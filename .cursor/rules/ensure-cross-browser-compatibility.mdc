@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Code and design solutions must work seamlessly across modern browsers (Chrome, Firefox, Safari, Edge) and on various devices. Prioritize a smooth, consistent user experience.

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For deployment, favor static hosting solutions (like GitHub Pages, Netlify, or Vercel) to ensure fast loading times, easy continuous deployment, and cost efficiency.

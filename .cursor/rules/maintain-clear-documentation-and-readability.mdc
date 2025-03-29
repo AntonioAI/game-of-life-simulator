@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+All generated content, including design documents, code comments, and user guides, should be written in clear, accessible language. Document assumptions and rationale so that future developers (or your future self) can quickly understand and extend the project.

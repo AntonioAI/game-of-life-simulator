@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Ensure that all simulation logic is optimized—use requestAnimationFrame for animations and efficient canvas drawing routines. Avoid unnecessary libraries unless they add significant value.

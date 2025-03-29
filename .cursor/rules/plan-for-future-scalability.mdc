@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+While the MVP focuses on core features, design solutions should be modular and scalable. Keep potential future enhancements in mind (e.g., custom rule editors, pattern sharing, user accounts).

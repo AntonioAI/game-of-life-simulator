@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+All code examples should be written in modern JavaScript (ES6+). Use clear, concise syntax with proper inline comments. Code must be modular to allow easy extension in the future.

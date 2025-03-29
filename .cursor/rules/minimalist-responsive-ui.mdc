@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+The UI should be simple and intuitive. Use plain HTML5 and CSS3 (or a lightweight framework like TailwindCSS) to build a responsive interface that works well on desktop and mobile devices.

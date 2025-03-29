@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+When generating content, focus on building a robust, interactive Game of Life simulator using HTML5 Canvas. Emphasize features like cell toggling, simulation control (start/pause/reset), and real-time analytics (generation and live cell count).
