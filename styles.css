@@ -221,6 +221,7 @@ main {
 .analytics-label {
     font-weight: 500;
     color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
 .analytics-value {
