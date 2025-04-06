@@ -788,8 +788,8 @@ function createPatternThumbnail(patternId, width = 80, height = 80) {
         
         // Create a more detailed representation by focusing on the important parts
         // The gun is 36 cells wide, but most activity is in central portion
-        const centralStartX = 10;
-        const centralWidth = 26;
+        const centralStartX = 8;  // Adjusted from 10 to include more of the left "duck face"
+        const centralWidth = 28;  // Adjusted from 26 to properly show distance to right square
         
         // Calculate offset to center the view on the important part
         const offsetX = Math.floor((width - (centralWidth * cellSize)) / 2);
