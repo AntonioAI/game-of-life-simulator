@@ -189,8 +189,8 @@ function calculateCellSize() {
 function calculateCanvasDimensions() {
     const canvas = document.getElementById('game-canvas');
     // Canvas size remains fixed at 600x600
-    canvas.width = 600;
-    canvas.height = 600;
+    canvas.width = 800;
+    canvas.height = 800;
     // Update cell size based on grid dimensions
     gridSettings.cellSize = calculateCellSize();
 }
