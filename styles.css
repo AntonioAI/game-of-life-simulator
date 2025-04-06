@@ -344,12 +344,12 @@ footer {
         grid-template-columns: 1fr;
     }
     
-    .patterns {
-        grid-column: 1;
-    }
-    
     .control-buttons {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .patterns-container {
+        margin-top: var(--spacing-md);
     }
 }
 
@@ -575,4 +575,20 @@ footer {
     border-radius: var(--radius-sm);
     background-color: white;
     font-size: 0.9rem;
+}
+
+/* Pattern Library Container */
+.patterns-container {
+    width: 100%;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.patterns {
+    background-color: var(--panel-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    width: 100%;
 }
