@@ -714,7 +714,7 @@ function createSimulationControls() {
         <h3>Simulation Controls</h3>
         <div class="control-buttons">
             <button id="start-button" class="primary-button"><span class="icon">▶</span> Start</button>
-            <button id="pause-button" disabled><span class="icon">■</span> Pause</button>
+            <button id="pause-button" disabled><span class="icon">⏸</span> Pause</button>
             <button id="step-button"><span class="icon">➡</span> Step</button>
             <button id="reset-button"><span class="icon">↺</span> Reset</button>
             <button id="test-pattern-button"><span class="icon">+</span> Glider</button>
