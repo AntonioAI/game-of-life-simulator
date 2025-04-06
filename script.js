@@ -694,15 +694,6 @@ function createAnalyticsDisplay() {
     updateAnalytics();
 }
 
-// Add a test pattern (glider) for verifying rules
-function createTestPattern() {
-    // Clear the grid first
-    initializeGrid();
-    
-    // Place a glider pattern from the pattern library
-    placePatternInCenter('glider');
-}
-
 // Update the simulation controls
 function createSimulationControls() {
     const controlsDiv = document.querySelector('.controls');
@@ -717,7 +708,6 @@ function createSimulationControls() {
             <button id="pause-button" disabled><span class="icon">⏸</span> Pause</button>
             <button id="step-button"><span class="icon">➡</span> Step</button>
             <button id="reset-button"><span class="icon">↺</span> Reset</button>
-            <button id="test-pattern-button"><span class="icon">+</span> Glider</button>
         </div>
         <div class="speed-control">
             <label for="speed-slider">Speed: <span id="speed-value">${simulationSpeed}</span> FPS</label>
@@ -758,10 +748,6 @@ function createSimulationControls() {
         startButton.classList.add('primary-button');
         pauseButton.classList.remove('primary-button');
     });
-    
-    // Add event listener to test pattern button
-    const testPatternButton = document.getElementById('test-pattern-button');
-    testPatternButton.addEventListener('click', createTestPattern);
     
     // Add event listener to speed slider
     const speedSlider = document.getElementById('speed-slider');
