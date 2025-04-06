@@ -172,43 +172,50 @@ main {
 .simulation-controls h3 {
     color: var(--secondary-color);
     font-size: 1.1rem;
-    margin-bottom: 0.8rem;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
 }
 
 /* Analytics section */
 .analytics {
     margin-top: 0;
-    padding: 15px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: var(--spacing-lg);
+    background-color: var(--panel-background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
 }
 
 .analytics h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 18px;
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .analytics-content {
-    padding: 0 5px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
 }
 
 .analytics-data {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 10px;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
 }
 
 .analytics-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-sm);
     background-color: var(--background-color);
     border-radius: var(--radius-sm);
-    margin-bottom: var(--spacing-xs);
+    border: 1px solid var(--border-color);
 }
 
 .analytics-label {
@@ -268,13 +275,18 @@ button:disabled {
 /* Speed control styling */
 .speed-control {
     margin-top: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
 }
 
 .speed-control label {
     display: block;
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
     color: var(--text-secondary);
     font-size: 0.9rem;
+    font-weight: 500;
 }
 
 input[type="range"] {
@@ -413,10 +425,16 @@ footer {
     grid-template-columns: auto 1fr;
     gap: var(--spacing-sm);
     align-items: center;
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
 }
 
 .custom-size label {
     font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 .custom-size input {
@@ -527,4 +545,29 @@ footer {
     .pattern-name {
         font-size: 0.7rem;
     }
+}
+
+/* Boundary setting styling */
+.boundary-setting {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.boundary-setting label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.boundary-setting select {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background-color: white;
+    font-size: 0.9rem;
 }
