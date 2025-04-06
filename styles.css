@@ -227,6 +227,7 @@ main {
 .analytics-value {
     font-weight: 600;
     color: var(--primary-color);
+    font-size: 0.9rem;
 }
 
 /* Control button styles */
