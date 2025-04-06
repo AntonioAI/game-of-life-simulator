@@ -362,7 +362,7 @@ function createSettingsPanel() {
     const settingsDiv = document.createElement('div');
     settingsDiv.className = 'grid-settings';
     settingsDiv.innerHTML = `
-        <h3>Grid Settings</h3>
+        <h3>Grid Dimensions</h3>
         <div class="preset-buttons">
             <button data-size="50">50×50</button>
             <button data-size="75">75×75</button>
