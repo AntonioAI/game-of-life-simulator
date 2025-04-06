@@ -222,12 +222,15 @@ main {
     font-weight: 500;
     color: var(--text-secondary);
     font-size: 0.9rem;
+    margin-right: var(--spacing-md);
 }
 
 .analytics-value {
     font-weight: 600;
     color: var(--primary-color);
     font-size: 0.9rem;
+    text-align: right;
+    min-width: 60px;
 }
 
 /* Control button styles */
