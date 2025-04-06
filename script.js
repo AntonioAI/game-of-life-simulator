@@ -780,44 +780,163 @@ function createPatternThumbnail(patternId, width = 80, height = 80) {
     // Calculate cell size based on pattern dimensions
     const patternWidth = pattern[0].length;
     const patternHeight = pattern.length;
-    const cellSize = Math.min(
-        Math.floor((width - 10) / patternWidth),
-        Math.floor((height - 10) / patternHeight)
-    );
     
-    // Calculate offset to center the pattern
-    const offsetX = Math.floor((width - (patternWidth * cellSize)) / 2);
-    const offsetY = Math.floor((height - (patternHeight * cellSize)) / 2);
-    
-    // Draw the pattern
-    thumbnailCtx.fillStyle = '#000000';
-    for (let y = 0; y < patternHeight; y++) {
-        for (let x = 0; x < patternWidth; x++) {
-            if (pattern[y][x]) {
-                thumbnailCtx.fillRect(
-                    offsetX + (x * cellSize),
-                    offsetY + (y * cellSize),
-                    cellSize,
-                    cellSize
-                );
+    // Special case for Gosper Glider Gun - use a higher quality downsampling
+    if (patternId === 'gosperglidergun') {
+        // Fixed cell size for glider gun to ensure it's visible
+        const cellSize = 3;
+        
+        // Create a more detailed representation by focusing on the important parts
+        // The gun is 36 cells wide, but most activity is in central portion
+        const centralStartX = 10;
+        const centralWidth = 26;
+        
+        // Calculate offset to center the view on the important part
+        const offsetX = Math.floor((width - (centralWidth * cellSize)) / 2);
+        const offsetY = Math.floor((height - (patternHeight * cellSize)) / 2);
+        
+        // Draw the central portion of the pattern
+        thumbnailCtx.fillStyle = '#000000';
+        for (let y = 0; y < patternHeight; y++) {
+            for (let x = centralStartX; x < centralStartX + centralWidth && x < patternWidth; x++) {
+                if (pattern[y][x]) {
+                    thumbnailCtx.fillRect(
+                        offsetX + ((x - centralStartX) * cellSize),
+                        offsetY + (y * cellSize),
+                        cellSize,
+                        cellSize
+                    );
+                }
             }
         }
+        
+        // Draw grid for better visualization
+        thumbnailCtx.strokeStyle = '#eeeeee';
+        thumbnailCtx.lineWidth = 0.5;
+        
+        for (let y = 0; y <= patternHeight; y++) {
+            thumbnailCtx.beginPath();
+            thumbnailCtx.moveTo(offsetX, offsetY + (y * cellSize));
+            thumbnailCtx.lineTo(offsetX + (centralWidth * cellSize), offsetY + (y * cellSize));
+            thumbnailCtx.stroke();
+        }
+        
+        for (let x = 0; x <= centralWidth; x++) {
+            thumbnailCtx.beginPath();
+            thumbnailCtx.moveTo(offsetX + (x * cellSize), offsetY);
+            thumbnailCtx.lineTo(offsetX + (x * cellSize), offsetY + (patternHeight * cellSize));
+            thumbnailCtx.stroke();
+        }
     }
-    
-    // Draw a grid (optional for visual clarity)
-    thumbnailCtx.strokeStyle = '#dddddd';
-    for (let y = 0; y <= patternHeight; y++) {
-        thumbnailCtx.beginPath();
-        thumbnailCtx.moveTo(offsetX, offsetY + (y * cellSize));
-        thumbnailCtx.lineTo(offsetX + (patternWidth * cellSize), offsetY + (y * cellSize));
-        thumbnailCtx.stroke();
-    }
-    
-    for (let x = 0; x <= patternWidth; x++) {
-        thumbnailCtx.beginPath();
-        thumbnailCtx.moveTo(offsetX + (x * cellSize), offsetY);
-        thumbnailCtx.lineTo(offsetX + (x * cellSize), offsetY + (patternHeight * cellSize));
-        thumbnailCtx.stroke();
+    // For other large patterns, use the scaled approach
+    else if (patternWidth > 16 || patternHeight > 16) {
+        // Determine the optimal scale factor based on pattern size
+        let scaleFactor = Math.max(1, Math.ceil(Math.max(patternWidth, patternHeight) / 16));
+        
+        // Ensure we have enough cells to make a meaningful thumbnail
+        if (patternWidth / scaleFactor < 4 || patternHeight / scaleFactor < 4) {
+            scaleFactor = Math.max(1, Math.floor(Math.max(patternWidth, patternHeight) / 8));
+        }
+        
+        // Adjust cell size based on the scaled dimensions
+        const scaledWidth = Math.ceil(patternWidth / scaleFactor);
+        const scaledHeight = Math.ceil(patternHeight / scaleFactor);
+        
+        const cellSize = Math.min(
+            Math.floor((width - 10) / scaledWidth),
+            Math.floor((height - 10) / scaledHeight)
+        );
+        
+        // Create the scaled pattern
+        const scaledPattern = Array(scaledHeight).fill().map(() => Array(scaledWidth).fill(0));
+        
+        // Improved downsampling to preserve pattern structure
+        for (let y = 0; y < patternHeight; y++) {
+            for (let x = 0; x < patternWidth; x++) {
+                if (pattern[y][x]) {
+                    const scaledX = Math.floor(x / scaleFactor);
+                    const scaledY = Math.floor(y / scaleFactor);
+                    scaledPattern[scaledY][scaledX] = 1;
+                }
+            }
+        }
+        
+        // Calculate offset for the scaled pattern
+        const offsetX = Math.floor((width - (scaledWidth * cellSize)) / 2);
+        const offsetY = Math.floor((height - (scaledHeight * cellSize)) / 2);
+        
+        // Draw the scaled pattern
+        thumbnailCtx.fillStyle = '#000000';
+        for (let y = 0; y < scaledHeight; y++) {
+            for (let x = 0; x < scaledWidth; x++) {
+                if (scaledPattern[y][x]) {
+                    thumbnailCtx.fillRect(
+                        offsetX + (x * cellSize),
+                        offsetY + (y * cellSize),
+                        cellSize,
+                        cellSize
+                    );
+                }
+            }
+        }
+        
+        // Draw grid
+        thumbnailCtx.strokeStyle = '#dddddd';
+        for (let y = 0; y <= scaledHeight; y++) {
+            thumbnailCtx.beginPath();
+            thumbnailCtx.moveTo(offsetX, offsetY + (y * cellSize));
+            thumbnailCtx.lineTo(offsetX + (scaledWidth * cellSize), offsetY + (y * cellSize));
+            thumbnailCtx.stroke();
+        }
+        
+        for (let x = 0; x <= scaledWidth; x++) {
+            thumbnailCtx.beginPath();
+            thumbnailCtx.moveTo(offsetX + (x * cellSize), offsetY);
+            thumbnailCtx.lineTo(offsetX + (x * cellSize), offsetY + (scaledHeight * cellSize));
+            thumbnailCtx.stroke();
+        }
+    } else {
+        // Normal pattern rendering for smaller patterns
+        // Calculate cell size
+        const cellSize = Math.min(
+            Math.floor((width - 10) / patternWidth),
+            Math.floor((height - 10) / patternHeight)
+        );
+        
+        // Calculate offset to center the pattern
+        const offsetX = Math.floor((width - (patternWidth * cellSize)) / 2);
+        const offsetY = Math.floor((height - (patternHeight * cellSize)) / 2);
+        
+        // Draw the pattern
+        thumbnailCtx.fillStyle = '#000000';
+        for (let y = 0; y < patternHeight; y++) {
+            for (let x = 0; x < patternWidth; x++) {
+                if (pattern[y][x]) {
+                    thumbnailCtx.fillRect(
+                        offsetX + (x * cellSize),
+                        offsetY + (y * cellSize),
+                        cellSize,
+                        cellSize
+                    );
+                }
+            }
+        }
+        
+        // Draw a grid (optional for visual clarity)
+        thumbnailCtx.strokeStyle = '#dddddd';
+        for (let y = 0; y <= patternHeight; y++) {
+            thumbnailCtx.beginPath();
+            thumbnailCtx.moveTo(offsetX, offsetY + (y * cellSize));
+            thumbnailCtx.lineTo(offsetX + (patternWidth * cellSize), offsetY + (y * cellSize));
+            thumbnailCtx.stroke();
+        }
+        
+        for (let x = 0; x <= patternWidth; x++) {
+            thumbnailCtx.beginPath();
+            thumbnailCtx.moveTo(offsetX + (x * cellSize), offsetY);
+            thumbnailCtx.lineTo(offsetX + (x * cellSize), offsetY + (patternHeight * cellSize));
+            thumbnailCtx.stroke();
+        }
     }
     
     return thumbnailCanvas;
