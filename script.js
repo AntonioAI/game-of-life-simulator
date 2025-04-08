@@ -7,6 +7,14 @@
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 
+// Gosper Glider Gun thumbnail settings
+const GOSPER_GUN = {
+    CELL_SIZE: 3,
+    CENTRAL_START_X: 8,  // Adjusted to include more of the left "duck face"
+    CENTRAL_WIDTH: 28,   // Adjusted to properly show distance to right square
+    TOTAL_WIDTH: 36      // Total width of the pattern
+};
+
 // Default grid settings
 let gridSettings = {
     rows: 50,
@@ -783,28 +791,23 @@ function createPatternThumbnail(patternId, width = 80, height = 80) {
     
     // Special case for Gosper Glider Gun - use a higher quality downsampling
     if (patternId === 'gosperglidergun') {
-        // Fixed cell size for glider gun to ensure it's visible
-        const cellSize = 3;
-        
         // Create a more detailed representation by focusing on the important parts
         // The gun is 36 cells wide, but most activity is in central portion
-        const centralStartX = 8;  // Adjusted from 10 to include more of the left "duck face"
-        const centralWidth = 28;  // Adjusted from 26 to properly show distance to right square
         
         // Calculate offset to center the view on the important part
-        const offsetX = Math.floor((width - (centralWidth * cellSize)) / 2);
-        const offsetY = Math.floor((height - (patternHeight * cellSize)) / 2);
+        const offsetX = Math.floor((width - (GOSPER_GUN.CENTRAL_WIDTH * GOSPER_GUN.CELL_SIZE)) / 2);
+        const offsetY = Math.floor((height - (patternHeight * GOSPER_GUN.CELL_SIZE)) / 2);
         
         // Draw the central portion of the pattern
         thumbnailCtx.fillStyle = '#000000';
         for (let y = 0; y < patternHeight; y++) {
-            for (let x = centralStartX; x < centralStartX + centralWidth && x < patternWidth; x++) {
-                if (pattern[y][x]) {
+            for (let x = GOSPER_GUN.CENTRAL_START_X; x < GOSPER_GUN.CENTRAL_START_X + GOSPER_GUN.CENTRAL_WIDTH; x++) {
+                if (pattern[y][x] === 1) {
                     thumbnailCtx.fillRect(
-                        offsetX + ((x - centralStartX) * cellSize),
-                        offsetY + (y * cellSize),
-                        cellSize,
-                        cellSize
+                        offsetX + (x - GOSPER_GUN.CENTRAL_START_X) * GOSPER_GUN.CELL_SIZE,
+                        offsetY + y * GOSPER_GUN.CELL_SIZE,
+                        GOSPER_GUN.CELL_SIZE,
+                        GOSPER_GUN.CELL_SIZE
                     );
                 }
             }
@@ -816,15 +819,15 @@ function createPatternThumbnail(patternId, width = 80, height = 80) {
         
         for (let y = 0; y <= patternHeight; y++) {
             thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX, offsetY + (y * cellSize));
-            thumbnailCtx.lineTo(offsetX + (centralWidth * cellSize), offsetY + (y * cellSize));
+            thumbnailCtx.moveTo(offsetX, offsetY + (y * GOSPER_GUN.CELL_SIZE));
+            thumbnailCtx.lineTo(offsetX + (GOSPER_GUN.CENTRAL_WIDTH * GOSPER_GUN.CELL_SIZE), offsetY + (y * GOSPER_GUN.CELL_SIZE));
             thumbnailCtx.stroke();
         }
         
-        for (let x = 0; x <= centralWidth; x++) {
+        for (let x = 0; x <= GOSPER_GUN.CENTRAL_WIDTH; x++) {
             thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX + (x * cellSize), offsetY);
-            thumbnailCtx.lineTo(offsetX + (x * cellSize), offsetY + (patternHeight * cellSize));
+            thumbnailCtx.moveTo(offsetX + (x * GOSPER_GUN.CELL_SIZE), offsetY);
+            thumbnailCtx.lineTo(offsetX + (x * GOSPER_GUN.CELL_SIZE), offsetY + (patternHeight * GOSPER_GUN.CELL_SIZE));
             thumbnailCtx.stroke();
         }
     }
