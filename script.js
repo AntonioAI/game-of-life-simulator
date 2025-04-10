@@ -998,17 +998,29 @@ function createPatternLibrary() {
     
     // Create categories for organization
     const categories = {
-        'Still Life': [],
-        'Oscillator': [],
-        'Spaceship': [],
-        'Growth': []
+        'Still Life': {
+            description: 'Stable patterns that remain unchanged from generation to generation.',
+            patterns: []
+        },
+        'Oscillator': {
+            description: 'Patterns that repeat a sequence of states in a cycle.',
+            patterns: []
+        },
+        'Spaceship': {
+            description: 'Patterns that move across the grid while maintaining their shape.',
+            patterns: []
+        },
+        'Growth': {
+            description: 'Patterns that evolve in complex ways, often expanding indefinitely.',
+            patterns: []
+        }
     };
     
     // Organize patterns by category
     for (const patternId in patternLibrary) {
         const pattern = patternLibrary[patternId];
         if (categories[pattern.category]) {
-            categories[pattern.category].push(patternId);
+            categories[pattern.category].patterns.push(patternId);
         }
     }
     
@@ -1018,7 +1030,7 @@ function createPatternLibrary() {
     
     // Create section for each category
     for (const category in categories) {
-        if (categories[category].length === 0) continue;
+        if (categories[category].patterns.length === 0) continue;
         
         const categorySection = document.createElement('div');
         categorySection.className = 'pattern-category';
@@ -1027,11 +1039,17 @@ function createPatternLibrary() {
         categoryHeader.textContent = category;
         categorySection.appendChild(categoryHeader);
         
+        // Add category description
+        const categoryDescription = document.createElement('p');
+        categoryDescription.className = 'category-description';
+        categoryDescription.textContent = categories[category].description;
+        categorySection.appendChild(categoryDescription);
+        
         const patternsGrid = document.createElement('div');
         patternsGrid.className = 'patterns-grid';
         
         // Add each pattern in this category
-        categories[category].forEach(patternId => {
+        categories[category].patterns.forEach(patternId => {
             const pattern = patternLibrary[patternId];
             
             const patternCard = document.createElement('div');

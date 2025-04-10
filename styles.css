@@ -467,11 +467,19 @@ footer {
 }
 
 .pattern-category h3 {
-    font-size: 1.1rem;
-    color: var(--secondary-color);
-    margin-bottom: var(--spacing-sm);
-    padding-bottom: var(--spacing-xs);
-    border-bottom: 1px solid var(--border-color);
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.category-description {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    line-height: 1.4;
 }
 
 .patterns-grid {
