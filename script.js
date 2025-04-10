@@ -1183,18 +1183,11 @@ function createPatternLibrary() {
         }
         categoryDiv.appendChild(categoryDescription);
         
-        // Add category description
-        const categoryDescription = document.createElement('p');
-        categoryDescription.className = 'category-description';
-        categoryDescription.textContent = categories[category].description;
-        categorySection.appendChild(categoryDescription);
-        
         const patternsGrid = document.createElement('div');
         patternsGrid.className = 'patterns-grid';
         
         // Create a card for each pattern in this category
         patternsByCategory[category].forEach(pattern => {
-
             const patternCard = document.createElement('div');
             patternCard.className = 'pattern-card';
             patternCard.setAttribute('data-pattern-id', pattern.id);
