@@ -364,52 +364,84 @@ function setupCanvasInteractions() {
 
 // Create grid size settings panel
 function createSettingsPanel() {
-    const controlsDiv = document.querySelector('.controls');
+    const controlsContainer = document.querySelector('.controls');
     
-    // Create the settings container
-    const settingsDiv = document.createElement('div');
-    settingsDiv.className = 'grid-settings';
-    settingsDiv.innerHTML = `
-        <h3>Grid Dimensions</h3>
-        <div class="preset-buttons">
-            <button data-size="50">50×50</button>
-            <button data-size="75">75×75</button>
-            <button data-size="100">100×100</button>
-        </div>
-        <div class="custom-size">
-            <label for="custom-rows">Rows:</label>
-            <input type="number" id="custom-rows" min="10" max="200" value="${gridSettings.rows}">
-            <label for="custom-cols">Columns:</label>
-            <input type="number" id="custom-cols" min="10" max="200" value="${gridSettings.cols}">
-            <button id="apply-size">Apply</button>
-        </div>
-    `;
+    // Create grid settings section
+    const gridSettings = document.createElement('div');
+    gridSettings.className = 'grid-settings';
     
-    controlsDiv.appendChild(settingsDiv);
+    // Create title for this section
+    const gridTitle = document.createElement('h3');
+    gridTitle.textContent = 'Grid Dimensions';
+    gridSettings.appendChild(gridTitle);
     
-    // Add event listeners to preset buttons
-    const presetButtons = settingsDiv.querySelectorAll('.preset-buttons button');
-    presetButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const size = parseInt(button.getAttribute('data-size'), 10);
-            resizeGrid(size, size);
-        });
-    });
+    // Create preset buttons
+    const presetButtons = document.createElement('div');
+    presetButtons.className = 'preset-buttons';
     
-    // Add event listener to custom size apply button
-    const applyButton = document.getElementById('apply-size');
+    const btn50 = document.createElement('button');
+    btn50.textContent = '50×50';
+    btn50.addEventListener('click', () => resizeGrid(50, 50));
+    presetButtons.appendChild(btn50);
+    
+    const btn75 = document.createElement('button');
+    btn75.textContent = '75×75';
+    btn75.addEventListener('click', () => resizeGrid(75, 75));
+    presetButtons.appendChild(btn75);
+    
+    const btn100 = document.createElement('button');
+    btn100.textContent = '100×100';
+    btn100.addEventListener('click', () => resizeGrid(100, 100));
+    presetButtons.appendChild(btn100);
+    
+    gridSettings.appendChild(presetButtons);
+    
+    // Create custom size inputs
+    const customSize = document.createElement('div');
+    customSize.className = 'custom-size';
+    
+    // Rows input
+    const rowsLabel = document.createElement('label');
+    rowsLabel.textContent = 'Rows:';
+    customSize.appendChild(rowsLabel);
+    
+    const rowsInput = document.createElement('input');
+    rowsInput.type = 'number';
+    rowsInput.min = '10';
+    rowsInput.max = '200';
+    rowsInput.value = gridSettings.rows;
+    customSize.appendChild(rowsInput);
+    
+    // Columns input
+    const colsLabel = document.createElement('label');
+    colsLabel.textContent = 'Columns:';
+    customSize.appendChild(colsLabel);
+    
+    const colsInput = document.createElement('input');
+    colsInput.type = 'number';
+    colsInput.min = '10';
+    colsInput.max = '200';
+    colsInput.value = gridSettings.cols;
+    customSize.appendChild(colsInput);
+    
+    // Apply button
+    const applyButton = document.createElement('button');
+    applyButton.id = 'apply-size';
+    applyButton.className = 'primary-button';
+    applyButton.textContent = 'Apply';
     applyButton.addEventListener('click', () => {
-        const rows = parseInt(document.getElementById('custom-rows').value, 10);
-        const cols = parseInt(document.getElementById('custom-cols').value, 10);
-        
-        // Validate input
-        if (isNaN(rows) || isNaN(cols) || rows < 10 || cols < 10 || rows > 200 || cols > 200) {
-            alert('Please enter valid dimensions (10-200)');
-            return;
+        const rows = parseInt(rowsInput.value);
+        const cols = parseInt(colsInput.value);
+        if (rows >= 10 && rows <= 200 && cols >= 10 && cols <= 200) {
+            resizeGrid(rows, cols);
         }
-        
-        resizeGrid(rows, cols);
     });
+    customSize.appendChild(applyButton);
+    
+    gridSettings.appendChild(customSize);
+    
+    // Add to controls container
+    controlsContainer.appendChild(gridSettings);
 }
 
 // Resize the grid with new dimensions
@@ -519,26 +551,42 @@ function toggleBoundaryType() {
 
 // Add boundary type toggle to settings panel
 function addBoundaryToggle() {
-    const settingsDiv = document.querySelector('.grid-settings');
+    const controlsContainer = document.querySelector('.controls');
     
-    const boundaryDiv = document.createElement('div');
-    boundaryDiv.className = 'boundary-setting';
-    boundaryDiv.innerHTML = `
-        <label for="boundary-toggle">Grid Boundary:</label>
-        <select id="boundary-toggle">
-            <option value="toroidal" selected>Toroidal (Edges Connect)</option>
-            <option value="finite">Finite (Fixed Edges)</option>
-        </select>
-    `;
+    // Create boundary setting section
+    const boundarySettings = document.createElement('div');
+    boundarySettings.className = 'boundary-setting';
     
-    settingsDiv.appendChild(boundaryDiv);
+    // Create title for this section
+    const boundaryTitle = document.createElement('h3');
+    boundaryTitle.textContent = 'Grid Boundary:';
+    boundarySettings.appendChild(boundaryTitle);
     
-    // Add event listener to the boundary toggle
-    const boundaryToggle = document.getElementById('boundary-toggle');
-    boundaryToggle.addEventListener('change', () => {
-        boundaryType = boundaryToggle.value;
-        updateAnalytics();
+    // Create boundary type selector
+    const boundarySelect = document.createElement('select');
+    boundarySelect.id = 'boundary-type-select';
+    
+    const toroidalOption = document.createElement('option');
+    toroidalOption.value = 'toroidal';
+    toroidalOption.textContent = 'Toroidal (Edges Connect)';
+    boundarySelect.appendChild(toroidalOption);
+    
+    const finiteOption = document.createElement('option');
+    finiteOption.value = 'finite';
+    finiteOption.textContent = 'Finite (Fixed Edges)';
+    boundarySelect.appendChild(finiteOption);
+    
+    boundarySelect.value = boundaryType;
+    boundarySelect.addEventListener('change', function() {
+        boundaryType = this.value;
+        document.getElementById('boundary-type').textContent = 
+            boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
     });
+    
+    boundarySettings.appendChild(boundarySelect);
+    
+    // Add to controls container
+    controlsContainer.appendChild(boundarySettings);
 }
 
 // Main simulation loop using requestAnimationFrame
@@ -651,121 +699,218 @@ function updateAnalytics() {
     document.getElementById('live-cell-count').textContent = liveCellCount;
     document.getElementById('population-density').textContent = density.toFixed(1) + '%';
     document.getElementById('grid-size').textContent = `${gridSettings.rows}×${gridSettings.cols}`;
-    document.getElementById('speed-display').textContent = `${simulationSpeed} FPS`;
+    document.getElementById('simulation-speed').textContent = `${simulationSpeed} FPS`;
     document.getElementById('simulation-state').textContent = isSimulationRunning ? 'Running' : 'Paused';
-    document.getElementById('boundary-type-display').textContent = boundaryType.charAt(0).toUpperCase() + boundaryType.slice(1);
+    document.getElementById('boundary-type').textContent = boundaryType.charAt(0).toUpperCase() + boundaryType.slice(1);
 }
 
 // Create analytics display
 function createAnalyticsDisplay() {
-    const analyticsDiv = document.querySelector('.analytics');
+    const analyticsContainer = document.querySelector('.analytics');
     
+    // Create analytics content container
     const analyticsContent = document.createElement('div');
     analyticsContent.className = 'analytics-content';
-    analyticsContent.innerHTML = `
-        <h3>Analytics</h3>
-        <div class="analytics-data">
-            <div class="analytics-item">
-                <span class="analytics-label">Generation:</span>
-                <span id="generation-count" class="analytics-value">0</span>
-            </div>
-            <div class="analytics-item">
-                <span class="analytics-label">Live Cells:</span>
-                <span id="live-cell-count" class="analytics-value">0</span>
-            </div>
-            <div class="analytics-item">
-                <span class="analytics-label">Population Density:</span>
-                <span id="population-density" class="analytics-value">0.0%</span>
-            </div>
-            <div class="analytics-item">
-                <span class="analytics-label">Grid Size:</span>
-                <span id="grid-size" class="analytics-value">50×50</span>
-            </div>
-            <div class="analytics-item">
-                <span class="analytics-label">Speed:</span>
-                <span id="speed-display" class="analytics-value">10 FPS</span>
-            </div>
-            <div class="analytics-item">
-                <span class="analytics-label">State:</span>
-                <span id="simulation-state" class="analytics-value">Paused</span>
-            </div>
-            <div class="analytics-item">
-                <span class="analytics-label">Boundary:</span>
-                <span id="boundary-type-display" class="analytics-value">Toroidal</span>
-            </div>
-        </div>
-    `;
     
-    analyticsDiv.appendChild(analyticsContent);
+    // Create analytics data container
+    const analyticsData = document.createElement('div');
+    analyticsData.className = 'analytics-data';
     
-    // Initialize analytics
-    updateAnalytics();
+    // Generation counter
+    const generationItem = document.createElement('div');
+    generationItem.className = 'analytics-item';
+    
+    const generationLabel = document.createElement('span');
+    generationLabel.className = 'analytics-label';
+    generationLabel.textContent = 'Generation:';
+    generationItem.appendChild(generationLabel);
+    
+    const generationValue = document.createElement('span');
+    generationValue.className = 'analytics-value';
+    generationValue.id = 'generation-count';
+    generationValue.textContent = '0';
+    generationItem.appendChild(generationValue);
+    
+    analyticsData.appendChild(generationItem);
+    
+    // Live cell counter
+    const liveCellItem = document.createElement('div');
+    liveCellItem.className = 'analytics-item';
+    
+    const liveCellLabel = document.createElement('span');
+    liveCellLabel.className = 'analytics-label';
+    liveCellLabel.textContent = 'Live Cells:';
+    liveCellItem.appendChild(liveCellLabel);
+    
+    const liveCellValue = document.createElement('span');
+    liveCellValue.className = 'analytics-value';
+    liveCellValue.id = 'live-cell-count';
+    liveCellValue.textContent = '0';
+    liveCellItem.appendChild(liveCellValue);
+    
+    analyticsData.appendChild(liveCellItem);
+    
+    // Population density counter
+    const densityItem = document.createElement('div');
+    densityItem.className = 'analytics-item';
+    
+    const densityLabel = document.createElement('span');
+    densityLabel.className = 'analytics-label';
+    densityLabel.textContent = 'Population Density:';
+    densityItem.appendChild(densityLabel);
+    
+    const densityValue = document.createElement('span');
+    densityValue.className = 'analytics-value';
+    densityValue.id = 'population-density';
+    densityValue.textContent = '0.0%';
+    densityItem.appendChild(densityValue);
+    
+    analyticsData.appendChild(densityItem);
+    
+    // Grid size display
+    const gridSizeItem = document.createElement('div');
+    gridSizeItem.className = 'analytics-item';
+    
+    const gridSizeLabel = document.createElement('span');
+    gridSizeLabel.className = 'analytics-label';
+    gridSizeLabel.textContent = 'Grid Size:';
+    gridSizeItem.appendChild(gridSizeLabel);
+    
+    const gridSizeValue = document.createElement('span');
+    gridSizeValue.className = 'analytics-value';
+    gridSizeValue.id = 'grid-size';
+    gridSizeValue.textContent = gridSettings.rows + '×' + gridSettings.cols;
+    gridSizeItem.appendChild(gridSizeValue);
+    
+    analyticsData.appendChild(gridSizeItem);
+    
+    // Add speed display
+    const speedItem = document.createElement('div');
+    speedItem.className = 'analytics-item';
+    
+    const speedLabel = document.createElement('span');
+    speedLabel.className = 'analytics-label';
+    speedLabel.textContent = 'Speed:';
+    speedItem.appendChild(speedLabel);
+    
+    const speedValue = document.createElement('span');
+    speedValue.className = 'analytics-value';
+    speedValue.id = 'simulation-speed';
+    speedValue.textContent = simulationSpeed + ' FPS';
+    speedItem.appendChild(speedValue);
+    
+    analyticsData.appendChild(speedItem);
+    
+    // Add simulation state
+    const stateItem = document.createElement('div');
+    stateItem.className = 'analytics-item';
+    
+    const stateLabel = document.createElement('span');
+    stateLabel.className = 'analytics-label';
+    stateLabel.textContent = 'State:';
+    stateItem.appendChild(stateLabel);
+    
+    const stateValue = document.createElement('span');
+    stateValue.className = 'analytics-value';
+    stateValue.id = 'simulation-state';
+    stateValue.textContent = 'Paused';
+    stateItem.appendChild(stateValue);
+    
+    analyticsData.appendChild(stateItem);
+    
+    // Add boundary type
+    const boundaryItem = document.createElement('div');
+    boundaryItem.className = 'analytics-item';
+    
+    const boundaryLabel = document.createElement('span');
+    boundaryLabel.className = 'analytics-label';
+    boundaryLabel.textContent = 'Boundary:';
+    boundaryItem.appendChild(boundaryLabel);
+    
+    const boundaryValue = document.createElement('span');
+    boundaryValue.className = 'analytics-value';
+    boundaryValue.id = 'boundary-type';
+    boundaryValue.textContent = 'Toroidal';
+    boundaryItem.appendChild(boundaryValue);
+    
+    analyticsData.appendChild(boundaryItem);
+    
+    analyticsContent.appendChild(analyticsData);
+    analyticsContainer.appendChild(analyticsContent);
 }
 
 // Update the simulation controls
 function createSimulationControls() {
-    const controlsDiv = document.querySelector('.controls');
+    const controlsContainer = document.querySelector('.controls');
     
-    // Create the controls container
-    const controlsContainer = document.createElement('div');
-    controlsContainer.className = 'simulation-controls';
-    controlsContainer.innerHTML = `
-        <h3>Simulation Controls</h3>
-        <div class="control-buttons">
-            <button id="start-button" class="primary-button"><span class="icon">▶</span> Start</button>
-            <button id="pause-button" disabled><span class="icon">⏸</span> Pause</button>
-            <button id="step-button"><span class="icon">➡</span> Step</button>
-            <button id="reset-button"><span class="icon">↺</span> Reset</button>
-        </div>
-        <div class="speed-control">
-            <label for="speed-slider">Speed: <span id="speed-value">${simulationSpeed}</span> FPS</label>
-            <input type="range" id="speed-slider" min="1" max="60" value="${simulationSpeed}" step="1">
-        </div>
-    `;
+    // Create simulation controls section
+    const simulationControls = document.createElement('div');
+    simulationControls.className = 'simulation-controls';
     
-    controlsDiv.appendChild(controlsContainer);
+    // Create title for this section
+    const simulationTitle = document.createElement('h3');
+    simulationTitle.textContent = 'Simulation Controls';
+    simulationControls.appendChild(simulationTitle);
     
-    // Add event listeners to control buttons
-    const startButton = document.getElementById('start-button');
-    const pauseButton = document.getElementById('pause-button');
-    const stepButton = document.getElementById('step-button');
-    const resetButton = document.getElementById('reset-button');
+    // Create button container
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'control-buttons';
     
-    startButton.addEventListener('click', () => {
-        startSimulation();
-        startButton.disabled = true;
-        pauseButton.disabled = false;
-        pauseButton.classList.add('primary-button');
-        startButton.classList.remove('primary-button');
-    });
+    // Start button
+    const startButton = document.createElement('button');
+    startButton.innerHTML = '<span class="icon">▶</span>';
+    startButton.title = 'Start';
+    startButton.addEventListener('click', startSimulation);
+    buttonContainer.appendChild(startButton);
     
-    pauseButton.addEventListener('click', () => {
-        pauseSimulation();
-        pauseButton.disabled = true;
-        startButton.disabled = false;
-        startButton.classList.add('primary-button');
-        pauseButton.classList.remove('primary-button');
-    });
+    // Pause button
+    const pauseButton = document.createElement('button');
+    pauseButton.innerHTML = '<span class="icon">⏸</span>';
+    pauseButton.title = 'Pause';
+    pauseButton.addEventListener('click', pauseSimulation);
+    buttonContainer.appendChild(pauseButton);
     
+    // Step button
+    const stepButton = document.createElement('button');
+    stepButton.innerHTML = '<span class="icon">➡</span>';
+    stepButton.title = 'Step';
     stepButton.addEventListener('click', stepSimulation);
-    resetButton.addEventListener('click', () => {
-        resetSimulation();
-        // Reset button states
-        startButton.disabled = false;
-        pauseButton.disabled = true;
-        startButton.classList.add('primary-button');
-        pauseButton.classList.remove('primary-button');
-    });
+    buttonContainer.appendChild(stepButton);
     
-    // Add event listener to speed slider
-    const speedSlider = document.getElementById('speed-slider');
-    const speedValue = document.getElementById('speed-value');
+    // Reset button
+    const resetButton = document.createElement('button');
+    resetButton.innerHTML = '<span class="icon">↺</span>';
+    resetButton.title = 'Reset';
+    resetButton.addEventListener('click', resetSimulation);
+    buttonContainer.appendChild(resetButton);
     
-    speedSlider.addEventListener('input', () => {
-        const newSpeed = speedSlider.value;
-        speedValue.textContent = newSpeed;
+    simulationControls.appendChild(buttonContainer);
+    
+    // Speed control
+    const speedControl = document.createElement('div');
+    speedControl.className = 'speed-control';
+    
+    const speedLabel = document.createElement('label');
+    speedLabel.textContent = 'Speed: ' + simulationSpeed + ' FPS';
+    speedControl.appendChild(speedLabel);
+    
+    const speedSlider = document.createElement('input');
+    speedSlider.type = 'range';
+    speedSlider.min = '1';
+    speedSlider.max = '60';
+    speedSlider.value = simulationSpeed;
+    speedSlider.addEventListener('input', (e) => {
+        const newSpeed = parseInt(e.target.value);
+        simulationSpeed = newSpeed;
+        speedLabel.textContent = 'Speed: ' + newSpeed + ' FPS';
         updateSimulationSpeed(newSpeed);
     });
+    speedControl.appendChild(speedSlider);
+    
+    simulationControls.appendChild(speedControl);
+    
+    // Add to controls container
+    controlsContainer.appendChild(simulationControls);
 }
 
 // Render a pattern on a small canvas for the thumbnail
@@ -991,99 +1136,86 @@ function placePatternInCenter(patternId) {
     placePattern(patternId, centerX, centerY);
 }
 
-// Create the pattern library UI
+// Create the pattern library display
 function createPatternLibrary() {
-    const patternsDiv = document.querySelector('.patterns');
-    patternsDiv.innerHTML = '<h2>Pattern Library</h2>';
+    const patternsContainer = document.querySelector('.patterns');
     
-    // Create categories for organization
-    const categories = {
-        'Still Life': {
-            description: 'Stable patterns that remain unchanged from generation to generation.',
-            patterns: []
-        },
-        'Oscillator': {
-            description: 'Patterns that repeat a sequence of states in a cycle.',
-            patterns: []
-        },
-        'Spaceship': {
-            description: 'Patterns that move across the grid while maintaining their shape.',
-            patterns: []
-        },
-        'Growth': {
-            description: 'Patterns that evolve in complex ways, often expanding indefinitely.',
-            patterns: []
-        }
-    };
+    // Create pattern gallery container
+    const patternGallery = document.createElement('div');
+    patternGallery.className = 'pattern-gallery';
     
-    // Organize patterns by category
-    for (const patternId in patternLibrary) {
+    // Group patterns by category
+    const patternsByCategory = {};
+    Object.keys(patternLibrary).forEach(patternId => {
         const pattern = patternLibrary[patternId];
-        if (categories[pattern.category]) {
-            categories[pattern.category].patterns.push(patternId);
+        if (!patternsByCategory[pattern.category]) {
+            patternsByCategory[pattern.category] = [];
         }
-    }
+        patternsByCategory[pattern.category].push({ id: patternId, ...pattern });
+    });
     
-    // Create the gallery grid container
-    const galleryContainer = document.createElement('div');
-    galleryContainer.className = 'pattern-gallery';
-    
-    // Create section for each category
-    for (const category in categories) {
-        if (categories[category].patterns.length === 0) continue;
+    // Create sections for each category
+    Object.keys(patternsByCategory).forEach(category => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'pattern-category';
         
-        const categorySection = document.createElement('div');
-        categorySection.className = 'pattern-category';
+        const categoryTitle = document.createElement('h3');
+        categoryTitle.textContent = category;
+        categoryDiv.appendChild(categoryTitle);
         
-        const categoryHeader = document.createElement('h3');
-        categoryHeader.textContent = category;
-        categorySection.appendChild(categoryHeader);
-        
-        // Add category description
         const categoryDescription = document.createElement('p');
         categoryDescription.className = 'category-description';
-        categoryDescription.textContent = categories[category].description;
-        categorySection.appendChild(categoryDescription);
+        switch (category) {
+            case 'Still Life':
+                categoryDescription.textContent = 'Patterns that remain unchanged from one generation to the next.';
+                break;
+            case 'Oscillator':
+                categoryDescription.textContent = 'Patterns that return to their initial state after a finite number of generations.';
+                break;
+            case 'Spaceship':
+                categoryDescription.textContent = 'Patterns that translate across the grid.';
+                break;
+            case 'Growth':
+                categoryDescription.textContent = 'Patterns that evolve in interesting ways.';
+                break;
+            default:
+                categoryDescription.textContent = '';
+        }
+        categoryDiv.appendChild(categoryDescription);
         
         const patternsGrid = document.createElement('div');
         patternsGrid.className = 'patterns-grid';
         
-        // Add each pattern in this category
-        categories[category].patterns.forEach(patternId => {
-            const pattern = patternLibrary[patternId];
-            
+        // Create a card for each pattern in this category
+        patternsByCategory[category].forEach(pattern => {
             const patternCard = document.createElement('div');
             patternCard.className = 'pattern-card';
-            patternCard.dataset.pattern = patternId;
+            patternCard.setAttribute('data-pattern-id', pattern.id);
             
-            // Create thumbnail
-            const thumbnail = createPatternThumbnail(patternId);
-            if (thumbnail) {
-                patternCard.appendChild(thumbnail);
-            }
+            // Create thumbnail canvas
+            const thumbnailCanvas = createPatternThumbnail(pattern.id);
+            patternCard.appendChild(thumbnailCanvas);
             
-            // Pattern name
+            // Add pattern name
             const patternName = document.createElement('div');
             patternName.className = 'pattern-name';
+            patternName.setAttribute('title', pattern.description);
             patternName.textContent = pattern.name;
             patternCard.appendChild(patternName);
             
-            // Add tooltip with description
-            patternCard.title = pattern.description;
-            
-            // Add click handler to place the pattern
+            // Add click event to place pattern
             patternCard.addEventListener('click', () => {
-                placePatternInCenter(patternId);
+                placePatternInCenter(pattern.id);
             });
             
             patternsGrid.appendChild(patternCard);
         });
         
-        categorySection.appendChild(patternsGrid);
-        galleryContainer.appendChild(categorySection);
-    }
+        categoryDiv.appendChild(patternsGrid);
+        patternGallery.appendChild(categoryDiv);
+    });
     
-    patternsDiv.appendChild(galleryContainer);
+    patternsContainer.appendChild(patternGallery);
 }
 
 // Update the init function to include the pattern library and device detection
