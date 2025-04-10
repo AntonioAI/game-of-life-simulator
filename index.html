@@ -21,16 +21,19 @@
         
         <div class="instructions">
             <h2>Instructions</h2>
-            <p>Welcome to the Game of Life Simulator! To use the simulator, follow these steps:</p>
+            <p>Welcome to the Game of Life, a cellular automaton created by John Conway. Watch cells evolve on the grid based on simple rules: a live cell with 2-3 neighbors survives, a dead cell with exactly 3 neighbors becomes alive, and other cells die or stay dead. Here’s how to use the simulator:</p>
             <ol>
-                <li>Click on the grid to add or remove cells.</li>
-                <li>Use the 'Start' button to begin the simulation.</li>
-                <li>Use the 'Stop' button to pause the simulation.</li>
-                <li>Adjust the speed using the slider.</li>
-                <li>Use the 'Reset' button to clear the grid.</li>
-                <li>Explore different patterns by loading them from the dropdown menu.</li>
+              <li><strong>Add or Remove Cells</strong>: Click any square on the grid to toggle it between alive (filled) and dead (empty).</li>
+              <li><strong>Start the Simulation</strong>: Press the "Start" button (▶) to begin the evolution.</li>
+              <li><strong>Pause the Simulation</strong>: Press the "Pause" button (⏸) to stop the action.</li>
+              <li><strong>Step Through</strong>: Use the "Step" button (➡) to advance one generation manually.</li>
+              <li><strong>Adjust Speed</strong>: Move the speed slider (1-60 FPS) to control how fast the cells evolve.</li>
+              <li><strong>Reset the Grid</strong>: Press the "Reset" button to clear all cells and start fresh.</li>
+              <li><strong>Resize the Grid</strong>: Choose a grid size (e.g., 50x50, 75x75, 100x100) or enter custom rows and columns, then click "Apply."</li>
+              <li><strong>Set Boundaries</strong>: Select "Toroidal" to make the grid wrap around Pac-Man style, or "Finite" for fixed edges.</li>
             </ol>
-        </div>
+            <p><strong>Tip</strong>: Try starting off by selecting a pattern from the Pattern Library. Then press "Start" to see it move!</p>
+          </div>
         
         <main>
             <div class="canvas-container">
