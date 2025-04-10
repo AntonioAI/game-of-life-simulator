@@ -559,7 +559,7 @@ function addBoundaryToggle() {
     
     // Create title for this section
     const boundaryTitle = document.createElement('h3');
-    boundaryTitle.textContent = 'Grid Boundary:';
+    boundaryTitle.textContent = 'Grid Boundary';
     boundarySettings.appendChild(boundaryTitle);
     
     // Create boundary type selector
@@ -842,11 +842,6 @@ function createAnalyticsDisplay() {
 // Update the simulation controls
 function createSimulationControls() {
     const controlsContainer = document.querySelector('.controls');
-    
-    // Add a horizontal rule for visual separation
-    const separator = document.createElement('hr');
-    separator.className = 'controls-separator';
-    controlsContainer.appendChild(separator);
     
     // Create simulation controls section
     const simulationControls = document.createElement('div');
