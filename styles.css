@@ -16,7 +16,7 @@
     --primary-color: #1a73e8;
     --primary-hover: #1557b0;
     --secondary-color: #3c4043;
-    --background-color: #f8f9fa;
+    --background-color: #f0f4f8; /* Updated to a soft blue-gray */
     --panel-background: #ffffff;
     
     /* Text colors */
@@ -54,6 +54,7 @@ body {
     line-height: 1.6;
     color: var(--text-primary);
     background-color: var(--background-color);
+    background-image: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%); /* Added subtle gradient */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -112,6 +113,7 @@ main {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Added subtle border */
 }
 
 #game-canvas {
@@ -145,6 +147,11 @@ main {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     padding: var(--spacing-lg);
+    transition: box-shadow 0.3s ease; /* Added transition for hover effect */
+}
+
+.controls:hover, .patterns:hover, .analytics:hover {
+    box-shadow: var(--shadow-lg); /* Enhanced shadow on hover */
 }
 
 /* Patterns panel should span full width below Controls and Analytics */
@@ -274,7 +281,7 @@ button:disabled {
 .speed-control {
     margin-top: var(--spacing-md);
     padding: var(--spacing-sm);
-    background-color: var(--background-color);
+    background-color: #f8f9fa; /* Updated to a slightly different shade */
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
 }
@@ -423,7 +430,7 @@ footer {
     gap: var(--spacing-sm);
     align-items: center;
     padding: var(--spacing-sm);
-    background-color: var(--background-color);
+    background-color: #f8f9fa; /* Updated to a slightly different shade */
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
 }
@@ -497,7 +504,7 @@ footer {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
     padding: var(--spacing-xs);
-    background-color: var(--background-color);
+    background-color: var(--panel-background);
     transition: all 0.2s ease;
     overflow: hidden;
 }
@@ -506,6 +513,7 @@ footer {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
     border-color: var(--primary-color);
+    background-color: #f8f9fa; /* Slightly different background on hover */
 }
 
 .pattern-card canvas {
@@ -558,7 +566,7 @@ footer {
     flex-direction: column;
     gap: var(--spacing-sm);
     padding: var(--spacing-sm);
-    background-color: var(--background-color);
+    background-color: #f8f9fa; /* Updated to a slightly different shade */
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
 }
