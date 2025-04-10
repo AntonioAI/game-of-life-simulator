@@ -157,7 +157,9 @@ header h1 {
 /* Main content layout */
 main {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
     gap: var(--spacing-lg);
     width: 100%;
 }
@@ -166,12 +168,12 @@ main {
     position: relative;
     width: 100%;
     max-width: 800px;
-    margin: 0 auto;
     background-color: var(--panel-background);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.1); /* Added subtle border */
+    order: 2; /* Center the canvas in the flex layout */
 }
 
 #game-canvas {
@@ -188,12 +190,14 @@ main {
     flex-direction: column;
     gap: var(--spacing-lg);
     width: 100%;
+    max-width: 300px;
+    order: 1; /* Position controls on the left */
 }
 
 /* Control panels container */
 .control-panels {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-lg);
     width: 100%;
 }
@@ -227,7 +231,20 @@ main {
     border-bottom: 1px solid var(--border-color);
 }
 
-.simulation-controls h3 {
+/* Control panel section styles for consistent formatting */
+.grid-settings, .boundary-setting, .simulation-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    padding: var(--spacing-sm);
+    background-color: #f8f9fa;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.grid-settings h3, .boundary-setting h3, .simulation-controls h3 {
     color: var(--secondary-color);
     font-size: 1.1rem;
     margin-bottom: var(--spacing-sm);
@@ -235,13 +252,31 @@ main {
     border-bottom: 1px solid var(--border-color);
 }
 
+/* Remove specific section margin styling to make gaps uniform */
+.boundary-setting {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.simulation-controls {
+    margin-top: 0;
+}
+
+/* Re-styling the speed control to match other sections */
+.speed-control {
+    margin-top: var(--spacing-sm);
+    width: 100%;
+}
+
 /* Analytics section */
 .analytics {
-    margin-top: 0;
-    padding: var(--spacing-lg);
     background-color: var(--panel-background);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    width: 100%;
+    max-width: 300px;
+    order: 3; /* Position analytics on the right */
 }
 
 .analytics h3 {
@@ -335,23 +370,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* Speed control styling */
-.speed-control {
-    margin-top: var(--spacing-md);
-    padding: var(--spacing-sm);
-    background-color: #f8f9fa; /* Updated to a slightly different shade */
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-}
-
-.speed-control label {
-    display: block;
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
 input[type="range"] {
     width: 100%;
     margin: var(--spacing-xs) 0;
@@ -360,36 +378,52 @@ input[type="range"] {
 /* Footer styles */
 footer {
     text-align: center;
-    margin-top: auto;
+    margin-top: var(--spacing-lg);
     padding: 1rem 0;
     border-top: 1px solid var(--border-color);
     font-size: 0.9rem;
     color: #666;
+    width: 100%;
+    clear: both;
+    order: 5; /* Ensure it comes after pattern library in flex layout */
 }
 
 /* Responsive styles */
 @media screen and (min-width: 768px) {
     main {
-        display: grid;
-        grid-template-columns: 800px 1fr;
-        gap: var(--spacing-lg);
-        padding: var(--spacing-lg);
-    }
-
-    .canvas-container {
-        width: 800px;
-        height: 800px;
+        flex-direction: row;
     }
     
-    .sidebar {
+    .canvas-container {
+        flex: 2;
+    }
+    
+    .sidebar, .analytics {
         flex: 1;
-        min-width: 300px;
+        max-width: 300px;
     }
 }
 
 @media screen and (max-width: 767px) {
+    main {
+        flex-direction: column;
+    }
+    
     #game-canvas {
-        max-height: 500px;
+        max-width: 100%;
+    }
+    
+    .sidebar, .analytics {
+        max-width: 100%;
+        order: 1;
+    }
+    
+    .canvas-container {
+        order: 2;
+    }
+    
+    .patterns-container {
+        order: 3;
     }
     
     header h1 {
@@ -495,15 +529,23 @@ footer {
     background-color: var(--primary-hover);
 }
 
+/* Section heading for main areas of the controls panel */
+.section-heading {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Custom size inputs */
 .custom-size {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: var(--spacing-sm);
     align-items: center;
-    padding: var(--spacing-sm);
-    background-color: #f8f9fa; /* Updated to a slightly different shade */
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
 }
 
 .custom-size label {
@@ -521,6 +563,15 @@ footer {
 #apply-size {
     grid-column: span 2;
     margin-top: var(--spacing-sm);
+}
+
+/* Speed control label styling */
+.speed-control label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 /* Primary button style */
@@ -661,13 +712,9 @@ footer {
     width: 100%;
     margin-top: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
+    order: 4;
 }
 
 .patterns {
-    background-color: var(--panel-background);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    padding: var(--spacing-lg);
     width: 100%;
 }
