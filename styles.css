@@ -96,6 +96,42 @@ header h1 {
     word-wrap: break-word; /* Handle long titles better */
 }
 
+/* Instructions styles */
+.instructions {
+    background-color: var(--panel-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    transition: box-shadow 0.3s ease;
+}
+
+.instructions:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.instructions h2 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.instructions p {
+    margin-bottom: var(--spacing-md);
+}
+
+.instructions ol {
+    padding-left: 1.5rem;
+}
+
+.instructions li {
+    margin-bottom: var(--spacing-sm);
+}
+
 /* Main content layout */
 main {
     display: flex;
@@ -331,12 +367,11 @@ footer {
 
 @media screen and (max-width: 767px) {
     #game-canvas {
-        max-width: 100vw;
-        max-height: 100vw;
+        max-height: 500px;
     }
     
     header h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
     
     .control-panels {
@@ -344,44 +379,58 @@ footer {
     }
     
     .control-buttons {
-        grid-template-columns: repeat(2, 1fr);
+        flex-direction: column;
     }
     
     .patterns-container {
-        margin-top: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+    
+    .instructions {
+        padding: var(--spacing-md);
     }
 }
 
-/* For very small screens */
 @media screen and (max-width: 480px) {
     .container {
         padding: var(--spacing-sm);
     }
     
     header h1 {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
     }
     
     .controls, .patterns, .analytics {
         padding: var(--spacing-md);
     }
     
-    /* For very small screens, stack buttons vertically */
     .control-buttons {
-        grid-template-columns: 1fr;
+        flex-wrap: wrap;
     }
     
     .custom-size {
-        grid-template-columns: 1fr;
+        flex-direction: column;
     }
     
     .preset-buttons {
-        flex-direction: column;
-        align-items: center;
+        justify-content: center;
     }
     
     .preset-buttons button {
-        width: 100%;
+        font-size: 0.7rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .instructions {
+        padding: var(--spacing-sm);
+    }
+    
+    .instructions h2 {
+        font-size: 1.1rem;
+    }
+    
+    .instructions li {
+        font-size: 0.9rem;
     }
 }
 
