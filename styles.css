@@ -231,6 +231,19 @@ main {
     border-bottom: 1px solid var(--border-color);
 }
 
+/* Controls separator */
+.controls-separator {
+    margin: 2rem 0 1.5rem;
+    border: none;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+/* Simulation Controls section with added margin */
+.simulation-controls {
+    margin-top: 1rem;
+}
+
 .simulation-controls h3 {
     color: var(--secondary-color);
     font-size: 1.1rem;
@@ -366,11 +379,14 @@ input[type="range"] {
 /* Footer styles */
 footer {
     text-align: center;
-    margin-top: auto;
+    margin-top: var(--spacing-lg);
     padding: 1rem 0;
     border-top: 1px solid var(--border-color);
     font-size: 0.9rem;
     color: #666;
+    width: 100%;
+    clear: both;
+    order: 5; /* Ensure it comes after pattern library in flex layout */
 }
 
 /* Responsive styles */
@@ -679,6 +695,7 @@ footer {
 .patterns-container {
     width: 100%;
     margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
     order: 4;
 }
 

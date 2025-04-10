@@ -843,6 +843,11 @@ function createAnalyticsDisplay() {
 function createSimulationControls() {
     const controlsContainer = document.querySelector('.controls');
     
+    // Add a horizontal rule for visual separation
+    const separator = document.createElement('hr');
+    separator.className = 'controls-separator';
+    controlsContainer.appendChild(separator);
+    
     // Create simulation controls section
     const simulationControls = document.createElement('div');
     simulationControls.className = 'simulation-controls';
