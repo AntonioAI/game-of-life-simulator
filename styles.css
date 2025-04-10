@@ -3,6 +3,28 @@
  * Copyright (c) 2025 Antonio Innocente
  */ 
 
+/* Back to Projects link */
+.back-to-projects {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 8px 12px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.back-to-projects:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
 /* Reset and base styles */
 * {
     margin: 0;
