@@ -1124,6 +1124,9 @@ function placePatternInCenter(patternId) {
     const patternData = patternLibrary[patternId];
     if (!patternData) return;
     
+    // Clear the grid first
+    initializeGrid();
+    
     const pattern = patternData.pattern;
     const patternHeight = pattern.length;
     const patternWidth = pattern[0].length;
@@ -1218,8 +1221,15 @@ function createPatternLibrary() {
     patternsContainer.appendChild(patternGallery);
 }
 
-// Update the init function to include the pattern library and device detection
+// Initialize the application
 function init() {
+    // Create required DOM elements first
+    createSettingsPanel();
+    addBoundaryToggle();
+    createSimulationControls();
+    createAnalyticsDisplay();
+    createPatternLibrary();
+
     // Detect mobile devices
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
@@ -1233,9 +1243,14 @@ function init() {
     }
     
     // Initialize canvas with proper pixel ratio for high-DPI displays
+    const canvas = document.getElementById('game-canvas');
+    if (!canvas) {
+        console.error('Canvas element not found');
+        return;
+    }
+
     const pixelRatio = window.devicePixelRatio || 1;
     if (pixelRatio > 1) {
-        const canvas = document.getElementById('game-canvas');
         canvas.style.width = canvas.width + 'px';
         canvas.style.height = canvas.height + 'px';
         canvas.width = canvas.width * pixelRatio;
@@ -1247,12 +1262,9 @@ function init() {
     // Initialize the simulation
     calculateCanvasDimensions();
     initializeGrid();
+    // Place the R-Pentomino pattern in the center
+    placePatternInCenter('rpentomino');
     drawGrid();
-    createSettingsPanel();
-    addBoundaryToggle();
-    createSimulationControls();
-    createAnalyticsDisplay();
-    createPatternLibrary();
     setupCanvasInteractions();
     
     // Add window resize handler for responsive behavior
@@ -1261,10 +1273,10 @@ function init() {
         calculateCanvasDimensions();
         drawGrid();
     });
+
+    // Update analytics after everything is initialized
+    updateAnalytics();
 }
 
-// Removing the existing init function call to avoid duplication
-window.removeEventListener('load', init);
-
-// Call init when the page is loaded
-window.addEventListener('load', init); 
+// Wait for DOM to be fully loaded before initializing
+document.addEventListener('DOMContentLoaded', init); 
