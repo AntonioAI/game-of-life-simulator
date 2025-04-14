@@ -1124,6 +1124,9 @@ function placePatternInCenter(patternId) {
     const patternData = patternLibrary[patternId];
     if (!patternData) return;
     
+    // Clear the grid first
+    initializeGrid();
+    
     const pattern = patternData.pattern;
     const patternHeight = pattern.length;
     const patternWidth = pattern[0].length;
