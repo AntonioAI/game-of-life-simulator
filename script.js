@@ -4,7 +4,7 @@
  */
 
 // Import pattern library module
-import { patternLibrary, createPatternThumbnail, placePattern, placePatternInCenter, createPatternLibrary } from './patternLibrary.js';
+import { patternLibrary, createPatternThumbnail, placePattern, placePatternInCenter, createPatternLibrary } from './PatternLibrary.js';
 
 // Game Manager object to maintain references across modules
 window.gameManager = {
