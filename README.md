@@ -41,7 +41,37 @@ An interactive web-based implementation of Conway's Game of Life built with HTML
    cd game-of-life-simulator
    ```
 
-2. Open `index.html` in your web browser
+2. Run a local web server to serve the files:
+
+   Since this application uses ES modules (`import`/`export`), you'll need to serve the files through a web server due to browser security restrictions when loading modules from `file://` URLs.
+
+   You can use one of these methods:
+
+   **Option 1: Using Python (if installed):**
+   ```bash
+   # For Python 3.x
+   python -m http.server
+
+   # For Python 2.x
+   python -m SimpleHTTPServer
+   ```
+   Then open http://localhost:8000 in your browser.
+
+   **Option 2: Using Node.js (if installed):**
+   ```bash
+   # Install a simple HTTP server globally (if not already installed)
+   npm install -g http-server
+
+   # Run the server
+   http-server
+   ```
+   Then open http://localhost:8080 in your browser.
+
+   **Option 3: Using Visual Studio Code:**
+   If you're using VS Code, install the "Live Server" extension, then right-click on index.html and select "Open with Live Server".
+
+   **Option 4: Using any modern web server:**
+   You can use any web server that can serve static files (Apache, Nginx, etc.)
 
 The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrate the fascinating evolution of Conway's Game of Life.
 
@@ -63,24 +93,40 @@ The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrat
    - Enter custom dimensions (10-200 cells per side)
    - Toggle between toroidal (wrapping) and finite boundaries
 
+4. **Pattern Library**:
+   - Use the search bar to find specific patterns
+   - Click on a pattern thumbnail to place it on the grid
+   - Patterns are categorized by type (Still Life, Oscillator, Spaceship, Growth)
+
 ## Technical Details
 
-- Built with vanilla JavaScript and HTML5 Canvas
+- Built with vanilla JavaScript (ES6 modules) and HTML5 Canvas
 - No external dependencies
+- Modular architecture with dependency injection
 - Optimized for performance with:
   - RequestAnimationFrame for smooth animation
   - Batch rendering operations
   - Efficient grid computation
   - Mobile-specific optimizations
 
-## Browser Support
+## Project Structure
 
-Tested and working on:
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome for Android)
+```
+/src
+  /core
+    GameManager.js       // Orchestration and game loop
+    Grid.js              // Grid state and operations
+    Rules.js             // Conway's rules implementation
+  /rendering
+    Renderer.js          // Canvas rendering
+  /ui
+    UIManager.js         // UI coordination
+    Controls.js          // User controls
+  /patterns
+    PatternLibrary.js    // Pattern definitions and management
+  main.js                // Application entry point
+```
+
 
 ## Contributing
 
