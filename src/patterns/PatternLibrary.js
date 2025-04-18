@@ -343,36 +343,70 @@ class PatternLibrary {
         searchInput.type = 'text';
         searchInput.placeholder = 'Search patterns...';
         searchInput.className = 'pattern-search-input';
+        searchInput.id = 'pattern-search-input';
         
-        // Add search functionality
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
+        // Function to update search results
+        const updateSearchResults = () => {
+            const searchTerm = searchInput.value.toLowerCase();
             const patternCards = document.querySelectorAll('.pattern-card');
+            
+            // Toggle clear button visibility
+            if (searchTerm.length > 0) {
+                searchContainer.classList.add('has-text');
+            } else {
+                searchContainer.classList.remove('has-text');
+            }
+            
+            // Count of visible patterns per category
+            const visibleCountByCategory = {};
             
             patternCards.forEach(card => {
                 const patternName = card.querySelector('.pattern-name').textContent.toLowerCase();
                 const patternDesc = card.getAttribute('title').toLowerCase();
+                const category = card.closest('.pattern-category');
+                const categoryName = category ? category.querySelector('h3').textContent : null;
+                
+                // Initialize counter for this category if not exists
+                if (categoryName && !visibleCountByCategory[categoryName]) {
+                    visibleCountByCategory[categoryName] = 0;
+                }
                 
                 // Show/hide based on search term
                 if (patternName.includes(searchTerm) || patternDesc.includes(searchTerm)) {
-                    card.style.display = 'flex';
+                    card.style.display = '';  // Use default display value (usually flex from CSS)
+                    if (categoryName) {
+                        visibleCountByCategory[categoryName]++;
+                    }
                 } else {
                     card.style.display = 'none';
                 }
             });
             
-            // Show/hide category headers if all patterns are hidden
+            // Show/hide category headers based on visible patterns
             document.querySelectorAll('.pattern-category').forEach(category => {
-                const visiblePatterns = category.querySelectorAll('.pattern-card[style="display: flex"]').length;
-                const categoryHeader = category.querySelector('h3');
-                const categoryDesc = category.querySelector('.category-description');
+                const categoryName = category.querySelector('h3').textContent;
+                const hasVisiblePatterns = visibleCountByCategory[categoryName] > 0;
                 
-                if (visiblePatterns === 0) {
-                    category.style.display = 'none';
-                } else {
-                    category.style.display = 'block';
-                }
+                category.style.display = hasVisiblePatterns ? '' : 'none';
             });
+        };
+        
+        // Add search functionality
+        searchInput.addEventListener('input', updateSearchResults);
+        
+        // Add clear button functionality
+        searchContainer.addEventListener('click', (e) => {
+            // Check if the click was on the pseudo-element (approximately)
+            const rect = searchContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            
+            // If click is near the right edge where the × is displayed
+            if (clickX > rect.width - 40 && searchInput.value.length > 0) {
+                searchInput.value = '';
+                searchContainer.classList.remove('has-text');
+                updateSearchResults();
+                searchInput.focus();
+            }
         });
         
         searchContainer.appendChild(searchInput);
