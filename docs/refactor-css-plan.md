@@ -18,7 +18,7 @@
   /utilities
     animations.css       // Animations and transitions
     helpers.css          // Utility classes
-  main.css               // Import file
+  main.css               // Single import file that includes all CSS modules
 ```
 
 ## Incremental Refactoring Plan
@@ -27,121 +27,185 @@
 1. **Create Directory Structure**
    - Create the folder structure as outlined above
    - Create empty skeleton CSS files for each module
+   - Create a backup copy of the original styles.css file for reference
    - Test: Application should still work with the original CSS file
 
-2. **Setup Import System**
-   - Create main.css with @import statements for all modules
-   - Add link to main.css in index.html
+2. **Setup CSS Import System**
+   - Create main.css with @import statements for all modules in the correct order:
+     ```css
+     /* Core styles first */
+     @import 'core/variables.css';
+     @import 'core/reset.css';
+     @import 'core/typography.css';
+     
+     /* Layout styles next */
+     @import 'layout/grid.css';
+     
+     /* Component styles */
+     @import 'components/canvas.css';
+     @import 'components/controls.css';
+     @import 'components/analytics.css';
+     @import 'components/patterns.css';
+     
+     /* Utilities */
+     @import 'utilities/animations.css';
+     @import 'utilities/helpers.css';
+     
+     /* Responsive styles last */
+     @import 'layout/responsive.css';
+     ```
+   - Update index.html to reference only main.css instead of styles.css
    - Test: Page should load with styles intact
 
 ### Phase 2: Extract Core Styles
 1. **Extract Variables**
-   - Move all CSS custom properties from :root to variables.css
+   - Move all CSS custom properties from :root to core/variables.css
    - Include color palette, spacing, shadows, and border radius
-   - Update main.css to import variables.css
+   - Ensure variables.css has its own :root declaration
    - Test: Styles should remain consistent
 
 2. **Create Reset and Base Styles**
-   - Move reset styles (* selector, html, body) to reset.css
+   - Move reset styles (* selector, html, body) to core/reset.css
    - Include basic global defaults
-   - Update main.css to import reset.css
    - Test: Page layout should be unaffected
 
 3. **Extract Typography**
-   - Move font-related styles to typography.css
+   - Move font-related styles to core/typography.css
    - Include text colors, sizes, weights, and line heights
-   - Update main.css to import typography.css
    - Test: Text styling should appear the same
 
-### Phase 3: Component Extraction
+### Phase 3: Component Extraction and BEM Implementation
 1. **Extract Canvas Styles**
-   - Move #game-canvas and .canvas-container styles to canvas.css
-   - Apply BEM methodology for class naming (e.g., .game-canvas, .game-canvas--active)
-   - Update HTML with new class names
+   - Move #game-canvas and .canvas-container styles to components/canvas.css
+   - Convert to BEM methodology:
+     - .game-canvas (was #game-canvas)
+     - .game-canvas--active (was #game-canvas.canvas-active)
+     - .game-canvas__container (was .canvas-container)
+   - Update HTML and JS references to use new class names
    - Test: Canvas should display correctly
 
 2. **Extract Controls Styles**
-   - Move .controls, .control-buttons, and related styles to controls.css
-   - Apply BEM methodology for class naming
-   - Update HTML with new class names
+   - Move .controls, .control-buttons, and related styles to components/controls.css
+   - Convert to BEM:
+     - .controls → .control-panel
+     - .control-buttons → .control-panel__buttons
+     - .control-buttons button → .control-panel__button
+   - Update HTML and JS references
    - Test: Controls should function and appear correctly
 
 3. **Extract Analytics Styles**
-   - Move .analytics and related styles to analytics.css
-   - Apply BEM methodology for class naming
-   - Update HTML with new class names
+   - Move .analytics and related styles to components/analytics.css
+   - Convert to BEM:
+     - .analytics → .analytics-panel
+     - .analytics-content → .analytics-panel__content
+     - .analytics-item → .analytics-panel__item
+   - Update HTML and JS references
    - Test: Analytics panel should display correctly
 
 4. **Extract Pattern Library Styles**
-   - Move .patterns, .pattern-gallery and related styles to patterns.css
-   - Apply BEM methodology for class naming
-   - Update HTML with new class names
+   - Move .patterns, .pattern-gallery and related styles to components/patterns.css
+   - Convert to BEM:
+     - .patterns → .pattern-library
+     - .pattern-gallery → .pattern-library__gallery
+     - .pattern-card → .pattern-library__card
+   - Update HTML and JS references
    - Test: Pattern library should function and appear correctly
 
 ### Phase 4: Layout and Responsive Design
 1. **Extract Layout Styles**
-   - Move main, container, and structural layout styles to grid.css
-   - Apply BEM methodology for layout class naming
-   - Update HTML with new class names
+   - Move main, container, and structural layout styles to layout/grid.css
+   - Apply BEM methodology:
+     - .container → .layout-container
+     - .sidebar → .layout-sidebar
+   - Update HTML references
    - Test: Page layout should remain consistent
 
 2. **Extract Media Queries**
-   - Move all @media queries to responsive.css
-   - Organize by component or screen size as appropriate
+   - Create layout/responsive.css
+   - For each component, move its media queries to responsive.css in organized sections
+   - Structure by component: 
+     ```css
+     /* Canvas responsive styles */
+     @media screen and (max-width: 767px) {
+       .game-canvas { /* styles */ }
+     }
+     
+     /* Control panel responsive styles */
+     @media screen and (max-width: 767px) {
+       .control-panel { /* styles */ }
+     }
+     ```
    - Test: Responsive behavior should work across different screen sizes
 
 ### Phase 5: Utility and Animation Styles
 1. **Extract Animation Styles**
-   - Move keyframes and animation properties to animations.css
+   - Move keyframes and animation properties to utilities/animations.css
+   - Include touch ripple effects and transitions
    - Test: All animations should continue to work
 
 2. **Create Utility Classes**
-   - Move helper classes to helpers.css
-   - Consider adding additional utility classes for common patterns
+   - Move helper classes to utilities/helpers.css
+   - Create reusable utility classes with prefixes:
+     - .u-hidden (utility for hidden elements)
+     - .u-margin-top (utility for top margin)
    - Test: All utility classes should work as expected
 
-### Phase 6: BEM Methodology Implementation
-1. **Standardize Block Names**
-   - Ensure all component blocks follow a consistent naming convention
-   - Document block names and purposes
-   - Test: Styling should be maintained
+### Phase 6: JavaScript Integration
+1. **Update Class References in JS**
+   - Find all JavaScript files that reference CSS classes
+   - Systematically update each reference to use the new BEM class names
+   - Test: All dynamic behaviors and UI updates should still work
 
-2. **Implement Element Naming**
-   - Convert element selectors to BEM notation (block__element)
-   - Update HTML to match new class names
-   - Test incrementally by component
-
-3. **Implement Modifier Naming**
-   - Convert state and variant classes to BEM modifiers (block--modifier, block__element--modifier)
-   - Update HTML and JavaScript references
-   - Test: All state changes and variations should work
+2. **Update Dynamic CSS Class Application**
+   - Find places where classes are added/removed via JavaScript
+   - Update to use BEM modifier pattern:
+     ```javascript
+     // Old: element.classList.add('active');
+     // New: element.classList.add('control-panel__button--active');
+     ```
+   - Test: All state changes and interactions should work
 
 ### Phase 7: Optimization and Cleanup
 1. **Reduce Specificity Issues**
-   - Identify and fix overly specific selectors
-   - Ensure consistent specificity levels
+   - Replace ID selectors with class selectors
+   - Avoid deep nesting of selectors
+   - Ensure consistent specificity with BEM naming
    - Test: Styles should apply correctly
 
 2. **Remove Redundancies**
    - Identify and consolidate duplicate properties
-   - Create reusable utility classes for common patterns
+   - Create shared styles for similar components
    - Test: Visual appearance should remain unchanged
 
 3. **Optimize CSS**
-   - Check for unused styles and remove them
-   - Ensure proper use of shorthand properties
+   - Check for unused styles with browser DevTools Coverage tab
+   - Use shorthand properties where appropriate
    - Test: Application should render correctly with cleaner CSS
 
-### Phase 8: Documentation
+### Phase 8: Documentation and Finalization
 1. **Document CSS Architecture**
-   - Create README file explaining the CSS organization
-   - Document the BEM convention used in the project
+   - Create styles/README.md explaining:
+     - The CSS organization and file structure
+     - The BEM naming convention used
+     - Import order and why it matters
    - Add code comments for complex selectors or calculations
 
 2. **Create Style Guide**
    - Document available utility classes
    - List color palette and variables
    - Provide examples of component variants
+
+3. **Remove Original CSS File**
+   - Once all tests pass consistently, remove the original styles.css
+   - Ensure all @import paths are correct
+   - Finalize index.html to only use main.css
+
+4. **Update Project README**
+   - Update the main project README.md to include a section on CSS architecture
+   - Document how the CSS is organized and link to the style guide
+   - Note the BEM methodology used and benefits for contributors
+   - Include instructions for adding new styles or components
+   - Ensure the CSS documentation aligns with the overall project documentation
 
 ## Progress Legend
 - ✅ Completed
@@ -158,13 +222,21 @@ After each step within each phase:
    - Pattern library
    - Animations and interactions
 3. Check for visual regressions or styling issues
-4. Test responsive behavior on different devices/screen sizes
+4. Test responsive behavior on different devices/screen sizes (320px, 768px, 1024px, 1440px)
 5. Address any issues before proceeding to the next step
 
 ## Implementation Strategy
-- Work on one component at a time
-- Use temporary classes during transition to maintain functionality
-- Keep original styles.css as a backup until refactoring is complete
+- Work on one component at a time, completing the full cycle:
+  1. Extract CSS to component file
+  2. Apply BEM naming
+  3. Update HTML and JS references
+  4. Test thoroughly
+- Use browser DevTools to debug style issues
+- Keep original styles.css as a reference until refactoring is complete
 - Commit changes after each component is successfully migrated
+- Maintain a consistent class naming convention throughout:
+  - Block: Meaningful component name (e.g., `game-canvas`)
+  - Element: Block + double underscore + element name (e.g., `game-canvas__container`)
+  - Modifier: Element + double dash + state (e.g., `game-canvas--active`)
 
-By following this incremental approach, you'll maintain a functional and visually consistent application throughout the CSS refactoring process while improving organization and maintainability. 
+By following this incremental approach with the CSS @import system, you'll maintain a functional and visually consistent application throughout the CSS refactoring process while improving organization and maintainability. The single main.css import file keeps the HTML clean while providing a modular CSS architecture. 
