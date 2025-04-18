@@ -1,0 +1,407 @@
+/**
+ * Game of Life Simulator - UIManager Module
+ * Responsible for UI coordination
+ * Copyright (c) 2025 Antonio Innocente
+ */
+
+import Controls from './Controls.js';
+
+/**
+ * UIManager class for managing UI elements
+ */
+class UIManager {
+    /**
+     * Create a UI manager
+     * @param {Object} dependencies - Dependencies object
+     * @param {GameManager} dependencies.gameManager - The game manager instance
+     * @param {Controls} dependencies.controls - The controls instance
+     */
+    constructor(dependencies = {}) {
+        this.gameManager = dependencies.gameManager || null;
+        this.controls = dependencies.controls || new Controls();
+        
+        // UI elements references
+        this.controlsContainer = document.querySelector('.controls');
+        this.analyticsContainer = document.querySelector('.analytics');
+        this.patternsContainer = document.querySelector('.patterns');
+    }
+    
+    /**
+     * Initialize UI elements
+     */
+    initialize() {
+        // Validate dependencies
+        if (!this.gameManager) {
+            throw new Error('GameManager dependency is required');
+        }
+        if (!this.gameManager.grid) {
+            throw new Error('Grid dependency is required');
+        }
+        if (!this.gameManager.renderer) {
+            throw new Error('Renderer dependency is required');
+        }
+        
+        this.createSimulationControls();
+        this.createSettingsPanel();
+        this.addBoundaryToggle();
+        this.createAnalyticsDisplay();
+        this.setupCanvasInteractions(this.gameManager.renderer.canvas, this.gameManager.grid);
+    }
+    
+    /**
+     * Create simulation controls (start, pause, step, reset)
+     */
+    createSimulationControls() {
+        // Create simulation controls section
+        const simulationControls = document.createElement('div');
+        simulationControls.className = 'simulation-controls';
+        
+        // Create title for this section
+        const simulationTitle = document.createElement('h3');
+        simulationTitle.textContent = 'Simulation Controls';
+        simulationControls.appendChild(simulationTitle);
+        
+        // Create button container
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'control-buttons';
+        
+        // Create control buttons
+        const startButton = this.controls.createButton('▶', 'Start', 
+            () => this.gameManager.startSimulation());
+        buttonContainer.appendChild(startButton);
+        
+        const pauseButton = this.controls.createButton('⏸', 'Pause', 
+            () => this.gameManager.pauseSimulation());
+        buttonContainer.appendChild(pauseButton);
+        
+        const stepButton = this.controls.createButton('➡', 'Step', 
+            () => this.gameManager.stepSimulation());
+        buttonContainer.appendChild(stepButton);
+        
+        const resetButton = this.controls.createButton('↺', 'Reset', 
+            () => this.gameManager.resetSimulation());
+        buttonContainer.appendChild(resetButton);
+        
+        simulationControls.appendChild(buttonContainer);
+        
+        // Add speed control
+        const speedControl = this.controls.createSpeedSlider(
+            1, 60, this.gameManager.simulationSpeed,
+            (speed) => this.gameManager.updateSimulationSpeed(speed)
+        );
+        simulationControls.appendChild(speedControl.container);
+        
+        // Add to controls container
+        this.controlsContainer.appendChild(simulationControls);
+    }
+    
+    /**
+     * Create settings panel (grid size, boundary type)
+     */
+    createSettingsPanel() {
+        // Create grid settings section
+        const gridSettings = document.createElement('div');
+        gridSettings.className = 'grid-settings';
+        
+        // Create title for this section
+        const gridTitle = document.createElement('h3');
+        gridTitle.textContent = 'Grid Dimensions';
+        gridSettings.appendChild(gridTitle);
+        
+        // Create preset buttons
+        const presetButtons = this.controls.createPresetButtons([
+            { text: '50×50', handler: () => this.resizeGrid(50, 50) },
+            { text: '75×75', handler: () => this.resizeGrid(75, 75) },
+            { text: '100×100', handler: () => this.resizeGrid(100, 100) }
+        ]);
+        gridSettings.appendChild(presetButtons);
+        
+        // Create custom size inputs
+        const customSize = document.createElement('div');
+        customSize.className = 'custom-size';
+        
+        // Create rows input
+        const rowsWrapper = document.createElement('div');
+        rowsWrapper.className = 'dimension-input';
+        
+        const rowsLabel = document.createElement('label');
+        rowsLabel.textContent = 'Rows:';
+        rowsLabel.htmlFor = 'rows-input';
+        rowsWrapper.appendChild(rowsLabel);
+        
+        const rowsInput = document.createElement('input');
+        rowsInput.id = 'rows-input';
+        rowsInput.type = 'number';
+        rowsInput.min = '10';
+        rowsInput.max = '200';
+        rowsInput.value = this.gameManager.grid.rows;
+        rowsWrapper.appendChild(rowsInput);
+        
+        customSize.appendChild(rowsWrapper);
+        
+        // Create columns input
+        const colsWrapper = document.createElement('div');
+        colsWrapper.className = 'dimension-input';
+        
+        const colsLabel = document.createElement('label');
+        colsLabel.textContent = 'Columns:';
+        colsLabel.htmlFor = 'cols-input';
+        colsWrapper.appendChild(colsLabel);
+        
+        const colsInput = document.createElement('input');
+        colsInput.id = 'cols-input';
+        colsInput.type = 'number';
+        colsInput.min = '10';
+        colsInput.max = '200';
+        colsInput.value = this.gameManager.grid.cols;
+        colsWrapper.appendChild(colsInput);
+        
+        customSize.appendChild(colsWrapper);
+        
+        // Create apply button
+        const applyButton = this.controls.createPrimaryButton('Apply', () => {
+            const rows = parseInt(rowsInput.value);
+            const cols = parseInt(colsInput.value);
+            if (rows >= 10 && rows <= 200 && cols >= 10 && cols <= 200) {
+                this.resizeGrid(rows, cols);
+            }
+        });
+        customSize.appendChild(applyButton);
+        
+        gridSettings.appendChild(customSize);
+        
+        // Add to controls container
+        this.controlsContainer.appendChild(gridSettings);
+    }
+    
+    /**
+     * Add boundary toggle (toroidal/finite)
+     */
+    addBoundaryToggle() {
+        // Create boundary setting section
+        const boundarySettings = document.createElement('div');
+        boundarySettings.className = 'boundary-setting';
+        
+        // Create title for this section
+        const boundaryTitle = document.createElement('h3');
+        boundaryTitle.textContent = 'Grid Boundary';
+        boundarySettings.appendChild(boundaryTitle);
+        
+        // Create boundary type selector
+        const boundarySelect = this.controls.createSelectDropdown(
+            'Boundary Type:',
+            [
+                { value: 'toroidal', text: 'Toroidal (Edges Connect)' },
+                { value: 'finite', text: 'Finite (Fixed Edges)' }
+            ],
+            this.gameManager.grid.boundaryType,
+            (value) => {
+                this.gameManager.grid.setBoundaryType(value);
+                this.updateAnalytics();
+            }
+        );
+        
+        boundarySettings.appendChild(boundarySelect.container);
+        
+        // Add to controls container
+        this.controlsContainer.appendChild(boundarySettings);
+    }
+    
+    /**
+     * Create analytics display
+     */
+    createAnalyticsDisplay() {
+        // Create analytics content container
+        const analyticsContent = document.createElement('div');
+        analyticsContent.className = 'analytics-content';
+        
+        // Create analytics data container
+        const analyticsData = document.createElement('div');
+        analyticsData.className = 'analytics-data';
+        
+        // Generation counter
+        const generationItem = document.createElement('div');
+        generationItem.className = 'analytics-item';
+        
+        const generationLabel = document.createElement('span');
+        generationLabel.className = 'analytics-label';
+        generationLabel.textContent = 'Generation:';
+        generationItem.appendChild(generationLabel);
+        
+        const generationValue = document.createElement('span');
+        generationValue.className = 'analytics-value';
+        generationValue.id = 'generation-count';
+        generationValue.textContent = '0';
+        generationItem.appendChild(generationValue);
+        
+        analyticsData.appendChild(generationItem);
+        
+        // Live cell counter
+        const liveCellItem = document.createElement('div');
+        liveCellItem.className = 'analytics-item';
+        
+        const liveCellLabel = document.createElement('span');
+        liveCellLabel.className = 'analytics-label';
+        liveCellLabel.textContent = 'Live Cells:';
+        liveCellItem.appendChild(liveCellLabel);
+        
+        const liveCellValue = document.createElement('span');
+        liveCellValue.className = 'analytics-value';
+        liveCellValue.id = 'live-cell-count';
+        liveCellValue.textContent = '0';
+        liveCellItem.appendChild(liveCellValue);
+        
+        analyticsData.appendChild(liveCellItem);
+        
+        // Population density counter
+        const densityItem = document.createElement('div');
+        densityItem.className = 'analytics-item';
+        
+        const densityLabel = document.createElement('span');
+        densityLabel.className = 'analytics-label';
+        densityLabel.textContent = 'Population Density:';
+        densityItem.appendChild(densityLabel);
+        
+        const densityValue = document.createElement('span');
+        densityValue.className = 'analytics-value';
+        densityValue.id = 'population-density';
+        densityValue.textContent = '0.0%';
+        densityItem.appendChild(densityValue);
+        
+        analyticsData.appendChild(densityItem);
+        
+        // Grid size display
+        const gridSizeItem = document.createElement('div');
+        gridSizeItem.className = 'analytics-item';
+        
+        const gridSizeLabel = document.createElement('span');
+        gridSizeLabel.className = 'analytics-label';
+        gridSizeLabel.textContent = 'Grid Size:';
+        gridSizeItem.appendChild(gridSizeLabel);
+        
+        const gridSizeValue = document.createElement('span');
+        gridSizeValue.className = 'analytics-value';
+        gridSizeValue.id = 'grid-size';
+        gridSizeValue.textContent = `${this.gameManager.grid.rows}×${this.gameManager.grid.cols}`;
+        gridSizeItem.appendChild(gridSizeValue);
+        
+        analyticsData.appendChild(gridSizeItem);
+        
+        // Add speed display
+        const speedItem = document.createElement('div');
+        speedItem.className = 'analytics-item';
+        
+        const speedLabel = document.createElement('span');
+        speedLabel.className = 'analytics-label';
+        speedLabel.textContent = 'Speed:';
+        speedItem.appendChild(speedLabel);
+        
+        const speedValue = document.createElement('span');
+        speedValue.className = 'analytics-value';
+        speedValue.id = 'simulation-speed';
+        speedValue.textContent = `${this.gameManager.simulationSpeed} FPS`;
+        speedItem.appendChild(speedValue);
+        
+        analyticsData.appendChild(speedItem);
+        
+        // Add simulation state
+        const stateItem = document.createElement('div');
+        stateItem.className = 'analytics-item';
+        
+        const stateLabel = document.createElement('span');
+        stateLabel.className = 'analytics-label';
+        stateLabel.textContent = 'State:';
+        stateItem.appendChild(stateLabel);
+        
+        const stateValue = document.createElement('span');
+        stateValue.className = 'analytics-value';
+        stateValue.id = 'simulation-state';
+        stateValue.textContent = this.gameManager.isSimulationRunning ? 'Running' : 'Paused';
+        stateItem.appendChild(stateValue);
+        
+        analyticsData.appendChild(stateItem);
+        
+        // Add boundary type
+        const boundaryItem = document.createElement('div');
+        boundaryItem.className = 'analytics-item';
+        
+        const boundaryLabel = document.createElement('span');
+        boundaryLabel.className = 'analytics-label';
+        boundaryLabel.textContent = 'Boundary:';
+        boundaryItem.appendChild(boundaryLabel);
+        
+        const boundaryValue = document.createElement('span');
+        boundaryValue.className = 'analytics-value';
+        boundaryValue.id = 'boundary-type';
+        boundaryValue.textContent = this.gameManager.grid.boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
+        boundaryItem.appendChild(boundaryValue);
+        
+        analyticsData.appendChild(boundaryItem);
+        
+        analyticsContent.appendChild(analyticsData);
+        this.analyticsContainer.appendChild(analyticsContent);
+    }
+    
+    /**
+     * Update analytics display
+     */
+    updateAnalytics() {
+        // Get values from the game manager
+        const grid = this.gameManager.grid;
+        const generationCount = this.gameManager.generationCount;
+        const liveCells = grid.getAliveCellsCount();
+        const totalCells = grid.rows * grid.cols;
+        const density = (liveCells / totalCells) * 100;
+        
+        // Update analytics elements
+        document.getElementById('generation-count').textContent = generationCount.toString();
+        document.getElementById('live-cell-count').textContent = liveCells.toString();
+        document.getElementById('population-density').textContent = density.toFixed(2) + '%';
+        document.getElementById('grid-size').textContent = `${grid.rows}×${grid.cols}`;
+        document.getElementById('simulation-speed').textContent = `${this.gameManager.simulationSpeed} FPS`;
+        document.getElementById('simulation-state').textContent = this.gameManager.isSimulationRunning ? 'Running' : 'Paused';
+        document.getElementById('boundary-type').textContent = grid.boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
+    }
+    
+    /**
+     * Resize the grid
+     * @param {number} rows - Number of rows
+     * @param {number} cols - Number of columns
+     */
+    resizeGrid(rows, cols) {
+        this.gameManager.grid.resize(rows, cols);
+        this.gameManager.renderer.settings.cellSize = 
+            this.gameManager.renderer.calculateCellSize(rows, cols);
+        this.gameManager.renderer.drawGrid(this.gameManager.grid);
+        this.updateAnalytics();
+    }
+    
+    /**
+     * Set up canvas interactions (clicking to toggle cells)
+     * @param {HTMLCanvasElement} canvas - The canvas element
+     * @param {Grid} grid - The grid object
+     */
+    setupCanvasInteractions(canvas, grid) {
+        const handleCanvasInteraction = (event) => {
+            // Prevent default behavior (like scrolling on mobile)
+            event.preventDefault();
+            
+            const coords = this.gameManager.renderer.getCellCoordinates(event, grid);
+            
+            // Only toggle if we have valid coordinates
+            if (coords) {
+                grid.toggleCell(coords.x, coords.y);
+                this.gameManager.renderer.drawGrid(grid);
+                this.updateAnalytics();
+            }
+        };
+        
+        // Mouse events for desktop
+        canvas.addEventListener('mousedown', handleCanvasInteraction);
+        
+        // Touch events for mobile devices
+        canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
+    }
+}
+
+export default UIManager; 
