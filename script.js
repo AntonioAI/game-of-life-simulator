@@ -3,187 +3,84 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
+// Import pattern library module
+import { patternLibrary, createPatternThumbnail, placePattern, placePatternInCenter, createPatternLibrary } from './patternLibrary.js';
+
+// Game Manager object to maintain references across modules
+window.gameManager = {
+    grid: [],
+    gridSettings: {
+        rows: 50,
+        cols: 50,
+        gridColor: '#dddddd',
+        cellColor: '#000000',
+        backgroundColor: '#ffffff'
+    },
+    boundaryType: 'toroidal',
+    isSimulationRunning: false,
+    animationFrameId: null,
+    lastFrameTime: 0,
+    simulationSpeed: 10,
+    generationCount: 0,
+    
+    // Helper function to update the local grid reference
+    updateGridReference: function(newGrid) {
+        this.grid = newGrid;
+        // Also update the legacy grid variable for backward compatibility
+        grid = newGrid;
+    },
+    
+    // Function to handle pattern application
+    applyPattern: function(patternId) {
+        console.log(`Applying pattern ${patternId} via gameManager`);
+        placePatternInCenter(
+            patternId, 
+            this.grid, 
+            this.gridSettings, 
+            drawGrid, 
+            updateAnalytics, 
+            initializeGrid
+        );
+    }
+};
+
 // Canvas and context references
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 
-// Gosper Glider Gun thumbnail settings
-const GOSPER_GUN = {
-    CELL_SIZE: 3,
-    CENTRAL_START_X: 8,  // Adjusted to include more of the left "duck face"
-    CENTRAL_WIDTH: 28,   // Adjusted to properly show distance to right square
-    TOTAL_WIDTH: 36      // Total width of the pattern
-};
+// Legacy variables (kept for compatibility)
+let gridSettings = window.gameManager.gridSettings;
+let grid = window.gameManager.grid;
+let boundaryType = window.gameManager.boundaryType;
+let isSimulationRunning = window.gameManager.isSimulationRunning;
+let animationFrameId = window.gameManager.animationFrameId;
+let lastFrameTime = window.gameManager.lastFrameTime;
+let simulationSpeed = window.gameManager.simulationSpeed;
+let generationCount = window.gameManager.generationCount;
 
-// Default grid settings
-let gridSettings = {
-    rows: 50,
-    cols: 50,
-    gridColor: '#dddddd',
-    cellColor: '#000000',
-    backgroundColor: '#ffffff'
-};
-
-// Grid state (2D array to store alive/dead states)
-let grid = [];
-
-// Grid boundary type (toroidal or finite)
-let boundaryType = 'toroidal'; // default is toroidal (edges connect)
-
-// Simulation loop variables
-let isSimulationRunning = false;
-let animationFrameId = null;
-let lastFrameTime = 0;
-let simulationSpeed = 10; // Frames per second
-let generationCount = 0;
-
-// Pattern definitions for the library
-const patternLibrary = {
-    // Still Lifes
-    'block': {
-        name: 'Block',
-        category: 'Still Life',
-        description: 'A 2×2 square that remains stable',
-        pattern: [
-            [1, 1],
-            [1, 1]
-        ]
-    },
-    'beehive': {
-        name: 'Beehive',
-        category: 'Still Life',
-        description: 'A 6-cell pattern that remains stable',
-        pattern: [
-            [0, 1, 1, 0],
-            [1, 0, 0, 1],
-            [0, 1, 1, 0]
-        ]
-    },
-    'boat': {
-        name: 'Boat',
-        category: 'Still Life',
-        description: 'A 5-cell stable pattern',
-        pattern: [
-            [1, 1, 0],
-            [1, 0, 1],
-            [0, 1, 0]
-        ]
-    },
-    'loaf': {
-        name: 'Loaf',
-        category: 'Still Life',
-        description: 'A 7-cell stable pattern',
-        pattern: [
-            [0, 1, 1, 0],
-            [1, 0, 0, 1],
-            [0, 1, 0, 1],
-            [0, 0, 1, 0]
-        ]
-    },
-    
-    // Oscillators
-    'blinker': {
-        name: 'Blinker',
-        category: 'Oscillator',
-        description: 'A period 2 oscillator that alternates between horizontal and vertical',
-        pattern: [
-            [1],
-            [1],
-            [1]
-        ]
-    },
-    'toad': {
-        name: 'Toad',
-        category: 'Oscillator',
-        description: 'A period 2 oscillator with 6 cells',
-        pattern: [
-            [0, 1, 1, 1],
-            [1, 1, 1, 0]
-        ]
-    },
-    'pulsar': {
-        name: 'Pulsar',
-        category: 'Oscillator',
-        description: 'A period 3 oscillator with 48 cells',
-        pattern: [
-            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
-            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0]
-        ]
-    },
-    
-    // Spaceships
-    'glider': {
-        name: 'Glider',
-        category: 'Spaceship',
-        description: 'A small spaceship that moves diagonally',
-        pattern: [
-            [0, 1, 0],
-            [0, 0, 1],
-            [1, 1, 1]
-        ]
-    },
-    'lwss': {
-        name: 'Lightweight Spaceship',
-        category: 'Spaceship',
-        description: 'A small spaceship that moves horizontally',
-        pattern: [
-            [0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0],
-            [1, 0, 0, 0, 1],
-            [1, 1, 1, 1, 0]
-        ]
-    },
-    
-    // Growth Patterns
-    'rpentomino': {
-        name: 'R-Pentomino',
-        category: 'Growth',
-        description: 'A small pattern that grows chaotically',
-        pattern: [
-            [0, 1, 1],
-            [1, 1, 0],
-            [0, 1, 0]
-        ]
-    },
-    'gosperglidergun': {
-        name: 'Gosper Glider Gun',
-        category: 'Growth',
-        description: 'A pattern that continuously creates gliders',
-        pattern: [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]
-    }
-};
+// Wait for DOM to be fully loaded before initializing
+document.addEventListener('DOMContentLoaded', init);
 
 // Initialize the grid with all cells dead (0)
 function initializeGrid() {
-    grid = [];
+    console.log("Initializing grid with dimensions:", gridSettings.rows, "x", gridSettings.cols);
+    
+    // Create a new grid
+    const newGrid = [];
     for (let y = 0; y < gridSettings.rows; y++) {
         const row = [];
         for (let x = 0; x < gridSettings.cols; x++) {
             row.push(0); // 0 = dead, 1 = alive
         }
-        grid.push(row);
+        newGrid.push(row);
     }
+    
+    // Update both references
+    grid = newGrid;
+    window.gameManager.grid = newGrid;
+    
+    console.log("Grid initialized:", newGrid);
+    return newGrid;
 }
 
 // Calculate cell size based on canvas dimensions and grid size
@@ -205,48 +102,69 @@ function calculateCanvasDimensions() {
 
 // Draw the grid on the canvas
 function drawGrid() {
+    console.log("Drawing grid...");
+    
+    // Use gameManager reference if available
+    const currentGrid = window.gameManager ? window.gameManager.grid : grid;
+    const currentSettings = window.gameManager ? window.gameManager.gridSettings : gridSettings;
+    
+    console.log(`Drawing grid with ${currentGrid.length} rows, settings: ${currentSettings.rows}x${currentSettings.cols}`);
+    
     const canvas = document.getElementById('game-canvas');
+    if (!canvas) {
+        console.error("Canvas element not found");
+        return;
+    }
+    
     const ctx = canvas.getContext('2d', { alpha: false }); // Disable alpha for better performance
     
     // Clear the canvas
-    ctx.fillStyle = gridSettings.backgroundColor;
+    ctx.fillStyle = currentSettings.backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Calculate the offset to center the grid
-    const totalGridWidth = gridSettings.cols * gridSettings.cellSize;
-    const totalGridHeight = gridSettings.rows * gridSettings.cellSize;
+    const totalGridWidth = currentSettings.cols * currentSettings.cellSize;
+    const totalGridHeight = currentSettings.rows * currentSettings.cellSize;
     const offsetX = Math.floor((canvas.width - totalGridWidth) / 2);
     const offsetY = Math.floor((canvas.height - totalGridHeight) / 2);
     
     // Performance optimization: batch similar operations
-    const cellSize = gridSettings.cellSize;
+    const cellSize = currentSettings.cellSize;
     
     // First pass: Draw all live cells
-    ctx.fillStyle = gridSettings.cellColor;
-    for (let y = 0; y < gridSettings.rows; y++) {
-        for (let x = 0; x < gridSettings.cols; x++) {
-            if (grid[y][x] === 1) {
+    let liveCells = 0;
+    ctx.fillStyle = currentSettings.cellColor;
+    for (let y = 0; y < currentSettings.rows; y++) {
+        if (!currentGrid[y]) {
+            console.error(`Missing row ${y} in grid`);
+            continue;
+        }
+        
+        for (let x = 0; x < currentSettings.cols; x++) {
+            if (currentGrid[y][x] === 1) {
+                liveCells++;
                 const cellX = offsetX + (x * cellSize);
                 const cellY = offsetY + (y * cellSize);
                 ctx.fillRect(cellX, cellY, cellSize, cellSize);
             }
         }
     }
+    console.log(`Drew grid with ${liveCells} live cells`);
     
     // Second pass: Draw grid lines (only if cell size is large enough)
     if (cellSize >= 4) { // Skip grid lines for very small cells to improve performance
-        ctx.strokeStyle = gridSettings.gridColor;
+        ctx.strokeStyle = currentSettings.gridColor;
         ctx.beginPath();
         
         // Draw vertical lines
-        for (let x = 0; x <= gridSettings.cols; x++) {
+        for (let x = 0; x <= currentSettings.cols; x++) {
             const lineX = offsetX + (x * cellSize);
             ctx.moveTo(lineX, offsetY);
             ctx.lineTo(lineX, offsetY + totalGridHeight);
         }
         
         // Draw horizontal lines
-        for (let y = 0; y <= gridSettings.rows; y++) {
+        for (let y = 0; y <= currentSettings.rows; y++) {
             const lineY = offsetY + (y * cellSize);
             ctx.moveTo(offsetX, lineY);
             ctx.lineTo(offsetX + totalGridWidth, lineY);
@@ -456,6 +374,12 @@ function resizeGrid(rows, cols) {
 
 // Count the number of alive neighbors for a given cell
 function countAliveNeighbors(x, y) {
+    // Use gameManager if available
+    const manager = window.gameManager || {};
+    const currentGrid = manager.grid || grid;
+    const currentSettings = manager.gridSettings || gridSettings;
+    const currentBoundary = manager.boundaryType || boundaryType;
+    
     let count = 0;
     
     // Check all 8 neighboring cells (horizontal, vertical, diagonal)
@@ -466,23 +390,23 @@ function countAliveNeighbors(x, y) {
             
             let nx, ny;
             
-            if (boundaryType === 'toroidal') {
+            if (currentBoundary === 'toroidal') {
                 // Toroidal wrapping (edges connect)
-                nx = (x + dx + gridSettings.cols) % gridSettings.cols;
-                ny = (y + dy + gridSettings.rows) % gridSettings.rows;
+                nx = (x + dx + currentSettings.cols) % currentSettings.cols;
+                ny = (y + dy + currentSettings.rows) % currentSettings.rows;
             } else {
                 // Finite grid (edges don't connect)
                 nx = x + dx;
                 ny = y + dy;
                 
                 // Skip if neighbor is outside grid boundaries
-                if (nx < 0 || nx >= gridSettings.cols || ny < 0 || ny >= gridSettings.rows) {
+                if (nx < 0 || nx >= currentSettings.cols || ny < 0 || ny >= currentSettings.rows) {
                     continue;
                 }
             }
             
             // Increment count if neighbor is alive
-            if (grid[ny][nx] === 1) {
+            if (currentGrid[ny][nx] === 1) {
                 count++;
             }
         }
@@ -493,13 +417,21 @@ function countAliveNeighbors(x, y) {
 
 // Compute the next generation based on Game of Life rules
 function computeNextGeneration() {
+    // Use gameManager if available
+    const manager = window.gameManager || {};
+    const currentGrid = manager.grid || grid;
+    const currentSettings = manager.gridSettings || gridSettings;
+    const currentBoundary = manager.boundaryType || boundaryType;
+    
+    console.log(`Computing next generation with boundary type: ${currentBoundary}`);
+    
     // Create a new grid for the next generation
     const nextGrid = [];
-    for (let y = 0; y < gridSettings.rows; y++) {
+    for (let y = 0; y < currentSettings.rows; y++) {
         const row = [];
-        for (let x = 0; x < gridSettings.cols; x++) {
+        for (let x = 0; x < currentSettings.cols; x++) {
             const aliveNeighbors = countAliveNeighbors(x, y);
-            const isAlive = grid[y][x] === 1;
+            const isAlive = currentGrid[y][x] === 1;
             
             // Apply Conway's Game of Life rules:
             // 1. Any live cell with fewer than two live neighbors dies (underpopulation)
@@ -531,22 +463,60 @@ function computeNextGeneration() {
     }
     
     // Update the current grid with the new generation
+    if (manager.grid) {
+        manager.grid = nextGrid;
+    }
     grid = nextGrid;
+    
+    return nextGrid;
 }
 
 // Advance the simulation by one generation
 function stepSimulation() {
+    console.log("Stepping simulation");
+    
+    // Use gameManager if available
+    const manager = window.gameManager || {};
+    
     computeNextGeneration();
     drawGrid();
-    generationCount++;
+    
+    // Update generation count in both places
+    if (manager.generationCount !== undefined) {
+        manager.generationCount++;
+        generationCount = manager.generationCount;
+    } else {
+        generationCount++;
+    }
+    
     updateAnalytics();
 }
 
 // Function to toggle between toroidal and finite grid
 function toggleBoundaryType() {
-    boundaryType = boundaryType === 'toroidal' ? 'finite' : 'toroidal';
+    console.log("Toggling boundary type");
+    
+    // Use gameManager if available
+    const manager = window.gameManager || {};
+    
+    // Get current boundary type from manager or local variable
+    const currentBoundary = manager.boundaryType || boundaryType;
+    
+    // Toggle the boundary type
+    const newBoundary = currentBoundary === 'toroidal' ? 'finite' : 'toroidal';
+    
+    // Update both references
+    if (manager.boundaryType !== undefined) {
+        manager.boundaryType = newBoundary;
+    }
+    boundaryType = newBoundary;
+    
+    console.log(`Boundary type changed to: ${newBoundary}`);
+    
+    // Update the UI
     updateAnalytics();
-    return boundaryType;
+    
+    return newBoundary;
 }
 
 // Add boundary type toggle to settings panel
@@ -576,11 +546,29 @@ function addBoundaryToggle() {
     finiteOption.textContent = 'Finite (Fixed Edges)';
     boundarySelect.appendChild(finiteOption);
     
-    boundarySelect.value = boundaryType;
+    // Get current boundary type from gameManager or local variable
+    const manager = window.gameManager || {};
+    const currentBoundary = manager.boundaryType || boundaryType;
+    
+    boundarySelect.value = currentBoundary;
     boundarySelect.addEventListener('change', function() {
-        boundaryType = this.value;
-        document.getElementById('boundary-type').textContent = 
-            boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
+        const newBoundary = this.value;
+        console.log(`Boundary type changed via selector to: ${newBoundary}`);
+        
+        // Update both references
+        if (manager.boundaryType !== undefined) {
+            manager.boundaryType = newBoundary;
+        }
+        boundaryType = newBoundary;
+        
+        // Update the display
+        const boundaryTypeDisplay = document.getElementById('boundary-type');
+        if (boundaryTypeDisplay) {
+            boundaryTypeDisplay.textContent = newBoundary === 'toroidal' ? 'Toroidal' : 'Finite';
+        }
+        
+        // Update analytics to show the change
+        updateAnalytics();
     });
     
     boundarySettings.appendChild(boundarySelect);
@@ -589,67 +577,77 @@ function addBoundaryToggle() {
     controlsContainer.appendChild(boundarySettings);
 }
 
-// Main simulation loop using requestAnimationFrame
-function simulationLoop(timestamp) {
-    // Use performance.now() if available for more accurate timing
-    const currentTime = timestamp || performance.now();
-    
-    // Initialize lastFrameTime if it's the first frame
-    if (!lastFrameTime) lastFrameTime = currentTime;
-    
-    // Calculate time since last frame
-    const elapsed = currentTime - lastFrameTime;
-    
-    // Target frame interval based on simulation speed
-    const frameInterval = 1000 / simulationSpeed;
-    
-    // Check if it's time to update the simulation (based on simulation speed)
-    if (elapsed >= frameInterval) {
-        // Calculate how many generations to step forward
-        // This allows catching up if the browser is struggling to maintain framerate
-        const stepsToTake = Math.min(Math.floor(elapsed / frameInterval), 3); // Cap at 3 steps to prevent freezing
-        
-        // Step the simulation (usually just once, but can catch up if lagging)
-        for (let i = 0; i < stepsToTake; i++) {
-            stepSimulation();
-        }
-        
-        // Update last frame time, accounting for any extra time
-        lastFrameTime = currentTime - (elapsed % frameInterval);
-    }
-    
-    // Continue the loop if simulation is running
-    if (isSimulationRunning) {
-        // Use requestAnimationFrame with a polyfill fallback for older browsers
-        animationFrameId = (window.requestAnimationFrame || 
-                           window.webkitRequestAnimationFrame || 
-                           window.mozRequestAnimationFrame || 
-                           (callback => window.setTimeout(callback, 1000/60)))(simulationLoop);
-    }
-}
-
 // Start the simulation
 function startSimulation() {
-    if (isSimulationRunning) return;
+    console.log("Starting simulation");
     
-    // Set the simulation state to running
-    isSimulationRunning = true;
+    // Reference gameManager if available
+    const manager = window.gameManager || {};
+    
+    if (manager.isSimulationRunning !== undefined) {
+        if (manager.isSimulationRunning) {
+            console.log("Simulation already running, ignoring start request");
+            return;
+        }
+        manager.isSimulationRunning = true;
+        isSimulationRunning = true;
+    } else if (isSimulationRunning) {
+        console.log("Simulation already running, ignoring start request");
+        return;
+    } else {
+        isSimulationRunning = true;
+    }
+    
     updateAnalytics();
     
+    // Reset timing
+    if (manager.lastFrameTime !== undefined) {
+        manager.lastFrameTime = 0;
+        lastFrameTime = 0;
+    } else {
+        lastFrameTime = 0;
+    }
+    
     // Start the animation loop
-    lastFrameTime = 0;
-    animationFrameId = requestAnimationFrame(simulationLoop);
+    console.log("Starting animation loop");
+    const animationRequest = requestAnimationFrame(simulationLoop);
+    
+    // Update animation frame ID in both places
+    if (manager.animationFrameId !== undefined) {
+        manager.animationFrameId = animationRequest;
+    }
+    animationFrameId = animationRequest;
 }
 
 // Pause the simulation
 function pauseSimulation() {
-    if (!isSimulationRunning) return;
+    console.log("Pausing simulation");
     
-    // Set the simulation state to paused
-    isSimulationRunning = false;
+    // Reference gameManager if available
+    const manager = window.gameManager || {};
+    
+    if (manager.isSimulationRunning !== undefined) {
+        if (!manager.isSimulationRunning) {
+            console.log("Simulation already paused, ignoring pause request");
+            return;
+        }
+        manager.isSimulationRunning = false;
+        isSimulationRunning = false;
+    } else if (!isSimulationRunning) {
+        console.log("Simulation already paused, ignoring pause request");
+        return;
+    } else {
+        isSimulationRunning = false;
+    }
+    
     updateAnalytics();
     
-    // Cancel any pending animation frame
+    // Cancel animation frame in both places
+    if (manager.animationFrameId) {
+        cancelAnimationFrame(manager.animationFrameId);
+        manager.animationFrameId = null;
+    }
+    
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
@@ -658,50 +656,105 @@ function pauseSimulation() {
 
 // Reset simulation to initial state
 function resetSimulation() {
+    console.log("Resetting simulation");
+    
+    // Use gameManager if available
+    const manager = window.gameManager || {};
+    
     // Pause the simulation if it's running
-    if (isSimulationRunning) {
+    if ((manager.isSimulationRunning !== undefined && manager.isSimulationRunning) ||
+        isSimulationRunning) {
         pauseSimulation();
     }
     
     // Reset the grid and generation counter
     initializeGrid();
+    
+    // Reset generation count in both places
+    if (manager.generationCount !== undefined) {
+        manager.generationCount = 0;
+    }
     generationCount = 0;
     
     // Redraw the grid and update analytics
     drawGrid();
     updateAnalytics();
+    
+    console.log("Simulation reset complete");
 }
 
 // Update simulation speed
 function updateSimulationSpeed(newSpeed) {
-    simulationSpeed = parseInt(newSpeed, 10);
+    console.log(`Updating simulation speed to: ${newSpeed} FPS`);
+    
+    // Parse the speed value
+    const speedValue = parseInt(newSpeed, 10);
+    
+    // Use gameManager if available
+    const manager = window.gameManager || {};
+    
+    // Update speed in both places
+    if (manager.simulationSpeed !== undefined) {
+        manager.simulationSpeed = speedValue;
+    }
+    simulationSpeed = speedValue;
+    
+    // Update the UI
     updateAnalytics();
 }
 
 // Update analytics display
 function updateAnalytics() {
+    console.log("Updating analytics");
+    
+    // Use gameManager if available
+    const manager = window.gameManager || {};
+    const currentGrid = manager.grid || grid;
+    const currentSettings = manager.gridSettings || gridSettings;
+    const currentBoundary = manager.boundaryType || boundaryType;
+    const currentSimulationState = manager.isSimulationRunning !== undefined ? 
+                                   manager.isSimulationRunning : isSimulationRunning;
+    const currentSpeed = manager.simulationSpeed !== undefined ?
+                         manager.simulationSpeed : simulationSpeed;
+    const currentGeneration = manager.generationCount !== undefined ?
+                              manager.generationCount : generationCount;
+    
     // Count live cells
     let liveCellCount = 0;
-    for (let y = 0; y < gridSettings.rows; y++) {
-        for (let x = 0; x < gridSettings.cols; x++) {
-            if (grid[y][x] === 1) {
+    for (let y = 0; y < currentSettings.rows; y++) {
+        if (!currentGrid[y]) continue;
+        for (let x = 0; x < currentSettings.cols; x++) {
+            if (currentGrid[y][x] === 1) {
                 liveCellCount++;
             }
         }
     }
     
     // Calculate population density
-    const totalCells = gridSettings.rows * gridSettings.cols;
+    const totalCells = currentSettings.rows * currentSettings.cols;
     const density = (liveCellCount / totalCells) * 100;
     
     // Update all analytics displays
-    document.getElementById('generation-count').textContent = generationCount;
-    document.getElementById('live-cell-count').textContent = liveCellCount;
-    document.getElementById('population-density').textContent = density.toFixed(1) + '%';
-    document.getElementById('grid-size').textContent = `${gridSettings.rows}×${gridSettings.cols}`;
-    document.getElementById('simulation-speed').textContent = `${simulationSpeed} FPS`;
-    document.getElementById('simulation-state').textContent = isSimulationRunning ? 'Running' : 'Paused';
-    document.getElementById('boundary-type').textContent = boundaryType.charAt(0).toUpperCase() + boundaryType.slice(1);
+    const elements = {
+        generationCount: document.getElementById('generation-count'),
+        liveCellCount: document.getElementById('live-cell-count'),
+        populationDensity: document.getElementById('population-density'),
+        gridSize: document.getElementById('grid-size'),
+        simulationSpeed: document.getElementById('simulation-speed'),
+        simulationState: document.getElementById('simulation-state'),
+        boundaryType: document.getElementById('boundary-type')
+    };
+    
+    // Only update elements that exist
+    if (elements.generationCount) elements.generationCount.textContent = currentGeneration;
+    if (elements.liveCellCount) elements.liveCellCount.textContent = liveCellCount;
+    if (elements.populationDensity) elements.populationDensity.textContent = density.toFixed(1) + '%';
+    if (elements.gridSize) elements.gridSize.textContent = `${currentSettings.rows}×${currentSettings.cols}`;
+    if (elements.simulationSpeed) elements.simulationSpeed.textContent = `${currentSpeed} FPS`;
+    if (elements.simulationState) elements.simulationState.textContent = currentSimulationState ? 'Running' : 'Paused';
+    if (elements.boundaryType) elements.boundaryType.textContent = currentBoundary.charAt(0).toUpperCase() + currentBoundary.slice(1);
+    
+    console.log(`Analytics updated: ${liveCellCount} live cells, generation ${currentGeneration}`);
 }
 
 // Create analytics display
@@ -839,7 +892,7 @@ function createAnalyticsDisplay() {
     analyticsContainer.appendChild(analyticsContent);
 }
 
-// Update the simulation controls
+// Create simulation controls
 function createSimulationControls() {
     const controlsContainer = document.querySelector('.controls');
     
@@ -886,23 +939,31 @@ function createSimulationControls() {
     
     simulationControls.appendChild(buttonContainer);
     
+    // Get current speed value
+    const manager = window.gameManager || {};
+    const currentSpeed = manager.simulationSpeed !== undefined ? 
+                       manager.simulationSpeed : simulationSpeed;
+    
     // Speed control
     const speedControl = document.createElement('div');
     speedControl.className = 'speed-control';
     
     const speedLabel = document.createElement('label');
-    speedLabel.textContent = 'Speed: ' + simulationSpeed + ' FPS';
+    speedLabel.textContent = 'Speed: ' + currentSpeed + ' FPS';
     speedControl.appendChild(speedLabel);
     
     const speedSlider = document.createElement('input');
     speedSlider.type = 'range';
     speedSlider.min = '1';
     speedSlider.max = '60';
-    speedSlider.value = simulationSpeed;
+    speedSlider.value = currentSpeed;
     speedSlider.addEventListener('input', (e) => {
         const newSpeed = parseInt(e.target.value);
-        simulationSpeed = newSpeed;
+        
+        // Update label
         speedLabel.textContent = 'Speed: ' + newSpeed + ' FPS';
+        
+        // Update speed in the game
         updateSimulationSpeed(newSpeed);
     });
     speedControl.appendChild(speedSlider);
@@ -913,334 +974,84 @@ function createSimulationControls() {
     controlsContainer.appendChild(simulationControls);
 }
 
-// Render a pattern on a small canvas for the thumbnail
-function createPatternThumbnail(patternId, width = 80, height = 80) {
-    const patternData = patternLibrary[patternId];
-    if (!patternData) return null;
+// Main simulation loop using requestAnimationFrame
+function simulationLoop(timestamp) {
+    // Reference gameManager if available
+    const manager = window.gameManager || {};
+    const isRunning = manager.isSimulationRunning !== undefined ? 
+                     manager.isSimulationRunning : isSimulationRunning;
     
-    const pattern = patternData.pattern;
-    
-    // Create a small canvas for the thumbnail
-    const thumbnailCanvas = document.createElement('canvas');
-    thumbnailCanvas.width = width;
-    thumbnailCanvas.height = height;
-    const thumbnailCtx = thumbnailCanvas.getContext('2d');
-    
-    // Clear thumbnail canvas
-    thumbnailCtx.fillStyle = '#ffffff';
-    thumbnailCtx.fillRect(0, 0, width, height);
-    
-    // Calculate cell size based on pattern dimensions
-    const patternWidth = pattern[0].length;
-    const patternHeight = pattern.length;
-    
-    // Special case for Gosper Glider Gun - use a higher quality downsampling
-    if (patternId === 'gosperglidergun') {
-        // Create a more detailed representation by focusing on the important parts
-        // The gun is 36 cells wide, but most activity is in central portion
-        
-        // Calculate offset to center the view on the important part
-        const offsetX = Math.floor((width - (GOSPER_GUN.CENTRAL_WIDTH * GOSPER_GUN.CELL_SIZE)) / 2);
-        const offsetY = Math.floor((height - (patternHeight * GOSPER_GUN.CELL_SIZE)) / 2);
-        
-        // Draw the central portion of the pattern
-        thumbnailCtx.fillStyle = '#000000';
-        for (let y = 0; y < patternHeight; y++) {
-            for (let x = GOSPER_GUN.CENTRAL_START_X; x < GOSPER_GUN.CENTRAL_START_X + GOSPER_GUN.CENTRAL_WIDTH; x++) {
-                if (pattern[y][x] === 1) {
-                    thumbnailCtx.fillRect(
-                        offsetX + (x - GOSPER_GUN.CENTRAL_START_X) * GOSPER_GUN.CELL_SIZE,
-                        offsetY + y * GOSPER_GUN.CELL_SIZE,
-                        GOSPER_GUN.CELL_SIZE,
-                        GOSPER_GUN.CELL_SIZE
-                    );
-                }
-            }
-        }
-        
-        // Draw grid for better visualization
-        thumbnailCtx.strokeStyle = '#eeeeee';
-        thumbnailCtx.lineWidth = 0.5;
-        
-        for (let y = 0; y <= patternHeight; y++) {
-            thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX, offsetY + (y * GOSPER_GUN.CELL_SIZE));
-            thumbnailCtx.lineTo(offsetX + (GOSPER_GUN.CENTRAL_WIDTH * GOSPER_GUN.CELL_SIZE), offsetY + (y * GOSPER_GUN.CELL_SIZE));
-            thumbnailCtx.stroke();
-        }
-        
-        for (let x = 0; x <= GOSPER_GUN.CENTRAL_WIDTH; x++) {
-            thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX + (x * GOSPER_GUN.CELL_SIZE), offsetY);
-            thumbnailCtx.lineTo(offsetX + (x * GOSPER_GUN.CELL_SIZE), offsetY + (patternHeight * GOSPER_GUN.CELL_SIZE));
-            thumbnailCtx.stroke();
-        }
-    }
-    // For other large patterns, use the scaled approach
-    else if (patternWidth > 16 || patternHeight > 16) {
-        // Determine the optimal scale factor based on pattern size
-        let scaleFactor = Math.max(1, Math.ceil(Math.max(patternWidth, patternHeight) / 16));
-        
-        // Ensure we have enough cells to make a meaningful thumbnail
-        if (patternWidth / scaleFactor < 4 || patternHeight / scaleFactor < 4) {
-            scaleFactor = Math.max(1, Math.floor(Math.max(patternWidth, patternHeight) / 8));
-        }
-        
-        // Adjust cell size based on the scaled dimensions
-        const scaledWidth = Math.ceil(patternWidth / scaleFactor);
-        const scaledHeight = Math.ceil(patternHeight / scaleFactor);
-        
-        const cellSize = Math.min(
-            Math.floor((width - 10) / scaledWidth),
-            Math.floor((height - 10) / scaledHeight)
-        );
-        
-        // Create the scaled pattern
-        const scaledPattern = Array(scaledHeight).fill().map(() => Array(scaledWidth).fill(0));
-        
-        // Improved downsampling to preserve pattern structure
-        for (let y = 0; y < patternHeight; y++) {
-            for (let x = 0; x < patternWidth; x++) {
-                if (pattern[y][x]) {
-                    const scaledX = Math.floor(x / scaleFactor);
-                    const scaledY = Math.floor(y / scaleFactor);
-                    scaledPattern[scaledY][scaledX] = 1;
-                }
-            }
-        }
-        
-        // Calculate offset for the scaled pattern
-        const offsetX = Math.floor((width - (scaledWidth * cellSize)) / 2);
-        const offsetY = Math.floor((height - (scaledHeight * cellSize)) / 2);
-        
-        // Draw the scaled pattern
-        thumbnailCtx.fillStyle = '#000000';
-        for (let y = 0; y < scaledHeight; y++) {
-            for (let x = 0; x < scaledWidth; x++) {
-                if (scaledPattern[y][x]) {
-                    thumbnailCtx.fillRect(
-                        offsetX + (x * cellSize),
-                        offsetY + (y * cellSize),
-                        cellSize,
-                        cellSize
-                    );
-                }
-            }
-        }
-        
-        // Draw grid
-        thumbnailCtx.strokeStyle = '#dddddd';
-        for (let y = 0; y <= scaledHeight; y++) {
-            thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX, offsetY + (y * cellSize));
-            thumbnailCtx.lineTo(offsetX + (scaledWidth * cellSize), offsetY + (y * cellSize));
-            thumbnailCtx.stroke();
-        }
-        
-        for (let x = 0; x <= scaledWidth; x++) {
-            thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX + (x * cellSize), offsetY);
-            thumbnailCtx.lineTo(offsetX + (x * cellSize), offsetY + (scaledHeight * cellSize));
-            thumbnailCtx.stroke();
-        }
-    } else {
-        // Normal pattern rendering for smaller patterns
-        // Calculate cell size
-        const cellSize = Math.min(
-            Math.floor((width - 10) / patternWidth),
-            Math.floor((height - 10) / patternHeight)
-        );
-        
-        // Calculate offset to center the pattern
-        const offsetX = Math.floor((width - (patternWidth * cellSize)) / 2);
-        const offsetY = Math.floor((height - (patternHeight * cellSize)) / 2);
-        
-        // Draw the pattern
-        thumbnailCtx.fillStyle = '#000000';
-        for (let y = 0; y < patternHeight; y++) {
-            for (let x = 0; x < patternWidth; x++) {
-                if (pattern[y][x]) {
-                    thumbnailCtx.fillRect(
-                        offsetX + (x * cellSize),
-                        offsetY + (y * cellSize),
-                        cellSize,
-                        cellSize
-                    );
-                }
-            }
-        }
-        
-        // Draw a grid (optional for visual clarity)
-        thumbnailCtx.strokeStyle = '#dddddd';
-        for (let y = 0; y <= patternHeight; y++) {
-            thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX, offsetY + (y * cellSize));
-            thumbnailCtx.lineTo(offsetX + (patternWidth * cellSize), offsetY + (y * cellSize));
-            thumbnailCtx.stroke();
-        }
-        
-        for (let x = 0; x <= patternWidth; x++) {
-            thumbnailCtx.beginPath();
-            thumbnailCtx.moveTo(offsetX + (x * cellSize), offsetY);
-            thumbnailCtx.lineTo(offsetX + (x * cellSize), offsetY + (patternHeight * cellSize));
-            thumbnailCtx.stroke();
-        }
-    }
-    
-    return thumbnailCanvas;
-}
-
-// Place a pattern on the grid at the specified position
-function placePattern(patternId, x, y) {
-    const patternData = patternLibrary[patternId];
-    if (!patternData) return;
-    
-    const pattern = patternData.pattern;
-    const patternHeight = pattern.length;
-    const patternWidth = pattern[0].length;
-    
-    // Check if pattern fits within grid bounds
-    if (x < 0 || y < 0 || x + patternWidth > gridSettings.cols || y + patternHeight > gridSettings.rows) {
-        console.warn('Pattern would be placed outside grid bounds');
+    // Exit early if not running
+    if (!isRunning) {
+        console.log("Simulation not running, exiting loop");
         return;
     }
     
-    // Place the pattern on the grid
-    for (let patternY = 0; patternY < patternHeight; patternY++) {
-        for (let patternX = 0; patternX < patternWidth; patternX++) {
-            if (pattern[patternY][patternX]) {
-                grid[y + patternY][x + patternX] = 1;
-            }
+    console.log("Running simulation loop");
+    
+    // Use performance.now() if available for more accurate timing
+    const currentTime = timestamp || performance.now();
+    
+    // Get the appropriate lastFrameTime
+    let lastTime = manager.lastFrameTime !== undefined ? 
+                  manager.lastFrameTime : lastFrameTime;
+    
+    // Initialize lastFrameTime if it's the first frame
+    if (!lastTime) {
+        lastTime = currentTime;
+        if (manager.lastFrameTime !== undefined) {
+            manager.lastFrameTime = lastTime;
         }
+        lastFrameTime = lastTime;
     }
     
-    // Redraw the grid
-    drawGrid();
-    updateAnalytics();
-}
-
-// Place a pattern in the center of the grid
-function placePatternInCenter(patternId) {
-    const patternData = patternLibrary[patternId];
-    if (!patternData) return;
+    // Calculate time since last frame
+    const elapsed = currentTime - lastTime;
     
-    // Clear the grid first
-    initializeGrid();
+    // Target frame interval based on simulation speed
+    const speed = manager.simulationSpeed !== undefined ? 
+                 manager.simulationSpeed : simulationSpeed;
+    const frameInterval = 1000 / speed;
     
-    const pattern = patternData.pattern;
-    const patternHeight = pattern.length;
-    const patternWidth = pattern[0].length;
-    
-    // Calculate center coordinates
-    const centerX = Math.floor((gridSettings.cols - patternWidth) / 2);
-    const centerY = Math.floor((gridSettings.rows - patternHeight) / 2);
-    
-    // Place the pattern
-    placePattern(patternId, centerX, centerY);
-}
-
-// Create the pattern library display
-function createPatternLibrary() {
-    const patternsContainer = document.querySelector('.patterns');
-    
-    // Create pattern gallery container
-    const patternGallery = document.createElement('div');
-    patternGallery.className = 'pattern-gallery';
-    
-    // Group patterns by category
-    const patternsByCategory = {};
-    Object.keys(patternLibrary).forEach(patternId => {
-        const pattern = patternLibrary[patternId];
-        if (!patternsByCategory[pattern.category]) {
-            patternsByCategory[pattern.category] = [];
+    // Check if it's time to update the simulation (based on simulation speed)
+    if (elapsed >= frameInterval) {
+        // Calculate how many generations to step forward
+        // This allows catching up if the browser is struggling to maintain framerate
+        const stepsToTake = Math.min(Math.floor(elapsed / frameInterval), 3); // Cap at 3 steps to prevent freezing
+        
+        // Step the simulation (usually just once, but can catch up if lagging)
+        for (let i = 0; i < stepsToTake; i++) {
+            stepSimulation();
         }
-        patternsByCategory[pattern.category].push({ id: patternId, ...pattern });
-    });
-    
-    // Create sections for each category
-    Object.keys(patternsByCategory).forEach(category => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'pattern-category';
         
-        const categoryTitle = document.createElement('h3');
-        categoryTitle.textContent = category;
-        categoryDiv.appendChild(categoryTitle);
+        // Update last frame time, accounting for any extra time
+        const newLastTime = currentTime - (elapsed % frameInterval);
         
-        const categoryDescription = document.createElement('p');
-        categoryDescription.className = 'category-description';
-        switch (category) {
-            case 'Still Life':
-                categoryDescription.textContent = 'Patterns that remain unchanged from one generation to the next.';
-                break;
-            case 'Oscillator':
-                categoryDescription.textContent = 'Patterns that return to their initial state after a finite number of generations.';
-                break;
-            case 'Spaceship':
-                categoryDescription.textContent = 'Patterns that translate across the grid.';
-                break;
-            case 'Growth':
-                categoryDescription.textContent = 'Patterns that evolve in interesting ways.';
-                break;
-            default:
-                categoryDescription.textContent = '';
+        if (manager.lastFrameTime !== undefined) {
+            manager.lastFrameTime = newLastTime;
         }
-        categoryDiv.appendChild(categoryDescription);
-        
-        const patternsGrid = document.createElement('div');
-        patternsGrid.className = 'patterns-grid';
-        
-        // Create a card for each pattern in this category
-        patternsByCategory[category].forEach(pattern => {
-            const patternCard = document.createElement('div');
-            patternCard.className = 'pattern-card';
-            patternCard.setAttribute('data-pattern-id', pattern.id);
-            
-            // Create thumbnail canvas
-            const thumbnailCanvas = createPatternThumbnail(pattern.id);
-            patternCard.appendChild(thumbnailCanvas);
-            
-            // Add pattern name
-            const patternName = document.createElement('div');
-            patternName.className = 'pattern-name';
-            patternName.setAttribute('title', pattern.description);
-            patternName.textContent = pattern.name;
-            patternCard.appendChild(patternName);
-            
-            // Add click event to place pattern
-            patternCard.addEventListener('click', () => {
-                placePatternInCenter(pattern.id);
-            });
-            
-            patternsGrid.appendChild(patternCard);
-        });
-        
-        categoryDiv.appendChild(patternsGrid);
-        patternGallery.appendChild(categoryDiv);
-    });
+        lastFrameTime = newLastTime;
+    }
     
-    patternsContainer.appendChild(patternGallery);
+    // Continue the loop if simulation is running
+    if (isRunning) {
+        // Use requestAnimationFrame with a polyfill fallback for older browsers
+        const animationRequest = (window.requestAnimationFrame || 
+                           window.webkitRequestAnimationFrame || 
+                           window.mozRequestAnimationFrame || 
+                           (callback => window.setTimeout(callback, 1000/60)))(simulationLoop);
+        
+        // Update animation frame ID
+        if (manager.animationFrameId !== undefined) {
+            manager.animationFrameId = animationRequest;
+        }
+        animationFrameId = animationRequest;
+    }
 }
 
 // Initialize the application
 function init() {
-    // Create required DOM elements first
-    createSettingsPanel();
-    addBoundaryToggle();
-    createSimulationControls();
-    createAnalyticsDisplay();
-    createPatternLibrary();
-
-    // Detect mobile devices
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // Add a class to the body to help with CSS-specific adjustments
-    document.body.classList.toggle('mobile-device', isMobile);
-    
-    // Set a smaller default grid size for mobile devices to improve performance
-    if (isMobile && gridSettings.rows > 30) {
-        gridSettings.rows = 30;
-        gridSettings.cols = 30;
-    }
+    console.log("=== Starting initialization ===");
     
     // Initialize canvas with proper pixel ratio for high-DPI displays
     const canvas = document.getElementById('game-canvas');
@@ -1259,12 +1070,50 @@ function init() {
         ctx.scale(pixelRatio, pixelRatio);
     }
     
-    // Initialize the simulation
+    // Initialize grid and settings
+    console.log("Calculating canvas dimensions");
     calculateCanvasDimensions();
+    console.log("Initializing grid", typeof grid);
     initializeGrid();
-    // Place the R-Pentomino pattern in the center
-    placePatternInCenter('rpentomino');
+    console.log("Drawing initial grid");
     drawGrid();
+    
+    // Detect mobile devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Add a class to the body to help with CSS-specific adjustments
+    document.body.classList.toggle('mobile-device', isMobile);
+    
+    // Set a smaller default grid size for mobile devices to improve performance
+    if (isMobile && gridSettings.rows > 30) {
+        console.log("Resizing grid for mobile");
+        gridSettings.rows = 30;
+        gridSettings.cols = 30;
+        calculateCanvasDimensions();
+        initializeGrid();
+        drawGrid();
+    }
+    
+    // Create required DOM elements 
+    console.log("Creating UI elements");
+    createSettingsPanel();
+    addBoundaryToggle();
+    createSimulationControls();
+    createAnalyticsDisplay();
+    
+    console.log("Global grid before pattern library creation:", grid.length);
+    
+    // Create the pattern library (passing grid by reference)
+    createPatternLibrary(grid, gridSettings, drawGrid, updateAnalytics, initializeGrid);
+    
+    console.log("Global grid after pattern library creation:", grid.length);
+    
+    // Place the R-Pentomino pattern in the center after the grid is initialized
+    console.log("Placing initial pattern");
+    placePatternInCenter('rpentomino', grid, gridSettings, drawGrid, updateAnalytics, initializeGrid);
+    
+    // Set up canvas interactions
+    console.log("Setting up canvas interactions");
     setupCanvasInteractions();
     
     // Add window resize handler for responsive behavior
@@ -1276,7 +1125,11 @@ function init() {
 
     // Update analytics after everything is initialized
     updateAnalytics();
-}
-
-// Wait for DOM to be fully loaded before initializing
-document.addEventListener('DOMContentLoaded', init); 
+    
+    console.log("=== Initialization complete ===");
+    
+    // Expose grid to window for debugging (without alert)
+    window.gameGrid = grid;
+    window.gameSettings = gridSettings;
+    window.debugDrawGrid = drawGrid;
+} 
