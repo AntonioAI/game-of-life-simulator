@@ -60,6 +60,12 @@ class UIManager {
         simulationTitle.textContent = 'Simulation Controls';
         simulationControls.appendChild(simulationTitle);
         
+        // Description for simulation controls
+        const simulationDescription = document.createElement('p');
+        simulationDescription.className = 'settings-description';
+        simulationDescription.textContent = 'Control the simulation flow.';
+        simulationControls.appendChild(simulationDescription);
+        
         // Button container
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'control-buttons';
@@ -109,6 +115,12 @@ class UIManager {
         const gridTitle = document.createElement('h3');
         gridTitle.textContent = 'Grid Dimensions';
         gridSettings.appendChild(gridTitle);
+        
+        // Create description text for better user guidance
+        const gridDescription = document.createElement('p');
+        gridDescription.className = 'settings-description';
+        gridDescription.textContent = 'Select a preset size or enter custom dimensions.';
+        gridSettings.appendChild(gridDescription);
         
         // Create preset buttons with improved layout
         const presetButtons = document.createElement('div');
@@ -194,6 +206,12 @@ class UIManager {
         
         customSize.appendChild(colsWrapper);
         
+        // Create note about size limitations
+        const sizeNote = document.createElement('div');
+        sizeNote.className = 'size-note';
+        sizeNote.textContent = 'Min: 10×10, Max: 200×200';
+        customSize.appendChild(sizeNote);
+        
         // Create apply button with improved styling
         const applyButton = this.controls.createPrimaryButton('Apply', () => {
             const rows = parseInt(rowsInput.value);
@@ -222,6 +240,12 @@ class UIManager {
         const boundaryTitle = document.createElement('h3');
         boundaryTitle.textContent = 'Grid Boundary';
         boundarySettings.appendChild(boundaryTitle);
+        
+        // Create description for boundary type
+        const boundaryDescription = document.createElement('p');
+        boundaryDescription.className = 'settings-description';
+        boundaryDescription.textContent = 'Choose how cells behave at the grid edges.';
+        boundarySettings.appendChild(boundaryDescription);
         
         // Create boundary type selector
         const boundarySelect = this.controls.createSelectDropdown(
@@ -418,25 +442,97 @@ class UIManager {
      * @param {Grid} grid - The grid object
      */
     setupCanvasInteractions(canvas, grid) {
+        // Track if we're currently interacting with the canvas
+        let isInteracting = false;
+        // Store the last cell toggled to avoid multiple toggles on the same cell
+        let lastToggledCell = { x: -1, y: -1 };
+        
         const handleCanvasInteraction = (event) => {
             // Prevent default behavior (like scrolling on mobile)
             event.preventDefault();
             
             const coords = this.gameManager.renderer.getCellCoordinates(event, grid);
             
-            // Only toggle if we have valid coordinates
-            if (coords) {
+            // Only toggle if we have valid coordinates and it's not the same cell as last toggled
+            if (coords && (coords.x !== lastToggledCell.x || coords.y !== lastToggledCell.y)) {
+                lastToggledCell = { x: coords.x, y: coords.y };
                 grid.toggleCell(coords.x, coords.y);
                 this.gameManager.renderer.drawGrid(grid);
                 this.updateAnalytics();
+                
+                // Add visual feedback for touch
+                if (event.type.startsWith('touch')) {
+                    // Create a ripple effect at the touch point
+                    this.createTouchRipple(event);
+                }
+            }
+        };
+        
+        // Start interaction
+        const startInteraction = (event) => {
+            isInteracting = true;
+            handleCanvasInteraction(event);
+            
+            // Add active class to canvas for visual feedback
+            canvas.classList.add('canvas-active');
+        };
+        
+        // End interaction
+        const endInteraction = () => {
+            isInteracting = false;
+            lastToggledCell = { x: -1, y: -1 };
+            
+            // Remove active class from canvas
+            canvas.classList.remove('canvas-active');
+        };
+        
+        // Move interaction (for drag toggling)
+        const moveInteraction = (event) => {
+            if (isInteracting) {
+                handleCanvasInteraction(event);
             }
         };
         
         // Mouse events for desktop
-        canvas.addEventListener('mousedown', handleCanvasInteraction);
+        canvas.addEventListener('mousedown', startInteraction);
+        document.addEventListener('mouseup', endInteraction);
+        canvas.addEventListener('mousemove', moveInteraction);
         
         // Touch events for mobile devices
-        canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
+        canvas.addEventListener('touchstart', startInteraction, { passive: false });
+        canvas.addEventListener('touchend', endInteraction, { passive: false });
+        canvas.addEventListener('touchmove', moveInteraction, { passive: false });
+        
+        // Prevent context menu on canvas (for right-click)
+        canvas.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            return false;
+        });
+    }
+    
+    /**
+     * Create a ripple effect for touch feedback
+     * @param {TouchEvent} event - The touch event
+     */
+    createTouchRipple(event) {
+        // Get touch coordinates
+        const touch = event.touches[0] || event.changedTouches[0];
+        const x = touch.clientX;
+        const y = touch.clientY;
+        
+        // Create ripple element
+        const ripple = document.createElement('div');
+        ripple.className = 'touch-ripple';
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        
+        // Add to document
+        document.body.appendChild(ripple);
+        
+        // Remove after animation
+        setTimeout(() => {
+            ripple.remove();
+        }, 500);
     }
 }
 

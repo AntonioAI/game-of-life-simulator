@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Interactive Game of Life simulator with customizable patterns and controls">
     <title>Game of Life Simulator</title>
     <link rel="stylesheet" href="styles.css">
@@ -24,7 +24,7 @@
             <h2>Instructions</h2>
             <p>Welcome to the Game of Life, a cellular automaton invented by John Conway. Watch cells evolve on the grid based on simple rules: a live cell with 2-3 neighbors survives, a dead cell with exactly 3 neighbors becomes alive, and other cells die or stay dead. Here's how to use the simulator:</p>
             <ol>
-              <li><strong>Add or Remove Cells</strong>: Click any square on the grid to toggle it between alive (filled) and dead (empty).</li>
+              <li><strong>Add or Remove Cells</strong>: Click or tap any square on the grid to toggle it between alive (filled) and dead (empty).</li>
               <li><strong>Start the Simulation</strong>: Press the "Start" button (▶) to begin the evolution.</li>
               <li><strong>Pause the Simulation</strong>: Press the "Pause" button (⏸) to stop the action.</li>
               <li><strong>Step Through</strong>: Use the "Step" button (➡) to advance one generation manually.</li>
@@ -70,6 +70,32 @@
     <script>
         // Set current year in footer
         document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Check if device is mobile
+        function isMobileDevice() {
+            return (navigator.userAgent.match(/Android/i) ||
+                    navigator.userAgent.match(/webOS/i) ||
+                    navigator.userAgent.match(/iPhone/i) ||
+                    navigator.userAgent.match(/iPad/i) ||
+                    navigator.userAgent.match(/iPod/i) ||
+                    navigator.userAgent.match(/BlackBerry/i) ||
+                    navigator.userAgent.match(/Windows Phone/i));
+        }
+        
+        // Add mobile device class if needed
+        if (isMobileDevice()) {
+            document.body.classList.add('mobile-device');
+        }
+        
+        // Prevent double-tap zoom on iOS
+        document.addEventListener('touchstart', function(event) {
+            if (event.target.tagName === 'BUTTON' || 
+                event.target.tagName === 'INPUT' || 
+                event.target.tagName === 'CANVAS' ||
+                event.target.tagName === 'SELECT') {
+                event.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </body>
 </html> 
