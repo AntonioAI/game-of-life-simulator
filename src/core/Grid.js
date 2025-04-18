@@ -34,8 +34,6 @@ class Grid {
      * @returns {Array} The initialized grid
      */
     initialize() {
-        console.log("Initializing grid with dimensions:", this.rows, "x", this.cols);
-        
         // Create a new grid
         const newGrid = [];
         for (let y = 0; y < this.rows; y++) {
@@ -49,8 +47,23 @@ class Grid {
         // Update reference
         this.grid = newGrid;
         
-        console.log("Grid initialized:", newGrid);
         return this.grid;
+    }
+    
+    /**
+     * Set a cell to a specific state
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} state - The cell state (0 or 1)
+     * @returns {boolean} True if cell was set successfully
+     */
+    setCell(x, y, state) {
+        // Ensure coordinates are within grid bounds
+        if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
+            this.grid[y][x] = state === 1 ? 1 : 0;
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -115,31 +128,81 @@ class Grid {
      * @returns {Array} The grid for the next generation
      */
     computeNextGeneration() {
-        console.log(`Computing next generation with boundary type: ${this.boundaryType}`);
-        
         // Validate rules dependency
         if (!this.rules) {
             throw new Error('Rules dependency is required');
         }
         
-        // Create a new grid for the next generation
-        const nextGrid = [];
+        // Performance optimization: Pre-allocate new grid
+        const nextGrid = new Array(this.rows);
         for (let y = 0; y < this.rows; y++) {
-            const row = [];
-            for (let x = 0; x < this.cols; x++) {
-                const aliveNeighbors = this.countAliveNeighbors(x, y);
-                const currentState = this.grid[y][x];
+            nextGrid[y] = new Array(this.cols);
+        }
+        
+        // Use local references to avoid property lookups in the loop
+        const currentGrid = this.grid;
+        const rows = this.rows;
+        const cols = this.cols;
+        const boundaryType = this.boundaryType;
+        const applyRules = this.rules.applyRules.bind(this.rules);
+        
+        // Compute next generation
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                // Calculate alive neighbors
+                let aliveNeighbors = 0;
                 
-                // Apply Game of Life rules using the Rules dependency
-                const nextState = this.rules.applyRules(currentState, aliveNeighbors);
-                row.push(nextState);
+                // Check all 8 neighboring cells
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dx = -1; dx <= 1; dx++) {
+                        // Skip the cell itself
+                        if (dx === 0 && dy === 0) continue;
+                        
+                        let nx, ny;
+                        
+                        if (boundaryType === 'toroidal') {
+                            // Toroidal wrapping (edges connect)
+                            nx = (x + dx + cols) % cols;
+                            ny = (y + dy + rows) % rows;
+                        } else {
+                            // Finite grid (edges don't connect)
+                            nx = x + dx;
+                            ny = y + dy;
+                            
+                            // Skip if neighbor is outside grid boundaries
+                            if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) {
+                                continue;
+                            }
+                        }
+                        
+                        // Increment count if neighbor is alive
+                        if (currentGrid[ny][nx] === 1) {
+                            aliveNeighbors++;
+                        }
+                    }
+                }
+                
+                // Apply rules and set the cell state in the next generation
+                const currentState = currentGrid[y][x];
+                nextGrid[y][x] = applyRules(currentState, aliveNeighbors);
             }
-            nextGrid.push(row);
         }
         
         // Update the current grid with the new generation
         this.grid = nextGrid;
         
+        return this.grid;
+    }
+    
+    /**
+     * Reset the grid (all cells set to dead)
+     */
+    reset() {
+        for (let y = 0; y < this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
+                this.grid[y][x] = 0;
+            }
+        }
         return this.grid;
     }
     
@@ -152,7 +215,6 @@ class Grid {
      */
     placePattern(pattern, startX, startY) {
         if (!pattern || !Array.isArray(pattern)) {
-            console.error("Invalid pattern:", pattern);
             return false;
         }
         
@@ -163,7 +225,6 @@ class Grid {
         if (startX < 0 || startY < 0 || 
             startX + patternWidth > this.cols || 
             startY + patternHeight > this.rows) {
-            console.error("Pattern doesn't fit on grid at specified position");
             return false;
         }
         

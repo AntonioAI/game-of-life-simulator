@@ -26,8 +26,6 @@ class GameManager {
      * Initialize the game manager
      */
     initialize() {
-        console.log("=== Starting initialization ===");
-        
         // Validate dependencies
         if (!this.grid) {
             throw new Error('Grid dependency is required');
@@ -50,23 +48,17 @@ class GameManager {
         
         // Set a smaller default grid size for mobile devices to improve performance
         if (isMobile && this.grid.rows > 30) {
-            console.log("Resizing grid for mobile");
             this.grid.resize(30, 30);
             this.renderer.settings.cellSize = this.renderer.calculateCellSize(30, 30);
             this.renderer.drawGrid(this.grid);
         }
-        
-        console.log("=== Initialization complete ===");
     }
     
     /**
      * Start the simulation
      */
     startSimulation() {
-        console.log("Starting simulation");
-        
         if (this.isSimulationRunning) {
-            console.log("Simulation already running");
             return;
         }
         
@@ -86,10 +78,7 @@ class GameManager {
      * Pause the simulation
      */
     pauseSimulation() {
-        console.log("Pausing simulation");
-        
         if (!this.isSimulationRunning) {
-            console.log("Simulation already paused");
             return;
         }
         
@@ -111,8 +100,6 @@ class GameManager {
      * Reset the simulation
      */
     resetSimulation() {
-        console.log("Resetting simulation");
-        
         // Pause the simulation
         this.pauseSimulation();
         
@@ -126,15 +113,15 @@ class GameManager {
         this.renderer.drawGrid(this.grid);
         
         // Update the analytics
-        this.uiManager.updateAnalytics();
+        if (this.uiManager) {
+            this.uiManager.updateAnalytics();
+        }
     }
     
     /**
      * Step the simulation forward one generation
      */
     stepSimulation() {
-        console.log("Stepping simulation");
-        
         // Compute the next generation
         this.grid.computeNextGeneration();
         
@@ -153,8 +140,6 @@ class GameManager {
      * @param {number} newSpeed - The new speed in frames per second
      */
     updateSimulationSpeed(newSpeed) {
-        console.log(`Updating simulation speed to ${newSpeed} FPS`);
-        
         this.simulationSpeed = newSpeed;
         
         // Update the UI to show the new speed
@@ -164,19 +149,16 @@ class GameManager {
     }
     
     /**
-     * Main simulation loop using requestAnimationFrame
-     * @param {number} timestamp - The current timestamp
+     * Main simulation loop using requestAnimationFrame for smooth animation
+     * @param {number} timestamp - The current timestamp provided by requestAnimationFrame
      */
     simulationLoop(timestamp) {
         // Exit early if not running
         if (!this.isSimulationRunning) {
-            console.log("Simulation not running, exiting loop");
             return;
         }
         
-        console.log("Running simulation loop");
-        
-        // Use performance.now() if available for more accurate timing
+        // Use performance.now() for accurate timing if timestamp not provided
         const currentTime = timestamp || performance.now();
         
         // Initialize lastFrameTime if it's the first frame
@@ -190,29 +172,37 @@ class GameManager {
         // Target frame interval based on simulation speed
         const frameInterval = 1000 / this.simulationSpeed;
         
-        // Check if it's time to update the simulation (based on simulation speed)
+        // Performance optimization: Check if enough time has passed for an update
         if (elapsed >= frameInterval) {
             // Calculate how many generations to step forward
             // This allows catching up if the browser is struggling to maintain framerate
-            const stepsToTake = Math.min(Math.floor(elapsed / frameInterval), 3); // Cap at 3 steps to prevent freezing
+            // but limits the number of steps to prevent freezing with large grids
+            const stepsToTake = Math.min(Math.floor(elapsed / frameInterval), 
+                                        this.grid.rows > 80 ? 1 : 3); // Only 1 step for large grids
             
-            // Step the simulation (usually just once, but can catch up if lagging)
+            // For every step to take
             for (let i = 0; i < stepsToTake; i++) {
-                this.stepSimulation();
+                // Compute the next generation
+                this.grid.computeNextGeneration();
+                
+                // Increment generation count
+                this.generationCount++;
+            }
+            
+            // Optimize rendering: Only redraw once after all generations are computed
+            this.renderer.drawGrid(this.grid);
+            
+            // Update analytics only after all steps are complete to reduce DOM operations
+            if (this.uiManager) {
+                this.uiManager.updateAnalytics();
             }
             
             // Update last frame time, accounting for any extra time
             this.lastFrameTime = currentTime - (elapsed % frameInterval);
         }
         
-        // Continue the loop if simulation is running
-        if (this.isSimulationRunning) {
-            // Use requestAnimationFrame with a polyfill fallback for older browsers
-            this.animationFrameId = (window.requestAnimationFrame || 
-                               window.webkitRequestAnimationFrame || 
-                               window.mozRequestAnimationFrame || 
-                               (callback => window.setTimeout(callback, 1000/60)))(this.simulationLoop.bind(this));
-        }
+        // Continue the loop with optimized animation frame request
+        this.animationFrameId = requestAnimationFrame(this.simulationLoop.bind(this));
     }
 }
 

@@ -166,25 +166,6 @@ class Controls {
     }
     
     /**
-     * Create a preset button group
-     * @param {Array} presets - Preset options [{ text, handler }]
-     * @returns {HTMLDivElement} The created button group container
-     */
-    createPresetButtons(presets) {
-        const container = document.createElement('div');
-        container.className = 'preset-buttons';
-        
-        presets.forEach(preset => {
-            const button = document.createElement('button');
-            button.textContent = preset.text;
-            button.addEventListener('click', preset.handler);
-            container.appendChild(button);
-        });
-        
-        return container;
-    }
-    
-    /**
      * Create a primary action button
      * @param {string} text - Button text
      * @param {Function} clickHandler - Click event handler

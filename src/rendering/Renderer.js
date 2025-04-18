@@ -85,61 +85,71 @@ class Renderer {
      * @returns {void}
      */
     drawGrid(grid) {
-        console.log("Drawing grid...");
+        // Ensure canvas and context are available
+        if (!this.canvas || !this.ctx) {
+            throw new Error('Canvas and context are required');
+        }
         
         // Clear the canvas
         this.ctx.fillStyle = this.settings.backgroundColor;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Calculate the offset to center the grid
-        const totalGridWidth = grid.cols * this.settings.cellSize;
-        const totalGridHeight = grid.rows * this.settings.cellSize;
+        const cellSize = this.settings.cellSize;
+        const totalGridWidth = grid.cols * cellSize;
+        const totalGridHeight = grid.rows * cellSize;
         const offsetX = Math.floor((this.canvas.width - totalGridWidth) / 2);
         const offsetY = Math.floor((this.canvas.height - totalGridHeight) / 2);
         
-        // Performance optimization: batch similar operations
-        const cellSize = this.settings.cellSize;
+        // Performance optimization: Use local variables to reduce property lookups
+        const ctx = this.ctx;
+        const gridData = grid.grid;
+        const rows = grid.rows;
+        const cols = grid.cols;
         
-        // First pass: Draw all live cells
-        let liveCells = 0;
-        this.ctx.fillStyle = this.settings.cellColor;
-        for (let y = 0; y < grid.rows; y++) {
-            if (!grid.grid[y]) {
-                console.error(`Missing row ${y} in grid`);
-                continue;
-            }
+        // Draw grid lines only if cell size is large enough
+        if (cellSize >= 4) {
+            // Use a lighter grid color for better contrast
+            ctx.strokeStyle = this.settings.gridColor;
+            ctx.lineWidth = 0.5;
             
-            for (let x = 0; x < grid.cols; x++) {
-                if (grid.grid[y][x] === 1) {
-                    liveCells++;
-                    const cellX = offsetX + (x * cellSize);
-                    const cellY = offsetY + (y * cellSize);
-                    this.ctx.fillRect(cellX, cellY, cellSize, cellSize);
-                }
-            }
-        }
-        console.log(`Drew grid with ${liveCells} live cells`);
-        
-        // Second pass: Draw grid lines (only if cell size is large enough)
-        if (cellSize >= 4) { // Skip grid lines for very small cells to improve performance
-            this.ctx.strokeStyle = this.settings.gridColor;
-            this.ctx.beginPath();
+            // Draw grid lines using optimized path batching
+            ctx.beginPath();
             
             // Draw vertical lines
-            for (let x = 0; x <= grid.cols; x++) {
+            for (let x = 0; x <= cols; x++) {
                 const lineX = offsetX + (x * cellSize);
-                this.ctx.moveTo(lineX, offsetY);
-                this.ctx.lineTo(lineX, offsetY + totalGridHeight);
+                ctx.moveTo(lineX, offsetY);
+                ctx.lineTo(lineX, offsetY + totalGridHeight);
             }
             
             // Draw horizontal lines
-            for (let y = 0; y <= grid.rows; y++) {
+            for (let y = 0; y <= rows; y++) {
                 const lineY = offsetY + (y * cellSize);
-                this.ctx.moveTo(offsetX, lineY);
-                this.ctx.lineTo(offsetX + totalGridWidth, lineY);
+                ctx.moveTo(offsetX, lineY);
+                ctx.lineTo(offsetX + totalGridWidth, lineY);
             }
             
-            this.ctx.stroke();
+            ctx.stroke();
+        }
+        
+        // Draw all live cells
+        ctx.fillStyle = this.settings.cellColor;
+        
+        // Avoid creating closures inside the loop
+        const drawCell = (x, y) => {
+            const cellX = offsetX + (x * cellSize);
+            const cellY = offsetY + (y * cellSize);
+            ctx.fillRect(cellX, cellY, cellSize, cellSize);
+        };
+        
+        // Draw all live cells - removed duplicate code
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                if (gridData[y][x] === 1) {
+                    drawCell(x, y);
+                }
+            }
         }
     }
     

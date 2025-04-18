@@ -152,6 +152,17 @@ class PatternLibrary {
                 ]
             }
         };
+        
+        // Category descriptions for better organization
+        this.categoryDescriptions = {
+            'Still Life': 'Patterns that remain unchanged from one generation to the next',
+            'Oscillator': 'Patterns that return to their initial state after a fixed number of generations',
+            'Spaceship': 'Patterns that translate across the grid periodically',
+            'Growth': 'Patterns that grow or evolve in interesting ways'
+        };
+        
+        // Category order for consistent display
+        this.categoryOrder = ['Still Life', 'Oscillator', 'Spaceship', 'Growth'];
     }
     
     /**
@@ -188,6 +199,9 @@ class PatternLibrary {
         const patternWidth = pattern[0].length;
         const patternHeight = pattern.length;
         
+        // Set fill style for pattern cells to be used by both rendering paths
+        thumbnailCtx.fillStyle = '#000000';
+        
         // Special case for Gosper Glider Gun - use a higher quality downsampling
         if (patternId === 'gosperglidergun') {
             // Calculate offset to center the view on the important part
@@ -195,13 +209,12 @@ class PatternLibrary {
             const offsetY = Math.floor((height - (patternHeight * this.GOSPER_GUN.CELL_SIZE)) / 2);
             
             // Draw the central portion of the pattern
-            thumbnailCtx.fillStyle = '#000000';
             for (let y = 0; y < patternHeight; y++) {
                 for (let x = this.GOSPER_GUN.CENTRAL_START_X; x < this.GOSPER_GUN.CENTRAL_START_X + this.GOSPER_GUN.CENTRAL_WIDTH; x++) {
-                    if (pattern[y][x] === 1) {
+                    if (x < pattern[0].length && pattern[y][x] === 1) {
                         thumbnailCtx.fillRect(
-                            offsetX + (x - this.GOSPER_GUN.CENTRAL_START_X) * this.GOSPER_GUN.CELL_SIZE,
-                            offsetY + y * this.GOSPER_GUN.CELL_SIZE,
+                            offsetX + ((x - this.GOSPER_GUN.CENTRAL_START_X) * this.GOSPER_GUN.CELL_SIZE),
+                            offsetY + (y * this.GOSPER_GUN.CELL_SIZE),
                             this.GOSPER_GUN.CELL_SIZE,
                             this.GOSPER_GUN.CELL_SIZE
                         );
@@ -209,18 +222,18 @@ class PatternLibrary {
                 }
             }
         } else {
-            // For all other patterns
+            // Normal pattern rendering
+            // Calculate cell size to fit pattern in thumbnail
             const cellSize = Math.min(
-                Math.floor(width / patternWidth),
-                Math.floor(height / patternHeight)
+                Math.floor((width - 10) / patternWidth),
+                Math.floor((height - 10) / patternHeight)
             );
             
-            // Calculate offset to center the pattern
+            // Calculate offset to center pattern
             const offsetX = Math.floor((width - (patternWidth * cellSize)) / 2);
             const offsetY = Math.floor((height - (patternHeight * cellSize)) / 2);
             
-            // Draw the pattern cells
-            thumbnailCtx.fillStyle = '#000000';
+            // Draw pattern cells
             for (let y = 0; y < patternHeight; y++) {
                 for (let x = 0; x < patternWidth; x++) {
                     if (pattern[y][x] === 1) {
@@ -239,51 +252,63 @@ class PatternLibrary {
     }
     
     /**
-     * Place a pattern on the grid at specific coordinates
-     * @param {string} patternId - The ID of the pattern to place
-     * @param {number} x - The x coordinate
-     * @param {number} y - The y coordinate
-     * @param {Grid} grid - The grid object to place the pattern on
-     * @returns {boolean} True if pattern was placed successfully
+     * Place a pattern on the grid
+     * @param {string} patternId - The ID of the pattern
+     * @param {number} x - The x coordinate (top-left)
+     * @param {number} y - The y coordinate (top-left)
+     * @param {Grid} grid - The grid object
      */
     placePattern(patternId, x, y, grid) {
         const patternData = this.patterns[patternId];
-        if (!patternData) {
-            console.error(`Pattern '${patternId}' not found`);
-            return false;
-        }
+        if (!patternData || !grid) return;
         
-        return grid.placePattern(patternData.pattern, x, y);
+        const pattern = patternData.pattern;
+        
+        // Place each cell of the pattern
+        for (let dy = 0; dy < pattern.length; dy++) {
+            for (let dx = 0; dx < pattern[dy].length; dx++) {
+                if (pattern[dy][dx] === 1) {
+                    const gridX = x + dx;
+                    const gridY = y + dy;
+                    
+                    // Check grid boundaries
+                    if (gridX >= 0 && gridX < grid.cols && gridY >= 0 && gridY < grid.rows) {
+                        grid.setCell(gridX, gridY, 1);
+                    }
+                }
+            }
+        }
     }
     
     /**
      * Place a pattern in the center of the grid
-     * @param {string} patternId - The ID of the pattern to place
-     * @param {Grid} grid - The grid object to place the pattern on
-     * @returns {boolean} True if pattern was placed successfully
+     * @param {string} patternId - The ID of the pattern
+     * @param {Grid} grid - The grid object
      */
     placePatternInCenter(patternId, grid) {
         const patternData = this.patterns[patternId];
-        if (!patternData) {
-            console.error(`Pattern '${patternId}' not found`);
-            return false;
-        }
+        if (!patternData || !grid) return;
         
         const pattern = patternData.pattern;
+        
+        // Calculate center position
         const patternWidth = pattern[0].length;
         const patternHeight = pattern.length;
         
-        // Calculate the center position
         const startX = Math.floor((grid.cols - patternWidth) / 2);
         const startY = Math.floor((grid.rows - patternHeight) / 2);
         
-        return grid.placePattern(pattern, startX, startY);
+        // Reset grid before placing pattern
+        grid.reset();
+        
+        // Place pattern at center
+        this.placePattern(patternId, startX, startY, grid);
     }
     
     /**
      * Create pattern library UI
-     * @param {Object} dependencies - Dependencies object 
-     * @param {Grid} dependencies.grid - The grid to place patterns on
+     * @param {Object} dependencies - Dependencies object
+     * @param {Grid} dependencies.grid - The grid object
      * @param {Function} dependencies.onPatternSelected - Callback when pattern is selected
      */
     createPatternLibraryUI(dependencies = {}) {
@@ -310,6 +335,49 @@ class PatternLibrary {
         title.textContent = 'Pattern Library';
         patternsContainer.appendChild(title);
         
+        // Create search input for pattern filtering
+        const searchContainer = document.createElement('div');
+        searchContainer.className = 'pattern-search';
+        
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Search patterns...';
+        searchInput.className = 'pattern-search-input';
+        
+        // Add search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const patternCards = document.querySelectorAll('.pattern-card');
+            
+            patternCards.forEach(card => {
+                const patternName = card.querySelector('.pattern-name').textContent.toLowerCase();
+                const patternDesc = card.getAttribute('title').toLowerCase();
+                
+                // Show/hide based on search term
+                if (patternName.includes(searchTerm) || patternDesc.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show/hide category headers if all patterns are hidden
+            document.querySelectorAll('.pattern-category').forEach(category => {
+                const visiblePatterns = category.querySelectorAll('.pattern-card[style="display: flex"]').length;
+                const categoryHeader = category.querySelector('h3');
+                const categoryDesc = category.querySelector('.category-description');
+                
+                if (visiblePatterns === 0) {
+                    category.style.display = 'none';
+                } else {
+                    category.style.display = 'block';
+                }
+            });
+        });
+        
+        searchContainer.appendChild(searchInput);
+        patternsContainer.appendChild(searchContainer);
+        
         // Create pattern gallery
         const patternGallery = document.createElement('div');
         patternGallery.className = 'pattern-gallery';
@@ -326,23 +394,39 @@ class PatternLibrary {
             categories[pattern.category].push(pattern);
         });
         
-        // Create sections for each category
-        Object.keys(categories).forEach(category => {
+        // Create sections for each category in the specified order
+        this.categoryOrder.forEach(category => {
+            if (!categories[category] || categories[category].length === 0) return;
+            
             const categoryDiv = document.createElement('div');
             categoryDiv.className = 'pattern-category';
             
+            // Add category title
             const categoryTitle = document.createElement('h3');
             categoryTitle.textContent = category;
             categoryDiv.appendChild(categoryTitle);
             
+            // Add category description if available
+            if (this.categoryDescriptions[category]) {
+                const categoryDesc = document.createElement('div');
+                categoryDesc.className = 'category-description';
+                categoryDesc.textContent = this.categoryDescriptions[category];
+                categoryDiv.appendChild(categoryDesc);
+            }
+            
+            // Create grid for patterns in this category
             const patternsGrid = document.createElement('div');
             patternsGrid.className = 'patterns-grid';
+            
+            // Sort patterns alphabetically
+            categories[category].sort((a, b) => a.name.localeCompare(b.name));
             
             // Add patterns in this category
             categories[category].forEach(pattern => {
                 const patternCard = document.createElement('div');
                 patternCard.className = 'pattern-card';
                 patternCard.setAttribute('title', pattern.description);
+                patternCard.setAttribute('data-pattern-id', pattern.id);
                 
                 // Create thumbnail
                 const thumbnail = this.createPatternThumbnail(pattern.id);
@@ -357,6 +441,12 @@ class PatternLibrary {
                 
                 // Add click event to place pattern
                 patternCard.addEventListener('click', () => {
+                    // Add active class to selected pattern
+                    document.querySelectorAll('.pattern-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    patternCard.classList.add('active');
+                    
                     console.log(`Clicked pattern: ${pattern.id}`);
                     this.placePatternInCenter(pattern.id, grid);
                     if (typeof onPatternSelected === 'function') {

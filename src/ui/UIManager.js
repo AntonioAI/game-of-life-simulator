@@ -52,46 +52,48 @@ class UIManager {
      * Create simulation controls (start, pause, step, reset)
      */
     createSimulationControls() {
-        // Create simulation controls section
         const simulationControls = document.createElement('div');
         simulationControls.className = 'simulation-controls';
         
-        // Create title for this section
+        // Title 
         const simulationTitle = document.createElement('h3');
         simulationTitle.textContent = 'Simulation Controls';
         simulationControls.appendChild(simulationTitle);
         
-        // Create button container
+        // Button container
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'control-buttons';
         
-        // Create control buttons
-        const startButton = this.controls.createButton('▶', 'Start', 
-            () => this.gameManager.startSimulation());
-        buttonContainer.appendChild(startButton);
+        // Control buttons with clear labels and icons
+        buttonContainer.appendChild(
+            this.controls.createButton('▶', 'Start', 
+                () => this.gameManager.startSimulation())
+        );
         
-        const pauseButton = this.controls.createButton('⏸', 'Pause', 
-            () => this.gameManager.pauseSimulation());
-        buttonContainer.appendChild(pauseButton);
+        buttonContainer.appendChild(
+            this.controls.createButton('⏸', 'Pause', 
+                () => this.gameManager.pauseSimulation())
+        );
         
-        const stepButton = this.controls.createButton('➡', 'Step', 
-            () => this.gameManager.stepSimulation());
-        buttonContainer.appendChild(stepButton);
+        buttonContainer.appendChild(
+            this.controls.createButton('➡', 'Step', 
+                () => this.gameManager.stepSimulation())
+        );
         
-        const resetButton = this.controls.createButton('↺', 'Reset', 
-            () => this.gameManager.resetSimulation());
-        buttonContainer.appendChild(resetButton);
+        buttonContainer.appendChild(
+            this.controls.createButton('↺', 'Reset', 
+                () => this.gameManager.resetSimulation())
+        );
         
         simulationControls.appendChild(buttonContainer);
         
-        // Add speed control
+        // Speed control slider
         const speedControl = this.controls.createSpeedSlider(
             1, 60, this.gameManager.simulationSpeed,
             (speed) => this.gameManager.updateSimulationSpeed(speed)
         );
         simulationControls.appendChild(speedControl.container);
         
-        // Add to controls container
         this.controlsContainer.appendChild(simulationControls);
     }
     
@@ -108,19 +110,41 @@ class UIManager {
         gridTitle.textContent = 'Grid Dimensions';
         gridSettings.appendChild(gridTitle);
         
-        // Create preset buttons
-        const presetButtons = this.controls.createPresetButtons([
-            { text: '50×50', handler: () => this.resizeGrid(50, 50) },
-            { text: '75×75', handler: () => this.resizeGrid(75, 75) },
-            { text: '100×100', handler: () => this.resizeGrid(100, 100) }
-        ]);
+        // Create preset buttons with improved layout
+        const presetButtons = document.createElement('div');
+        presetButtons.className = 'preset-buttons';
+        
+        // Define preset configurations with descriptions
+        const presets = [
+            { text: '50×50', description: 'Small Grid', handler: () => this.resizeGrid(50, 50) },
+            { text: '75×75', description: 'Medium Grid', handler: () => this.resizeGrid(75, 75) },
+            { text: '100×100', description: 'Large Grid', handler: () => this.resizeGrid(100, 100) }
+        ];
+        
+        // Create buttons with improved styling
+        presets.forEach(preset => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'preset-button';
+            button.title = preset.description;
+            button.textContent = preset.text;
+            button.addEventListener('click', preset.handler);
+            presetButtons.appendChild(button);
+        });
+        
         gridSettings.appendChild(presetButtons);
         
-        // Create custom size inputs
+        // Create custom size inputs with improved layout
         const customSize = document.createElement('div');
         customSize.className = 'custom-size';
         
-        // Create rows input
+        // Create a heading for custom size
+        const customSizeHeading = document.createElement('div');
+        customSizeHeading.className = 'custom-size-heading';
+        customSizeHeading.textContent = 'Custom Size';
+        customSize.appendChild(customSizeHeading);
+        
+        // Create rows input with better alignment
         const rowsWrapper = document.createElement('div');
         rowsWrapper.className = 'dimension-input';
         
@@ -135,11 +159,17 @@ class UIManager {
         rowsInput.min = '10';
         rowsInput.max = '200';
         rowsInput.value = this.gameManager.grid.rows;
+        // Add validation to prevent invalid input
+        rowsInput.addEventListener('input', () => {
+            const value = parseInt(rowsInput.value);
+            if (value < 10) rowsInput.value = 10;
+            if (value > 200) rowsInput.value = 200;
+        });
         rowsWrapper.appendChild(rowsInput);
         
         customSize.appendChild(rowsWrapper);
         
-        // Create columns input
+        // Create columns input with better alignment
         const colsWrapper = document.createElement('div');
         colsWrapper.className = 'dimension-input';
         
@@ -154,11 +184,17 @@ class UIManager {
         colsInput.min = '10';
         colsInput.max = '200';
         colsInput.value = this.gameManager.grid.cols;
+        // Add validation to prevent invalid input
+        colsInput.addEventListener('input', () => {
+            const value = parseInt(colsInput.value);
+            if (value < 10) colsInput.value = 10;
+            if (value > 200) colsInput.value = 200;
+        });
         colsWrapper.appendChild(colsInput);
         
         customSize.appendChild(colsWrapper);
         
-        // Create apply button
+        // Create apply button with improved styling
         const applyButton = this.controls.createPrimaryButton('Apply', () => {
             const rows = parseInt(rowsInput.value);
             const cols = parseInt(colsInput.value);
