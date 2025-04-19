@@ -1,8 +1,20 @@
-/* 
- * Game of Life Simulator - Grid Layout
- * Page layout structure
+/* ==========================================================================
+ * Game of Life Simulator - Grid Layout System
+ * ==========================================================================
+ * Main page structure and layout containers
+ *
+ * CONTENTS:
+ * 1. Main Container
+ * 2. Content Layout
+ * 3. Sidebar
+ * 4. Instruction Panel
+ * 5. Header & Footer
+ * 6. Navigation Elements
  */
 
+/* ==========================================================================
+   1. Main Container - Primary page wrapper
+   ========================================================================== */
 .layout-container {
     width: 100%;
     max-width: 1400px;
@@ -13,7 +25,9 @@
     flex-direction: column;
 }
 
-/* Main content layout */
+/* ==========================================================================
+   2. Content Layout - Main content area structure
+   ========================================================================== */
 main {
     display: flex;
     flex-direction: row;
@@ -23,7 +37,9 @@ main {
     width: 100%;
 }
 
-/* Sidebar layout */
+/* ==========================================================================
+   3. Sidebar - Controls sidebar container
+   ========================================================================== */
 .layout-sidebar {
     display: flex;
     flex-direction: column;
@@ -33,10 +49,11 @@ main {
     order: 1; /* Position controls on the left */
 }
 
-/* Canvas container layout - reference only, defined in canvas.css */
-/* Removed duplicate styles to avoid specificity issues and redundancy */
+/* Note: Canvas container is defined in canvas.css to maintain component separation */
 
-/* Instructions layout */
+/* ==========================================================================
+   4. Instruction Panel - Game instruction container and elements
+   ========================================================================== */
 .instructions-container {
     margin-bottom: var(--spacing-lg);
 }
@@ -63,22 +80,9 @@ main {
     box-shadow: var(--shadow-md);
 }
 
-/* Old instructions class for backwards compatibility */
-.instructions {
-    background-color: var(--panel-background);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
-    /* Transition moved to utilities/animations.css as .transition-shadow */
-}
-
-.instructions:hover {
-    box-shadow: var(--shadow-lg);
-}
-
-/* Header layout */
+/* ==========================================================================
+   5. Header & Footer - Top and bottom page elements
+   ========================================================================== */
 header {
     text-align: center;
     margin-bottom: 1.5rem;
@@ -86,13 +90,11 @@ header {
     border-bottom: 1px solid var(--border-color);
 }
 
-/* Patterns container layout */
 .patterns-container {
     width: 100%;
     margin-top: var(--spacing-lg);
 }
 
-/* Footer layout */
 footer {
     text-align: center;
     margin-top: var(--spacing-lg);
@@ -103,7 +105,9 @@ footer {
     order: 5; /* Ensure it comes after pattern library in flex layout */
 }
 
-/* Back to Projects link */
+/* ==========================================================================
+   6. Navigation Elements - Links and navigation components
+   ========================================================================== */
 .back-to-projects {
     position: fixed;
     top: 20px;
@@ -115,8 +119,8 @@ footer {
     border-radius: var(--radius-sm);
     font-size: 0.9rem;
     font-weight: 500;
-    /* Transition moved to utilities/animations.css as .transition-background */
-    z-index: 100;
+    /* Transition defined in utilities/animations.css as .transition-background */
+    z-index: 100; /* Ensure link stays above other content */
     box-shadow: var(--shadow-sm);
 }
 

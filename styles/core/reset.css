@@ -1,9 +1,18 @@
-/* 
- * Game of Life Simulator - Reset
- * Base reset and element defaults
- */ 
+/* ==========================================================================
+ * Game of Life Simulator - CSS Reset & Base Styles
+ * ==========================================================================
+ * Normalizes browser default styles and sets base foundation
+ * 
+ * CONTENTS:
+ * 1. Global Reset
+ * 2. HTML & Body Setup
+ * 3. Base Typography
+ * 4. Mobile Touch Optimizations
+ */
 
-/* Reset and base styles */
+/* ==========================================================================
+   1. Global Reset - Remove default margins, padding, and set box model
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -11,19 +20,26 @@
     -webkit-tap-highlight-color: transparent; /* Prevent tap highlight on iOS */
 }
 
+/* ==========================================================================
+   2. HTML & Body Setup - Set viewport behavior
+   ========================================================================== */
 html, body {
     height: 100%;
     width: 100%;
     overflow-x: hidden; /* Prevent horizontal scrolling */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
 }
 
+/* ==========================================================================
+   3. Base Typography & Colors - Set foundational styles
+   ========================================================================== */
 body {
+    /* System font stack for optimal performance across devices */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
     background-color: var(--background-color);
-    background-image: linear-gradient(135deg, #e6f0fb 0%, #dae6f3 50%, #c2d9f1 100%); /* Enhanced gradient for more visual pop */
+    background-image: linear-gradient(135deg, #e6f0fb 0%, #dae6f3 50%, #c2d9f1 100%); 
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -31,7 +47,9 @@ body {
     -webkit-text-size-adjust: 100%; /* For older browsers */
 }
 
-/* Improve touch targets on mobile */
+/* ==========================================================================
+   4. Mobile Touch Optimizations - Improve usability on touch devices
+   ========================================================================== */
 .mobile-device button, 
 .mobile-device input, 
 .mobile-device select {

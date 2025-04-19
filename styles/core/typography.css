@@ -100,13 +100,6 @@ a:hover {
     font-weight: 600;
 }
 
-.instructions h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--border-color);
-}
-
 /* Panel headings */
 .controls h2, .patterns h2, .analytics h2 {
     color: var(--text-primary);
@@ -198,11 +191,13 @@ footer {
         font-size: 0.7rem;
     }
     
-    .instructions h2 {
+    /* Apply responsive typography to instruction panel */
+    .instructions-panel h2,
+    .instructions-title {
         font-size: 1.1rem;
     }
     
-    .instructions li {
+    .instructions-panel li {
         font-size: 0.9rem;
     }
 } 

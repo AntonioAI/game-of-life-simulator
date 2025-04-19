@@ -1,25 +1,45 @@
-/* 
+/* ==========================================================================
  * Game of Life Simulator - Main CSS
- * Imports all CSS modules in the correct order
+ * ==========================================================================
+ * Master stylesheet that imports all CSS modules in their dependency order
+ * 
+ * IMPORT ORDER:
+ * 1. Core: Variables, Reset, Typography (foundational styles)
+ * 2. Layout: Main structural components (grid, containers)
+ * 3. Components: Specific UI component styles (modules)
+ * 4. Utilities: Helper classes, animations (enhancements)
+ * 5. Responsive: Media queries (adaptations)
+ * 
+ * Note: Order is important! Later imports can override earlier ones.
  */
 
-/* Core styles first */
-@import 'core/variables.css';
-@import 'core/reset.css';
-@import 'core/typography.css';
+/* ==========================================================================
+   1. Core Styles - Fundamental variables and base styles
+   ========================================================================== */
+@import 'core/variables.css';  /* CSS custom properties (must come first) */
+@import 'core/reset.css';      /* Normalizes browser defaults */
+@import 'core/typography.css'; /* Text styling throughout the app */
 
-/* Layout styles next */
-@import 'layout/grid.css';
+/* ==========================================================================
+   2. Layout Styles - Page structure and grid system
+   ========================================================================== */
+@import 'layout/grid.css';     /* Layout containers and grid system */
 
-/* Component styles */
-@import 'components/canvas.css';
-@import 'components/controls.css';
-@import 'components/analytics.css';
-@import 'components/patterns.css';
+/* ==========================================================================
+   3. Component Styles - Individual UI elements
+   ========================================================================== */
+@import 'components/canvas.css';    /* Game canvas container */
+@import 'components/controls.css';  /* Simulation control buttons and inputs */
+@import 'components/analytics.css'; /* Game statistics display */
+@import 'components/patterns.css';  /* Pattern library and selection */
 
-/* Utilities */
-@import 'utilities/animations.css';
-@import 'utilities/helpers.css';
+/* ==========================================================================
+   4. Utility Styles - Helper classes
+   ========================================================================== */
+@import 'utilities/animations.css'; /* Transitions and animations */
+@import 'utilities/helpers.css';    /* Single-purpose utility classes */
 
-/* Responsive styles last */
-@import 'layout/responsive.css'; 
+/* ==========================================================================
+   5. Responsive Styles - Media queries (must be last)
+   ========================================================================== */
+@import 'layout/responsive.css';    /* Responsive adjustments for different devices */ 
