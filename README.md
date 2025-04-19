@@ -125,8 +125,38 @@ The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrat
   /patterns
     PatternLibrary.js    // Pattern definitions and management
   main.js                // Application entry point
+
+/styles
+  /core
+    variables.css        // CSS custom properties
+    reset.css            // Base reset and element defaults
+    typography.css       // Text styling and fonts
+  /components
+    canvas.css           // Game canvas styling
+    controls.css         // Controls panel and buttons
+    analytics.css        // Analytics panel
+    patterns.css         // Pattern library
+  /layout
+    grid.css             // Page layout structure
+    responsive.css       // Media queries
+  /utilities
+    animations.css       // Animations and transitions
+    helpers.css          // Utility classes
+  main.css               // Single import file
+  STYLE-GUIDE.md         // CSS style guide and documentation
+  README.md              // CSS architecture documentation
 ```
 
+### CSS Architecture
+
+The project uses a modular CSS architecture with the following characteristics:
+
+- **BEM Methodology**: Block, Element, Modifier naming convention for clear, maintainable CSS
+- **CSS Variables**: Defined in `variables.css` for consistent colors, spacing, and styling
+- **Modular Structure**: Separated by concerns (core, components, layout, utilities)
+- **Mobile-First Responsive Design**: Adapts seamlessly to different screen sizes
+
+For more details on the CSS structure and available utility classes, see the [CSS Style Guide](styles/STYLE-GUIDE.md) and [CSS Architecture Documentation](styles/README.md).
 
 ## Contributing
 

@@ -215,7 +215,10 @@ class UIManager {
         customSize.appendChild(sizeNote);
         
         // Create apply button with improved styling
-        const applyButton = this.controls.createPrimaryButton('Apply', () => {
+        const applyButton = document.createElement('button');
+        applyButton.className = 'preset-apply';
+        applyButton.textContent = 'Apply';
+        applyButton.addEventListener('click', () => {
             const rows = parseInt(rowsInput.value);
             const cols = parseInt(colsInput.value);
             if (rows >= 10 && rows <= 200 && cols >= 10 && cols <= 200) {
@@ -250,21 +253,46 @@ class UIManager {
         boundaryDescription.textContent = 'Choose how cells behave at the grid edges.';
         boundarySettings.appendChild(boundaryDescription);
         
-        // Create boundary type selector
-        const boundarySelect = this.controls.createSelectDropdown(
-            'Boundary Type:',
-            [
-                { value: 'toroidal', text: 'Toroidal (Edges Connect)' },
-                { value: 'finite', text: 'Finite (Fixed Edges)' }
-            ],
-            this.gameManager.grid.boundaryType,
-            (value) => {
-                this.gameManager.grid.setBoundaryType(value);
-                this.updateAnalytics();
-            }
-        );
+        // Create select container
+        const selectContainer = document.createElement('div');
+        selectContainer.className = 'boundary-select';
         
-        boundarySettings.appendChild(boundarySelect.container);
+        // Create label
+        const selectLabel = document.createElement('label');
+        selectLabel.className = 'boundary-label';
+        selectLabel.textContent = 'Boundary Type:';
+        selectLabel.htmlFor = 'boundary-select';
+        selectContainer.appendChild(selectLabel);
+        
+        // Create dropdown
+        const dropdown = document.createElement('select');
+        dropdown.className = 'boundary-dropdown';
+        dropdown.id = 'boundary-select';
+        
+        // Add options
+        const options = [
+            { value: 'toroidal', text: 'Toroidal (Edges Connect)' },
+            { value: 'finite', text: 'Finite (Fixed Edges)' }
+        ];
+        
+        options.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.value;
+            optionElement.textContent = option.text;
+            if (option.value === this.gameManager.grid.boundaryType) {
+                optionElement.selected = true;
+            }
+            dropdown.appendChild(optionElement);
+        });
+        
+        // Add change handler
+        dropdown.addEventListener('change', () => {
+            this.gameManager.grid.setBoundaryType(dropdown.value);
+            this.updateAnalytics();
+        });
+        
+        selectContainer.appendChild(dropdown);
+        boundarySettings.appendChild(selectContainer);
         
         // Add to controls container
         this.controlsContainer.appendChild(boundarySettings);

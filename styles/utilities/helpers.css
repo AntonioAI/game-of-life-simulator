@@ -97,13 +97,18 @@
     font-size: 16px; /* Prevent zoom on input focus in iOS */
 } 
 
-/* Common panel utilities */
+/* Common panel utilities - Updated for cleaner professional look */
 .u-panel {
     background-color: var(--panel-background);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     padding: var(--spacing-lg);
+    transition: box-shadow 0.2s ease;
+}
+
+.u-panel:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .u-panel-title {
@@ -117,20 +122,19 @@
 
 .u-panel-section {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
-    padding: var(--spacing-sm);
-    background-color: #f8f9fa;
-    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background-color: white;
+    border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .u-panel-section-title {
-    color: var(--secondary-color);
+    color: var(--text-primary);
     font-size: 1.1rem;
-    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
     padding-bottom: var(--spacing-xs);
     border-bottom: 1px solid var(--border-color);
 } 
