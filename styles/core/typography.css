@@ -48,4 +48,119 @@ a {
 a:hover {
     color: var(--primary-hover);
     text-decoration: underline;
+}
+
+/* Custom component typography */
+.back-to-projects {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.instructions h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Panel headings */
+.controls h2, .patterns h2, .analytics h2 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Section headings */
+.controls h3, .patterns h3, .analytics h3,
+.grid-settings h3, .boundary-setting h3, .simulation-controls h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Labels and values */
+.analytics-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.analytics-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+/* Button text */
+button {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.control-buttons .icon {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Form labels and inputs */
+.dimension-input label,
+.select-dropdown label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.dimension-input input,
+.select-dropdown select {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Custom component headings */
+.custom-size-heading {
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.pattern-name {
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Responsive typography */
+@media screen and (max-width: 767px) {
+    header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .preset-buttons button {
+        font-size: 0.7rem;
+    }
+    
+    .instructions h2 {
+        font-size: 1.1rem;
+    }
+    
+    .instructions li {
+        font-size: 0.9rem;
+    }
 } 

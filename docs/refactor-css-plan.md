@@ -57,7 +57,7 @@
    - Update index.html to reference both styles.css and main.css
    - Test: Page should load with styles intact
 
-### Phase 2: Extract Core Styles ⏳
+### Phase 2: Extract Core Styles ✅
 1. **Extract Variables** ✅
    - Move all CSS custom properties from :root to core/variables.css
    - Include color palette, spacing, shadows, and border radius
@@ -69,7 +69,7 @@
    - Include basic global defaults
    - Test: Page layout should be unaffected
 
-3. **Extract Typography** ⏳
+3. **Extract Typography** ✅
    - Move font-related styles to core/typography.css
    - Include text colors, sizes, weights, and line heights
    - Test: Text styling should appear the same
