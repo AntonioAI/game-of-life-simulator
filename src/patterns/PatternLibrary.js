@@ -321,7 +321,7 @@ class PatternLibrary {
         }
         
         // Find or create patterns container
-        const patternsContainer = document.querySelector('.patterns');
+        const patternsContainer = document.querySelector('.pattern-library');
         if (!patternsContainer) {
             console.error('Patterns container not found');
             return;
@@ -332,6 +332,7 @@ class PatternLibrary {
         
         // Create title
         const title = document.createElement('h2');
+        title.className = 'pattern-library__title';
         title.textContent = 'Pattern Library';
         patternsContainer.appendChild(title);
         

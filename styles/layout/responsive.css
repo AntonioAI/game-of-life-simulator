@@ -12,7 +12,7 @@
         max-width: calc(100% - 320px);
     }
     
-    .sidebar, .analytics-panel {
+    .layout-sidebar, .analytics-panel {
         width: 300px;
     }
 }
@@ -33,7 +33,7 @@
         height: auto;
     }
     
-    .sidebar {
+    .layout-sidebar {
         order: 2;
         max-width: 100%;
     }
@@ -58,7 +58,7 @@
 }
 
 @media screen and (max-width: 480px) {
-    .container {
+    .layout-container {
         padding: var(--spacing-sm);
     }
     
