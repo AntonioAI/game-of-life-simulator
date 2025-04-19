@@ -42,7 +42,7 @@ class Controls {
      */
     createSpeedSlider(minSpeed, maxSpeed, initialSpeed, changeHandler) {
         const speedControl = document.createElement('div');
-        speedControl.className = 'speed-control';
+        speedControl.className = 'control-panel__speed-control';
         
         const speedLabel = document.createElement('label');
         speedLabel.textContent = `Speed: ${initialSpeed} FPS`;
@@ -85,7 +85,7 @@ class Controls {
      */
     createSettingInput(label, type, value, options = {}) {
         const container = document.createElement('div');
-        container.className = 'setting-input';
+        container.className = 'control-panel__setting';
         
         const labelElement = document.createElement('label');
         labelElement.textContent = label;
@@ -107,7 +107,7 @@ class Controls {
         
         // For mobile-friendly UI and proper alignment
         const fieldWrapper = document.createElement('div');
-        fieldWrapper.className = 'field-wrapper';
+        fieldWrapper.className = 'control-panel__field';
         fieldWrapper.appendChild(labelElement);
         fieldWrapper.appendChild(input);
         
@@ -130,7 +130,7 @@ class Controls {
      */
     createSelectDropdown(label, options, initialValue, changeHandler) {
         const container = document.createElement('div');
-        container.className = 'select-dropdown';
+        container.className = 'control-panel__dropdown';
         
         const labelElement = document.createElement('label');
         labelElement.textContent = label;
@@ -174,7 +174,7 @@ class Controls {
     createPrimaryButton(text, clickHandler) {
         const button = document.createElement('button');
         button.textContent = text;
-        button.className = 'primary-button';
+        button.className = 'control-panel__button--primary';
         
         if (clickHandler) {
             button.addEventListener('click', clickHandler);

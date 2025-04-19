@@ -338,18 +338,18 @@ class PatternLibrary {
         
         // Create search input for pattern filtering
         const searchContainer = document.createElement('div');
-        searchContainer.className = 'pattern-search';
+        searchContainer.className = 'pattern-library__search';
         
         const searchInput = document.createElement('input');
         searchInput.type = 'text';
         searchInput.placeholder = 'Search patterns...';
-        searchInput.className = 'pattern-search-input';
+        searchInput.className = 'pattern-library__search-input';
         searchInput.id = 'pattern-search-input';
         
         // Function to update search results
         const updateSearchResults = () => {
             const searchTerm = searchInput.value.toLowerCase();
-            const patternCards = document.querySelectorAll('.pattern-card');
+            const patternCards = document.querySelectorAll('.pattern-library__card');
             
             // Toggle clear button visibility
             if (searchTerm.length > 0) {
@@ -362,9 +362,9 @@ class PatternLibrary {
             const visibleCountByCategory = {};
             
             patternCards.forEach(card => {
-                const patternName = card.querySelector('.pattern-name').textContent.toLowerCase();
+                const patternName = card.querySelector('.pattern-library__card-name').textContent.toLowerCase();
                 const patternDesc = card.getAttribute('title').toLowerCase();
-                const category = card.closest('.pattern-category');
+                const category = card.closest('.pattern-library__category');
                 const categoryName = category ? category.querySelector('h3').textContent : null;
                 
                 // Initialize counter for this category if not exists
@@ -384,7 +384,7 @@ class PatternLibrary {
             });
             
             // Show/hide category headers based on visible patterns
-            document.querySelectorAll('.pattern-category').forEach(category => {
+            document.querySelectorAll('.pattern-library__category').forEach(category => {
                 const categoryName = category.querySelector('h3').textContent;
                 const hasVisiblePatterns = visibleCountByCategory[categoryName] > 0;
                 
@@ -415,7 +415,7 @@ class PatternLibrary {
         
         // Create pattern gallery
         const patternGallery = document.createElement('div');
-        patternGallery.className = 'pattern-gallery';
+        patternGallery.className = 'pattern-library__gallery';
         
         // Group patterns by category
         const categories = {};
@@ -434,7 +434,7 @@ class PatternLibrary {
             if (!categories[category] || categories[category].length === 0) return;
             
             const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'pattern-category';
+            categoryDiv.className = 'pattern-library__category';
             
             // Add category title
             const categoryTitle = document.createElement('h3');
@@ -444,14 +444,14 @@ class PatternLibrary {
             // Add category description if available
             if (this.categoryDescriptions[category]) {
                 const categoryDesc = document.createElement('div');
-                categoryDesc.className = 'category-description';
+                categoryDesc.className = 'pattern-library__category-description';
                 categoryDesc.textContent = this.categoryDescriptions[category];
                 categoryDiv.appendChild(categoryDesc);
             }
             
             // Create grid for patterns in this category
             const patternsGrid = document.createElement('div');
-            patternsGrid.className = 'patterns-grid';
+            patternsGrid.className = 'pattern-library__grid';
             
             // Sort patterns alphabetically
             categories[category].sort((a, b) => a.name.localeCompare(b.name));
@@ -459,7 +459,7 @@ class PatternLibrary {
             // Add patterns in this category
             categories[category].forEach(pattern => {
                 const patternCard = document.createElement('div');
-                patternCard.className = 'pattern-card';
+                patternCard.className = 'pattern-library__card';
                 patternCard.setAttribute('title', pattern.description);
                 patternCard.setAttribute('data-pattern-id', pattern.id);
                 
@@ -469,7 +469,7 @@ class PatternLibrary {
                 
                 // Add pattern name
                 const patternName = document.createElement('div');
-                patternName.className = 'pattern-name';
+                patternName.className = 'pattern-library__card-name';
                 patternName.setAttribute('title', pattern.description);
                 patternName.textContent = pattern.name;
                 patternCard.appendChild(patternName);
@@ -477,7 +477,7 @@ class PatternLibrary {
                 // Add click event to place pattern
                 patternCard.addEventListener('click', () => {
                     // Add active class to selected pattern
-                    document.querySelectorAll('.pattern-card').forEach(card => {
+                    document.querySelectorAll('.pattern-library__card').forEach(card => {
                         card.classList.remove('active');
                     });
                     patternCard.classList.add('active');

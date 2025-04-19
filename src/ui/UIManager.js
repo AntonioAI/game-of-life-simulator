@@ -68,7 +68,7 @@ class UIManager {
         
         // Button container
         const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'control-buttons';
+        buttonContainer.className = 'control-panel__buttons';
         
         // Control buttons with clear labels and icons
         buttonContainer.appendChild(
@@ -273,7 +273,7 @@ class UIManager {
     createAnalyticsDisplay() {
         // Create analytics content container
         const analyticsContent = document.createElement('div');
-        analyticsContent.className = 'analytics-content';
+        analyticsContent.className = 'analytics-panel__content';
         
         // Create analytics data container
         const analyticsData = document.createElement('div');
@@ -281,15 +281,15 @@ class UIManager {
         
         // Generation counter
         const generationItem = document.createElement('div');
-        generationItem.className = 'analytics-item';
+        generationItem.className = 'analytics-panel__item';
         
         const generationLabel = document.createElement('span');
-        generationLabel.className = 'analytics-label';
+        generationLabel.className = 'analytics-panel__label';
         generationLabel.textContent = 'Generation:';
         generationItem.appendChild(generationLabel);
         
         const generationValue = document.createElement('span');
-        generationValue.className = 'analytics-value';
+        generationValue.className = 'analytics-panel__value';
         generationValue.id = 'generation-count';
         generationValue.textContent = '0';
         generationItem.appendChild(generationValue);
@@ -298,15 +298,15 @@ class UIManager {
         
         // Live cell counter
         const liveCellItem = document.createElement('div');
-        liveCellItem.className = 'analytics-item';
+        liveCellItem.className = 'analytics-panel__item';
         
         const liveCellLabel = document.createElement('span');
-        liveCellLabel.className = 'analytics-label';
+        liveCellLabel.className = 'analytics-panel__label';
         liveCellLabel.textContent = 'Live Cells:';
         liveCellItem.appendChild(liveCellLabel);
         
         const liveCellValue = document.createElement('span');
-        liveCellValue.className = 'analytics-value';
+        liveCellValue.className = 'analytics-panel__value';
         liveCellValue.id = 'live-cell-count';
         liveCellValue.textContent = '0';
         liveCellItem.appendChild(liveCellValue);
@@ -315,15 +315,15 @@ class UIManager {
         
         // Population density counter
         const densityItem = document.createElement('div');
-        densityItem.className = 'analytics-item';
+        densityItem.className = 'analytics-panel__item';
         
         const densityLabel = document.createElement('span');
-        densityLabel.className = 'analytics-label';
+        densityLabel.className = 'analytics-panel__label';
         densityLabel.textContent = 'Population Density:';
         densityItem.appendChild(densityLabel);
         
         const densityValue = document.createElement('span');
-        densityValue.className = 'analytics-value';
+        densityValue.className = 'analytics-panel__value';
         densityValue.id = 'population-density';
         densityValue.textContent = '0.0%';
         densityItem.appendChild(densityValue);
@@ -332,15 +332,15 @@ class UIManager {
         
         // Grid size display
         const gridSizeItem = document.createElement('div');
-        gridSizeItem.className = 'analytics-item';
+        gridSizeItem.className = 'analytics-panel__item';
         
         const gridSizeLabel = document.createElement('span');
-        gridSizeLabel.className = 'analytics-label';
+        gridSizeLabel.className = 'analytics-panel__label';
         gridSizeLabel.textContent = 'Grid Size:';
         gridSizeItem.appendChild(gridSizeLabel);
         
         const gridSizeValue = document.createElement('span');
-        gridSizeValue.className = 'analytics-value';
+        gridSizeValue.className = 'analytics-panel__value';
         gridSizeValue.id = 'grid-size';
         gridSizeValue.textContent = `${this.gameManager.grid.rows}×${this.gameManager.grid.cols}`;
         gridSizeItem.appendChild(gridSizeValue);
@@ -349,15 +349,15 @@ class UIManager {
         
         // Add speed display
         const speedItem = document.createElement('div');
-        speedItem.className = 'analytics-item';
+        speedItem.className = 'analytics-panel__item';
         
         const speedLabel = document.createElement('span');
-        speedLabel.className = 'analytics-label';
+        speedLabel.className = 'analytics-panel__label';
         speedLabel.textContent = 'Speed:';
         speedItem.appendChild(speedLabel);
         
         const speedValue = document.createElement('span');
-        speedValue.className = 'analytics-value';
+        speedValue.className = 'analytics-panel__value';
         speedValue.id = 'simulation-speed';
         speedValue.textContent = `${this.gameManager.simulationSpeed} FPS`;
         speedItem.appendChild(speedValue);
@@ -366,15 +366,15 @@ class UIManager {
         
         // Add simulation state
         const stateItem = document.createElement('div');
-        stateItem.className = 'analytics-item';
+        stateItem.className = 'analytics-panel__item';
         
         const stateLabel = document.createElement('span');
-        stateLabel.className = 'analytics-label';
+        stateLabel.className = 'analytics-panel__label';
         stateLabel.textContent = 'State:';
         stateItem.appendChild(stateLabel);
         
         const stateValue = document.createElement('span');
-        stateValue.className = 'analytics-value';
+        stateValue.className = 'analytics-panel__value';
         stateValue.id = 'simulation-state';
         stateValue.textContent = this.gameManager.isSimulationRunning ? 'Running' : 'Paused';
         stateItem.appendChild(stateValue);
@@ -383,15 +383,15 @@ class UIManager {
         
         // Add boundary type
         const boundaryItem = document.createElement('div');
-        boundaryItem.className = 'analytics-item';
+        boundaryItem.className = 'analytics-panel__item';
         
         const boundaryLabel = document.createElement('span');
-        boundaryLabel.className = 'analytics-label';
+        boundaryLabel.className = 'analytics-panel__label';
         boundaryLabel.textContent = 'Boundary:';
         boundaryItem.appendChild(boundaryLabel);
         
         const boundaryValue = document.createElement('span');
-        boundaryValue.className = 'analytics-value';
+        boundaryValue.className = 'analytics-panel__value';
         boundaryValue.id = 'boundary-type';
         boundaryValue.textContent = this.gameManager.grid.boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
         boundaryItem.appendChild(boundaryValue);
