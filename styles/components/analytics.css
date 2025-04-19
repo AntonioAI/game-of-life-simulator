@@ -13,7 +13,7 @@
     width: 100%;
     max-width: 300px;
     order: 3; /* Position analytics on the right */
-    transition: box-shadow 0.3s ease;
+    /* Transition moved to utilities/animations.css as .transition-shadow */
 }
 
 .analytics-panel:hover {

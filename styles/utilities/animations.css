@@ -2,3 +2,54 @@
  * Game of Life Simulator - Animations
  * Animations and transitions
  */ 
+
+/* Basic transitions */
+.transition-standard {
+    transition: all 0.2s ease;
+}
+
+.transition-background {
+    transition: background-color 0.2s ease;
+}
+
+.transition-transform {
+    transition: transform 0.2s ease;
+}
+
+.transition-shadow {
+    transition: box-shadow 0.3s ease;
+}
+
+.transition-color {
+    transition: color 0.2s ease;
+}
+
+.transition-opacity {
+    transition: opacity 0.2s ease;
+}
+
+/* Touch ripple effect animation */
+@keyframes ripple-animation {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Slider thumb transitions */
+.slider-thumb-hover {
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+/* Button and control transitions */
+.button-hover {
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.border-transition {
+    transition: border-color 0.2s ease;
+} 

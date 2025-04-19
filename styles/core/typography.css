@@ -42,7 +42,7 @@ p {
 a {
     color: var(--primary-color);
     text-decoration: none;
-    transition: color 0.2s ease;
+    /* Transition moved to utilities/animations.css as .transition-color */
 }
 
 a:hover {
