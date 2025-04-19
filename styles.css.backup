@@ -1,0 +1,1209 @@
+/* 
+ * Game of Life Simulator - Styles
+ * Copyright (c) 2025 Antonio Innocente
+ */ 
+
+/* Back to Projects link */
+.back-to-projects {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 8px 12px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.back-to-projects:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Prevent tap highlight on iOS */
+}
+
+:root {
+    /* Main colors */
+    --primary-color: #1a73e8;
+    --primary-hover: #1557b0;
+    --secondary-color: #3c4043;
+    --background-color: #f0f4f8; /* Updated to a soft blue-gray */
+    --panel-background: #ffffff;
+    
+    /* Text colors */
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --text-light: #ffffff;
+    
+    /* Border and shadow */
+    --border-color: #dadce0;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background-color);
+    background-image: linear-gradient(135deg, #e6f0fb 0%, #dae6f3 50%, #c2d9f1 100%); /* Enhanced gradient for more visual pop */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    text-size-adjust: 100%; /* Prevent iOS font size adjustment */
+    -webkit-text-size-adjust: 100%; /* For older browsers */
+}
+
+/* Improve touch targets on mobile */
+.mobile-device button, 
+.mobile-device input, 
+.mobile-device select {
+    min-height: 44px; /* Apple's recommended minimum touch target size */
+    font-size: 16px; /* Prevent zoom on input focus in iOS */
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles */
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    word-wrap: break-word; /* Handle long titles better */
+}
+
+/* Instructions styles */
+.instructions {
+    background-color: var(--panel-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    transition: box-shadow 0.3s ease;
+}
+
+.instructions:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.instructions h2 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.instructions p {
+    margin-bottom: var(--spacing-md);
+}
+
+.instructions ol {
+    padding-left: 1.5rem;
+}
+
+.instructions li {
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Main content layout */
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: var(--panel-background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Added subtle border */
+    order: 2; /* Center the canvas in the flex layout */
+}
+
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--panel-background);
+}
+
+/* Sidebar layout */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: 300px;
+    order: 1; /* Position controls on the left */
+}
+
+/* Control panels container */
+.control-panels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+/* Control panel styles */
+.controls, .patterns, .analytics {
+    background-color: var(--panel-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    transition: box-shadow 0.3s ease; /* Added transition for hover effect */
+}
+
+.controls:hover, .patterns:hover, .analytics:hover {
+    box-shadow: var(--shadow-lg); /* Enhanced shadow on hover */
+}
+
+/* Patterns panel should span full width below Controls and Analytics */
+.patterns {
+    grid-column: 1 / -1;
+}
+
+.controls h2, .patterns h2, .analytics h2,
+.controls h3, .patterns h3, .analytics h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Control panel section styles for consistent formatting */
+.grid-settings, .boundary-setting, .simulation-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    padding: var(--spacing-sm);
+    background-color: #f8f9fa;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.grid-settings h3, .boundary-setting h3, .simulation-controls h3 {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Remove specific section margin styling to make gaps uniform */
+.boundary-setting {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.simulation-controls {
+    margin-top: 0;
+}
+
+/* Re-styling the speed control to match other sections */
+.speed-control {
+    margin-top: var(--spacing-sm);
+    width: 100%;
+}
+
+/* Analytics section */
+.analytics {
+    background-color: var(--panel-background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    width: 100%;
+    max-width: 300px;
+    order: 3; /* Position analytics on the right */
+}
+
+.analytics h3 {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.analytics-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.analytics-data {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.analytics-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.analytics-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-right: var(--spacing-md);
+}
+
+.analytics-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    text-align: right;
+    min-width: 60px;
+}
+
+/* Control button styles */
+.control-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Icon styling for consistent visual weight */
+.control-buttons .icon {
+    display: inline-block;
+    width: 14px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin: var(--spacing-xs) 0;
+}
+
+/* Footer styles */
+footer {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    color: #666;
+    width: 100%;
+    clear: both;
+    order: 5; /* Ensure it comes after pattern library in flex layout */
+}
+
+/* Responsive styles */
+@media screen and (min-width: 768px) {
+    main {
+        flex-direction: row;
+    }
+    
+    .canvas-container {
+        flex: 2;
+    }
+    
+    .sidebar, .analytics {
+        flex: 1;
+        max-width: 300px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    main {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .canvas-container {
+        order: 1;
+        margin-bottom: var(--spacing-md);
+        max-width: 100%;
+    }
+    
+    #game-canvas {
+        width: 100%;
+    }
+    
+    .sidebar {
+        order: 2;
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .analytics {
+        order: 3;
+        max-width: 100%;
+        width: 100%;
+        margin-top: var(--spacing-md);
+    }
+    
+    .control-buttons {
+        flex-wrap: wrap;
+    }
+    
+    .control-buttons button {
+        min-width: calc(50% - var(--spacing-sm));
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .patterns-container {
+        margin-top: var(--spacing-lg);
+    }
+    
+    .preset-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .preset-button {
+        flex: 1 0 calc(33.33% - var(--spacing-sm));
+        min-width: 70px;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .custom-size {
+        padding: var(--spacing-sm);
+    }
+    
+    .dimension-input {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .dimension-input label {
+        margin-bottom: var(--spacing-xs);
+        flex: none;
+        width: 100%;
+    }
+    
+    .dimension-input input {
+        width: 100%;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .control-panels {
+        grid-template-columns: 1fr;
+    }
+    
+    .patterns-container {
+        margin-top: var(--spacing-lg);
+    }
+    
+    .instructions {
+        padding: var(--spacing-md);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        padding: var(--spacing-sm);
+    }
+    
+    header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .controls, .patterns, .analytics {
+        padding: var(--spacing-md);
+    }
+    
+    .control-buttons {
+        flex-wrap: wrap;
+    }
+    
+    .custom-size {
+        flex-direction: column;
+    }
+    
+    .preset-buttons {
+        justify-content: center;
+    }
+    
+    .preset-buttons button {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .instructions {
+        padding: var(--spacing-sm);
+    }
+    
+    .instructions h2 {
+        font-size: 1.1rem;
+    }
+    
+    .instructions li {
+        font-size: 0.9rem;
+    }
+}
+
+/* Grid settings improvements */
+.grid-settings {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background-color: var(--panel-background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    gap: var(--spacing-md);
+}
+
+.grid-settings h3 {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+/* Preset buttons improvements */
+.preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.preset-button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px;
+    text-align: center;
+    font-weight: 500;
+    background-color: #f5f7fa;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    outline: none;
+}
+
+.preset-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.preset-button:active {
+    transform: translateY(1px);
+}
+
+/* Custom size improvements */
+.custom-size {
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f7fa;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+    gap: var(--spacing-md);
+    border: 1px solid var(--border-color);
+}
+
+.custom-size-heading {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.dimension-input {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    justify-content: space-between;
+}
+
+.dimension-input label {
+    flex: 0 0 80px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding-right: var(--spacing-sm);
+}
+
+.dimension-input input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background-color: white;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dimension-input input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+.primary-button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    margin-top: var(--spacing-sm);
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.primary-button:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.primary-button:active {
+    transform: translateY(1px);
+}
+
+/* Simulation controls improvements */
+.simulation-controls {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background-color: var(--panel-background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    gap: var(--spacing-md);
+}
+
+.simulation-controls h3 {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+.control-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.control-buttons button {
+    flex: 1;
+    min-width: 60px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f7fa;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.control-buttons button:hover {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.control-buttons button:active {
+    transform: translateY(1px);
+}
+
+.control-buttons .icon {
+    font-size: 1.2rem;
+}
+
+/* Boundary setting improvements */
+.boundary-setting {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background-color: var(--panel-background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    gap: var(--spacing-md);
+}
+
+.boundary-setting h3 {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+.select-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.select-dropdown label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.select-dropdown select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background-color: white;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235f6368' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+}
+
+.select-dropdown select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+/* Analytics improvements */
+.analytics {
+    order: 3;
+    width: 100%;
+    max-width: 300px;
+    padding: var(--spacing-md);
+    background-color: var(--panel-background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: box-shadow 0.3s ease;
+}
+
+.analytics h2 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.analytics-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.analytics-data {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.analytics-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.analytics-item:last-child {
+    border-bottom: none;
+}
+
+.analytics-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.analytics-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-align: right;
+}
+
+/* Speed control improvements */
+.speed-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.speed-control label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #d7d9db;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+/* Pattern Library improvements */
+.patterns {
+    margin-top: var(--spacing-lg);
+    width: 100%;
+    padding: var(--spacing-md);
+    background-color: var(--panel-background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: box-shadow 0.3s ease;
+}
+
+.patterns h2 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Pattern search input */
+.pattern-search {
+    margin-bottom: var(--spacing-md);
+    width: 100%;
+    position: relative;
+}
+
+.pattern-search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    color: var(--text-primary);
+    background-color: white;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pattern-search-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+.pattern-search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Add clear button for search field */
+.pattern-search:after {
+    content: "×";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.pattern-search.has-text:after {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Mobile enhancements for pattern search */
+@media screen and (max-width: 767px) {
+    .pattern-search-input {
+        padding: 10px 14px;
+        font-size: 16px; /* Prevent zooming on iOS */
+    }
+}
+
+/* Category description */
+.category-description {
+    margin: 0;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.4;
+    padding-left: var(--spacing-xs);
+    border-left: 2px solid var(--border-color);
+}
+
+/* Active pattern card styling */
+.pattern-card.active {
+    border-color: var(--primary-color);
+    background-color: rgba(26, 115, 232, 0.05);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.pattern-card.active .pattern-name {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Media queries for pattern library */
+@media screen and (max-width: 767px) {
+    .patterns-grid {
+        grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+        gap: var(--spacing-sm);
+    }
+
+    .pattern-gallery {
+        max-height: 350px;
+    }
+
+    .pattern-card canvas {
+        width: 75px;
+        height: 75px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .patterns-grid {
+        grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+        gap: var(--spacing-xs);
+    }
+    
+    .pattern-card canvas {
+        width: 65px;
+        height: 65px;
+    }
+
+    .pattern-name {
+        font-size: 0.7rem;
+    }
+    
+    .settings-description {
+        font-size: 0.8rem;
+    }
+    
+    .size-note {
+        font-size: 0.75rem;
+    }
+}
+
+/* Canvas active state */
+#game-canvas.canvas-active {
+    cursor: cell;
+}
+
+/* Touch ripple effect */
+.touch-ripple {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(26, 115, 232, 0.3);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    animation: ripple-animation 0.5s ease-out;
+}
+
+@keyframes ripple-animation {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Enhanced mobile interaction styles */
+@media (hover: none) and (pointer: coarse) {
+    #game-canvas {
+        touch-action: none;
+    }
+    
+    .control-buttons button,
+    .preset-button,
+    .primary-button {
+        min-height: 44px;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+        width: 22px;
+        height: 22px;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .dimension-input input,
+    .select-dropdown select {
+        height: 44px;
+    }
+}
+
+/* Pattern gallery styles */
+.pattern-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-height: 550px;
+    overflow-y: auto;
+    padding-right: var(--spacing-sm);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.pattern-gallery::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pattern-gallery::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.pattern-gallery::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 6px;
+}
+
+.pattern-category {
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pattern-category h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    padding-bottom: 5px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.patterns-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.pattern-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-xs);
+    background-color: var(--panel-background);
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.pattern-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+    background-color: #f8f9fa;
+}
+
+.pattern-card canvas {
+    margin-bottom: var(--spacing-xs);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+.pattern-name {
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--text-secondary);
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 var(--spacing-xs);
+}
+
+/* Settings description */
+.settings-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.4;
+}
+
+/* Size note */
+.size-note {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: var(--spacing-xs);
+    font-style: italic;
+}

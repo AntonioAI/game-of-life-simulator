@@ -1,0 +1,45 @@
+/* 
+ * Game of Life Simulator - Responsive Layout
+ * Media queries for responsive design
+ */ 
+
+@media screen and (min-width: 768px) {
+    main {
+        flex-direction: row;
+    }
+    
+    .canvas-container {
+        max-width: calc(100% - 320px);
+    }
+    
+    .sidebar, .analytics {
+        width: 300px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    main {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .canvas-container {
+        order: 1;
+        max-width: 100%;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    #game-canvas {
+        height: auto;
+    }
+    
+    .sidebar {
+        order: 2;
+        max-width: 100%;
+    }
+    
+    .analytics {
+        order: 3;
+        width: 100%;
+    }
+} 

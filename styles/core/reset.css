@@ -1,0 +1,40 @@
+/* 
+ * Game of Life Simulator - Reset
+ * Base reset and element defaults
+ */ 
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Prevent tap highlight on iOS */
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background-color);
+    background-image: linear-gradient(135deg, #e6f0fb 0%, #dae6f3 50%, #c2d9f1 100%); /* Enhanced gradient for more visual pop */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    text-size-adjust: 100%; /* Prevent iOS font size adjustment */
+    -webkit-text-size-adjust: 100%; /* For older browsers */
+}
+
+/* Improve touch targets on mobile */
+.mobile-device button, 
+.mobile-device input, 
+.mobile-device select {
+    min-height: 44px; /* Apple's recommended minimum touch target size */
+    font-size: 16px; /* Prevent zoom on input focus in iOS */
+} 

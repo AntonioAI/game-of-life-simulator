@@ -1,0 +1,25 @@
+/* 
+ * Game of Life Simulator - Main CSS
+ * Imports all CSS modules in the correct order
+ */
+
+/* Core styles first */
+@import 'core/variables.css';
+@import 'core/reset.css';
+@import 'core/typography.css';
+
+/* Layout styles next */
+@import 'layout/grid.css';
+
+/* Component styles */
+@import 'components/canvas.css';
+@import 'components/controls.css';
+@import 'components/analytics.css';
+@import 'components/patterns.css';
+
+/* Utilities */
+@import 'utilities/animations.css';
+@import 'utilities/helpers.css';
+
+/* Responsive styles last */
+@import 'layout/responsive.css'; 
