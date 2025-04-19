@@ -1,0 +1,61 @@
+/* ==========================================================================
+ * Game of Life Simulator - Canvas Component
+ * ==========================================================================
+ * Styling for the game's main canvas element and its container
+ * 
+ * CONTENTS:
+ * 1. Canvas Container
+ * 2. Canvas Element
+ * 3. Interactive States
+ * 4. Visual Effects
+ */
+
+/* ==========================================================================
+   1. Canvas Container - Wrapper for the main game canvas
+   ========================================================================== */
+.game-canvas__container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1; /* Maintain square ratio for the game grid */
+    background-color: var(--panel-background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden; /* Prevent cells from overflowing container */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Subtle container border */
+    order: 2; /* Position in the center of the flex layout */
+}
+
+/* ==========================================================================
+   2. Canvas Element - The actual game canvas
+   ========================================================================== */
+.game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--panel-background);
+}
+
+/* ==========================================================================
+   3. Interactive States - Cursor changes for interactive mode
+   ========================================================================== */
+.game-canvas--active {
+    cursor: pointer; /* Indicates the canvas is clickable */
+}
+
+/* ==========================================================================
+   4. Visual Effects - UI feedback for interactions
+   ========================================================================== */
+/* User interaction feedback */
+.touch-ripple {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(26, 115, 232, 0.3); /* Semi-transparent primary color */
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* Prevent ripple from interfering with clicks */
+    z-index: 9999;
+    animation: ripple-animation 0.5s ease-out;
+}
+
+/* Animation keyframes defined in utilities/animations.css */ 

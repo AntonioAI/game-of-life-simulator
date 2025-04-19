@@ -1,0 +1,203 @@
+/* 
+ * Game of Life Simulator - Typography
+ * Text styling and fonts
+ */
+
+/* Header styles */
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    word-wrap: break-word; /* Handle long titles better */
+}
+
+/* General typography */
+h2 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+}
+
+h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-secondary);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    /* Transition moved to utilities/animations.css as .transition-color */
+}
+
+a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Custom component typography */
+.back-to-projects {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.instructions-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+.instructions-panel p {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+}
+
+.instructions-panel p:last-child {
+    margin-bottom: 0;
+}
+
+.instructions-panel p strong {
+    font-weight: 600;
+}
+
+.instructions-panel li {
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.instructions-panel ol {
+    padding-left: 2rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.instructions-panel ol li {
+    margin-bottom: 0.5rem;
+    padding-left: 0;
+    line-height: 1.5;
+}
+
+.instructions-panel strong {
+    font-weight: 600;
+}
+
+/* Panel headings */
+.controls h2, .patterns h2, .analytics h2 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Section headings */
+.controls h3, .patterns h3, .analytics h3,
+.grid-settings h3, .boundary-setting h3, .simulation-controls h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Labels and values */
+.analytics-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.analytics-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+/* Button text */
+button {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.control-buttons .icon {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Form labels and inputs */
+.dimension-input label,
+.select-dropdown label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.dimension-input input,
+.select-dropdown select {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Custom component headings */
+.custom-size-heading {
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.pattern-name {
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Responsive typography */
+@media screen and (max-width: 767px) {
+    header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .preset-buttons button {
+        font-size: 0.7rem;
+    }
+    
+    /* Apply responsive typography to instruction panel */
+    .instructions-panel h2,
+    .instructions-title {
+        font-size: 1.1rem;
+    }
+    
+    .instructions-panel li {
+        font-size: 0.9rem;
+    }
+} 

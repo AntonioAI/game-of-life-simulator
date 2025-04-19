@@ -1,0 +1,53 @@
+/* ==========================================================================
+ * Game of Life Simulator - CSS Variables
+ * ==========================================================================
+ * Global CSS variables for consistent theming across the application
+ * 
+ * CONTENTS:
+ * 1. Colors (Primary, Secondary, Backgrounds)
+ * 2. Typography Colors
+ * 3. Border & Shadows
+ * 4. Spacing Scale
+ * 5. Border Radius Scale
+ */
+
+:root {
+    /* ==========================================================================
+       1. Colors - Primary palette and background colors
+       ========================================================================== */
+    --primary-color: #1a73e8;         /* Main accent color - buttons, links, highlights */
+    --primary-hover: #1557b0;         /* Hover/active state for primary elements */
+    --secondary-color: #3c4043;       /* Secondary accent color for UI elements */
+    --background-color: #f0f4f8;      /* Page background */
+    --panel-background: #ffffff;      /* Panel/card backgrounds */
+    
+    /* ==========================================================================
+       2. Typography Colors - Text color variations
+       ========================================================================== */
+    --text-primary: #202124;          /* Main text color */
+    --text-secondary: #5f6368;        /* Secondary text, captions, help text */
+    --text-light: #ffffff;            /* Text on dark backgrounds */
+    
+    /* ==========================================================================
+       3. Border & Shadows - For depth and separation
+       ========================================================================== */
+    --border-color: #dadce0;          /* Subtle borders between elements */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);  /* Subtle shadows */
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);   /* Medium shadows for cards */
+    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);   /* Prominent shadows for modals */
+    
+    /* ==========================================================================
+       4. Spacing Scale - Consistent spacing increments
+       ========================================================================== */
+    --spacing-xs: 0.25rem;            /* 4px - Minimal spacing, icons, tight UIs */
+    --spacing-sm: 0.5rem;             /* 8px - Default inner spacing */
+    --spacing-md: 1rem;               /* 16px - Standard spacing between components */
+    --spacing-lg: 1.5rem;             /* 24px - Large spacing, section separators */
+    
+    /* ==========================================================================
+       5. Border Radius Scale - For rounded corners
+       ========================================================================== */
+    --radius-sm: 4px;                 /* Buttons, input fields */
+    --radius-md: 8px;                 /* Cards, panels */
+    --radius-lg: 12px;                /* Large panels, modals */
+} 

@@ -1,0 +1,72 @@
+/* ==========================================================================
+ * Game of Life Simulator - Animations & Transitions
+ * ==========================================================================
+ * Reusable animation and transition effects for consistent UI interaction
+ * 
+ * CONTENTS:
+ * 1. Transition Classes
+ * 2. Keyframe Animations
+ * 3. UI Element Transitions
+ */
+
+/* ==========================================================================
+   1. Transition Classes - Reusable transition effects
+   ========================================================================== */
+/* All properties transition */
+.transition-standard {
+    transition: all 0.2s ease; /* Smooth transition for multiple properties */
+}
+
+/* Specific property transitions for better performance */
+.transition-background {
+    transition: background-color 0.2s ease; /* For button and link hovers */
+}
+
+.transition-transform {
+    transition: transform 0.2s ease; /* For scaling and movement animations */
+}
+
+.transition-shadow {
+    transition: box-shadow 0.3s ease; /* For elevation changes on hover */
+}
+
+.transition-color {
+    transition: color 0.2s ease; /* For text color changes */
+}
+
+.transition-opacity {
+    transition: opacity 0.2s ease; /* For fade effects */
+}
+
+/* ==========================================================================
+   2. Keyframe Animations - Defined animation sequences
+   ========================================================================== */
+/* Material design-inspired ripple effect */
+@keyframes ripple-animation {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
+   3. UI Element Transitions - Component-specific transitions
+   ========================================================================== */
+/* Slider thumb hover and active states */
+.slider-thumb-hover {
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+/* Button interaction transitions */
+.button-hover {
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Border color transitions for inputs */
+.border-transition {
+    transition: border-color 0.2s ease;
+} 

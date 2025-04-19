@@ -1,0 +1,62 @@
+/* 
+ * Game of Life Simulator - Analytics Component
+ * Analytics panel styling
+ */ 
+
+/* Analytics panel */
+.analytics-panel {
+    /* Use utility class instead of duplicate styles */
+    /* Panel basic styling applied via HTML class u-panel */
+    max-width: 300px;
+    order: 3; /* Position analytics on the right */
+}
+
+.analytics-panel:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Title using utility class via HTML */
+/* .analytics-panel__title - apply u-panel-title in HTML */
+
+.analytics-panel__content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.analytics-panel__data {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.analytics-panel__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.analytics-panel__item:last-child {
+    margin-bottom: 0;
+}
+
+.analytics-panel__label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-right: var(--spacing-md);
+}
+
+.analytics-panel__value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    text-align: right;
+    min-width: 60px;
+} 

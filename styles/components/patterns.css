@@ -1,0 +1,224 @@
+/* 
+ * Game of Life Simulator - Patterns Component
+ * Pattern library styling
+ */ 
+
+/* Pattern Library Panel */
+.pattern-library {
+    /* Panel basic styling applied via HTML class u-panel */
+    margin-top: var(--spacing-lg);
+    width: 100%;
+}
+
+.pattern-library:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Title styling applied via HTML class u-panel-title */
+/* .pattern-library__title styles removed */
+
+/* Pattern search */
+.pattern-library__search {
+    position: relative;
+    margin-bottom: var(--spacing-md);
+}
+
+.pattern-library__search-input {
+    width: 100%;
+    padding: 10px 14px;
+    padding-right: 35px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    /* Transition moved to utilities/animations.css as .transition-standard */
+}
+
+.pattern-library__search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.pattern-library__search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.pattern-library__search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.pattern-library__search-icon--clear {
+    display: none;
+}
+
+.pattern-library__search--has-text .pattern-library__search-icon--clear {
+    display: block;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+/* Category description */
+.pattern-library__category-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+    padding: var(--spacing-sm);
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--primary-color);
+}
+
+/* Pattern Gallery */
+.pattern-library__gallery {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.pattern-library__gallery::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pattern-library__gallery::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.pattern-library__gallery::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.pattern-library__category {
+    margin-bottom: var(--spacing-lg);
+}
+
+.pattern-library__category-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pattern-library__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.pattern-library__card {
+    background-color: var(--panel-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    /* Transition moved to utilities/animations.css as .transition-standard */
+}
+
+.pattern-library__card:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(26, 115, 232, 0.05);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+
+.pattern-library__card-canvas {
+    width: 100px;
+    height: 100px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.pattern-library__pattern-name {
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-top: var(--spacing-xs);
+    /* Transition moved to utilities/animations.css as .transition-color */
+}
+
+.pattern-library__card--active {
+    border-color: var(--primary-color);
+    background-color: rgba(26, 115, 232, 0.05);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.pattern-library__card--active .pattern-library__pattern-name {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Settings description and notes */
+.pattern-library__settings-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.pattern-library__size-note {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: var(--spacing-xs);
+}
+
+/* Media queries for pattern library */
+@media screen and (max-width: 767px) {
+    .pattern-library__grid {
+        grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+        gap: var(--spacing-sm);
+    }
+
+    .pattern-library__gallery {
+        max-height: 350px;
+    }
+
+    .pattern-library__card-canvas {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .pattern-library__search-input {
+        padding: 8px 12px;
+        padding-right: 30px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .pattern-library__grid {
+        grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+        gap: var(--spacing-xs);
+    }
+    
+    .pattern-library__card-canvas {
+        width: 65px;
+        height: 65px;
+    }
+
+    .pattern-library__pattern-name {
+        font-size: 0.7rem;
+    }
+    
+    .pattern-library__settings-description {
+        font-size: 0.8rem;
+    }
+    
+    .pattern-library__size-note {
+        font-size: 0.75rem;
+    }
+} 

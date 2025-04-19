@@ -1,0 +1,153 @@
+/* ==========================================================================
+ * Game of Life Simulator - Responsive Layout
+ * ==========================================================================
+ * Media queries and responsive adaptations for different screen sizes
+ *
+ * BREAKPOINTS:
+ * - Desktop: 768px and above
+ * - Tablet: 481px to 767px 
+ * - Mobile: 480px and below
+ *
+ * CONTENTS:
+ * 1. Desktop Layout (≥768px)
+ * 2. Tablet Layout (<768px)
+ * 3. Mobile Layout (≤480px)
+ */ 
+
+/* ==========================================================================
+   1. Desktop Layout - 768px and above
+   ========================================================================== */
+@media screen and (min-width: 768px) {
+    /* Full horizontal layout with sidebar and content in a row */
+    main {
+        flex-direction: row;
+    }
+    
+    /* Canvas takes up most of the width but allows space for panels */
+    .game-canvas__container {
+        max-width: calc(100% - 320px);
+    }
+    
+    /* Fixed width for side panels to ensure consistent UI */
+    .layout-sidebar, .analytics-panel {
+        width: 300px;
+    }
+}
+
+/* ==========================================================================
+   2. Tablet Layout - Below 768px (typical tablets and small laptops)
+   ========================================================================== */
+@media screen and (max-width: 767px) {
+    /* Stack layout elements vertically for better space usage */
+    main {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* Canvas moves to the top for better visibility */
+    .game-canvas__container {
+        order: 1;
+        max-width: 100%;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    /* Ensure canvas remains properly sized */
+    .game-canvas {
+        height: auto;
+    }
+    
+    /* Controls appear below the canvas */
+    .layout-sidebar {
+        order: 2;
+        max-width: 100%;
+    }
+    
+    /* Analytics panel displays last */
+    .analytics-panel {
+        order: 3;
+        width: 100%;
+    }
+    
+    /* Compact padding for instruction panel */
+    .instructions-container {
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .instructions-panel {
+        padding: var(--spacing-md);
+    }
+    
+    /* Optimize button layout for medium-sized screens */
+    .control-panel__buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .control-panel__button {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+    
+    .pattern-library {
+        padding: var(--spacing-sm);
+    }
+}
+
+/* ==========================================================================
+   3. Mobile Layout - 480px and below (smartphones)
+   ========================================================================== */
+@media screen and (max-width: 480px) {
+    /* Reduce padding to maximize usable space */
+    .layout-container {
+        padding: var(--spacing-sm);
+    }
+    
+    /* Smaller heading to avoid text wrapping */
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    /* Compact instruction heading */
+    .instructions-title {
+        font-size: 1.1rem;
+    }
+    
+    /* Tighter padding on all panels to maximize content space */
+    .instructions-panel {
+        padding: var(--spacing-sm);
+    }
+    
+    /* Slightly smaller text for better fit on narrow screens */
+    .instructions-panel ol {
+        padding-left: 1.5rem;
+    }
+    
+    .instructions-panel ol li {
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    /* Reduce panel padding for more content space */
+    .control-panel, .pattern-library, .analytics-panel {
+        padding: var(--spacing-sm);
+    }
+    
+    /* Optimize control buttons for very small screens */
+    .control-panel__buttons {
+        gap: var(--spacing-xs);
+    }
+    
+    /* Stack inputs vertically */
+    .control-panel__custom-size {
+        flex-direction: column;
+    }
+    
+    /* Stack preset buttons vertically */
+    .control-panel__preset-buttons {
+        flex-direction: column;
+    }
+    
+    /* Make preset buttons full width */
+    .control-panel__preset-button {
+        width: 100%;
+        margin-bottom: var(--spacing-xs);
+    }
+} 

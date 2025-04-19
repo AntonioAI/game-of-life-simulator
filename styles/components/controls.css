@@ -1,0 +1,377 @@
+/* 
+ * Game of Life Simulator - Controls Component
+ * Controls panel and buttons styling
+ */ 
+
+/* Control panel styles */
+.control-panel {
+    /* Panel basic styling applied via HTML class u-panel */
+    /* No redundant panel styles needed */
+}
+
+.control-panel:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Title styling applied via HTML class u-panel-title */
+/* .control-panel__title styles removed */
+
+/* Control panel section styles */
+.control-panel__section {
+    /* Panel section styling applied via HTML class u-panel-section */
+    /* No redundant panel section styles needed */
+}
+
+.control-panel__section-title {
+    /* Panel section title styling applied via HTML class u-panel-section-title */
+    /* No redundant panel section title styles needed */
+}
+
+.control-panel__description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+}
+
+/* Control buttons */
+.control-panel__buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.control-panel__button {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    /* Transition moved to utilities/animations.css as .transition-standard */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.control-panel__button:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+}
+
+.control-panel__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.control-panel__button-icon {
+    display: inline-block;
+    width: 14px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+/* Speed control */
+.control-panel__speed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    width: 100%;
+}
+
+.control-panel__speed-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.control-panel__speed-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #d7d9db;
+    outline: none;
+    cursor: pointer;
+    margin: var(--spacing-xs) 0;
+}
+
+.control-panel__speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    /* Transition moved to utilities/animations.css as .slider-thumb-hover */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.control-panel__speed-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    /* Transition moved to utilities/animations.css as .slider-thumb-hover */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.control-panel__speed-slider::-webkit-slider-thumb:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+.control-panel__speed-slider::-moz-range-thumb:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+/* Grid settings section - Professional redesign */
+.control-panel__grid-settings,
+.grid-settings,
+.boundary-setting {
+    background-color: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+}
+
+.control-panel__grid-settings:hover,
+.grid-settings:hover,
+.boundary-setting:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.u-panel-section-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Preset buttons - Clean, modern styling */
+.preset-buttons,
+.control-panel__preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.preset-button,
+.control-panel__preset-button {
+    padding: var(--spacing-sm);
+    background-color: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    height: 32px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preset-button:hover,
+.control-panel__preset-button:hover {
+    background-color: #f0f7ff;
+    border-color: var(--primary-color);
+}
+
+.preset-button:active,
+.control-panel__preset-button:active {
+    background-color: #e6f0fe;
+    transform: translateY(1px);
+}
+
+/* Custom size section - Clean, minimal styling */
+.custom-size,
+.control-panel__custom-size {
+    background-color: #f8f9fa;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.custom-size-heading,
+.control-panel__custom-size-heading {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+    position: relative;
+}
+
+.custom-size-heading::after,
+.control-panel__custom-size-heading::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background-color: var(--primary-color);
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.dimension-input,
+.control-panel__dimension-input {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.dimension-input label,
+.control-panel__dimension-label {
+    flex: 0 0 65px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.dimension-input input,
+.control-panel__dimension-input input {
+    flex: 1;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid #d1d5db;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    background-color: white;
+    transition: all 0.15s ease;
+    height: 32px;
+    min-width: 0; /* Prevents flex items from overflowing */
+    -moz-appearance: textfield; /* Removes spinner in Firefox */
+}
+
+/* Remove spinner buttons for Webkit browsers */
+.dimension-input input::-webkit-outer-spin-button,
+.dimension-input input::-webkit-inner-spin-button,
+.control-panel__dimension-input input::-webkit-outer-spin-button,
+.control-panel__dimension-input input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.dimension-input input:focus,
+.control-panel__dimension-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+.size-note {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: var(--spacing-sm) 0 var(--spacing-md);
+    text-align: center;
+    font-style: italic;
+}
+
+/* Apply button - Clean, prominent styling */
+.control-panel__apply-button,
+button.preset-apply {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-sm);
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    height: 36px;
+}
+
+.control-panel__apply-button:hover,
+button.preset-apply:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.control-panel__apply-button:active,
+button.preset-apply:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+/* Boundary section - Clean, minimal styling */
+.control-panel__boundary,
+.boundary-setting {
+    background-color: white;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    border: 1px solid var(--border-color);
+}
+
+.control-panel__select,
+.boundary-select {
+    margin-top: var(--spacing-xs);
+}
+
+.control-panel__select-label,
+.boundary-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.control-panel__select-dropdown,
+.boundary-dropdown {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid #d1d5db;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    background-color: white;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233c4043' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+    transition: all 0.15s ease;
+}
+
+.control-panel__select-dropdown:focus,
+.boundary-dropdown:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+.control-panel__select-dropdown:hover,
+.boundary-dropdown:hover {
+    border-color: #b8bec3;
+} 

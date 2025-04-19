@@ -1,0 +1,168 @@
+/* ==========================================================================
+ * Game of Life Simulator - Utility Helpers
+ * ==========================================================================
+ * Single-purpose utility classes using the "u-" prefix naming convention
+ * Each class does one thing well and can be composed with others
+ * 
+ * CONTENTS:
+ * 1. Visibility Utilities
+ * 2. Accessibility Utilities
+ * 3. Spacing Utilities
+ * 4. Flexbox Utilities
+ * 5. Text Alignment Utilities
+ * 6. Mobile Optimizations
+ * 7. Panel Component Utilities
+ */ 
+
+/* ==========================================================================
+   1. Visibility Utilities - Control element visibility
+   ========================================================================== */
+.u-hidden {
+    display: none !important; /* Removes element from layout flow */
+}
+
+.u-invisible {
+    visibility: hidden !important; /* Hides element but preserves space */
+}
+
+.u-visible {
+    visibility: visible !important; /* Explicitly makes element visible */
+}
+
+/* ==========================================================================
+   2. Accessibility Utilities - Support for assistive technology
+   ========================================================================== */
+.u-sr-only {
+    /* Visually hidden but available to screen readers */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ==========================================================================
+   3. Spacing Utilities - Consistent margin helpers
+   ========================================================================== */
+/* Top margins */
+.u-margin-top-xs {
+    margin-top: var(--spacing-xs) !important;
+}
+
+.u-margin-top-sm {
+    margin-top: var(--spacing-sm) !important;
+}
+
+.u-margin-top-md {
+    margin-top: var(--spacing-md) !important;
+}
+
+.u-margin-top-lg {
+    margin-top: var(--spacing-lg) !important;
+}
+
+/* Bottom margins */
+.u-margin-bottom-xs {
+    margin-bottom: var(--spacing-xs) !important;
+}
+
+.u-margin-bottom-sm {
+    margin-bottom: var(--spacing-sm) !important;
+}
+
+.u-margin-bottom-md {
+    margin-bottom: var(--spacing-md) !important;
+}
+
+.u-margin-bottom-lg {
+    margin-bottom: var(--spacing-lg) !important;
+}
+
+/* ==========================================================================
+   4. Flexbox Utilities - Layout helpers
+   ========================================================================== */
+.u-flex {
+    display: flex !important; /* Basic flexbox container */
+}
+
+.u-flex-column {
+    display: flex !important;
+    flex-direction: column !important; /* Vertical flexbox layout */
+}
+
+.u-flex-center {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important; /* Center content horizontally and vertically */
+}
+
+/* ==========================================================================
+   5. Text Alignment Utilities - Control text alignment
+   ========================================================================== */
+.u-text-center {
+    text-align: center !important;
+}
+
+.u-text-left {
+    text-align: left !important;
+}
+
+.u-text-right {
+    text-align: right !important;
+}
+
+/* ==========================================================================
+   6. Mobile Optimizations - Touch-friendly sizing
+   ========================================================================== */
+.u-mobile-touch-target {
+    min-height: 44px; /* Apple's recommended minimum touch target size */
+    font-size: 16px; /* Prevent zoom on input focus in iOS */
+} 
+
+/* ==========================================================================
+   7. Panel Component Utilities - Reusable panel styling
+   ========================================================================== */
+.u-panel {
+    background-color: var(--panel-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-lg);
+    transition: box-shadow 0.2s ease;
+}
+
+.u-panel:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.u-panel-title {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.u-panel-section {
+    width: 100%;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background-color: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.u-panel-section-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+} 

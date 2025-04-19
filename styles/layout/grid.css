@@ -1,0 +1,130 @@
+/* ==========================================================================
+ * Game of Life Simulator - Grid Layout System
+ * ==========================================================================
+ * Main page structure and layout containers
+ *
+ * CONTENTS:
+ * 1. Main Container
+ * 2. Content Layout
+ * 3. Sidebar
+ * 4. Instruction Panel
+ * 5. Header & Footer
+ * 6. Navigation Elements
+ */
+
+/* ==========================================================================
+   1. Main Container - Primary page wrapper
+   ========================================================================== */
+.layout-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   2. Content Layout - Main content area structure
+   ========================================================================== */
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+/* ==========================================================================
+   3. Sidebar - Controls sidebar container
+   ========================================================================== */
+.layout-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: 300px;
+    order: 1; /* Position controls on the left */
+}
+
+/* Note: Canvas container is defined in canvas.css to maintain component separation */
+
+/* ==========================================================================
+   4. Instruction Panel - Game instruction container and elements
+   ========================================================================== */
+.instructions-container {
+    margin-bottom: var(--spacing-lg);
+}
+
+.instructions-panel {
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-md);
+}
+
+.instructions-title {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.instructions-panel:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================================
+   5. Header & Footer - Top and bottom page elements
+   ========================================================================== */
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.patterns-container {
+    width: 100%;
+    margin-top: var(--spacing-lg);
+}
+
+footer {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    clear: both;
+    order: 5; /* Ensure it comes after pattern library in flex layout */
+}
+
+/* ==========================================================================
+   6. Navigation Elements - Links and navigation components
+   ========================================================================== */
+.back-to-projects {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 8px 12px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    /* Transition defined in utilities/animations.css as .transition-background */
+    z-index: 100; /* Ensure link stays above other content */
+    box-shadow: var(--shadow-sm);
+}
+
+.back-to-projects:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+} 
