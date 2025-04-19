@@ -21,9 +21,9 @@ class UIManager {
         this.controls = dependencies.controls || new Controls();
         
         // UI elements references
-        this.controlsContainer = document.querySelector('.controls');
-        this.analyticsContainer = document.querySelector('.analytics');
-        this.patternsContainer = document.querySelector('.patterns');
+        this.controlsContainer = document.querySelector('.control-panel');
+        this.analyticsContainer = document.querySelector('.analytics-panel');
+        this.patternsContainer = document.querySelector('.pattern-library');
     }
     
     /**
@@ -474,7 +474,7 @@ class UIManager {
             handleCanvasInteraction(event);
             
             // Add active class to canvas for visual feedback
-            canvas.classList.add('canvas-active');
+            canvas.classList.add('game-canvas--active');
         };
         
         // End interaction
@@ -483,7 +483,7 @@ class UIManager {
             lastToggledCell = { x: -1, y: -1 };
             
             // Remove active class from canvas
-            canvas.classList.remove('canvas-active');
+            canvas.classList.remove('game-canvas--active');
         };
         
         // Move interaction (for drag toggling)

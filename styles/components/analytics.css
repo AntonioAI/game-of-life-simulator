@@ -2,3 +2,72 @@
  * Game of Life Simulator - Analytics Component
  * Analytics panel styling
  */ 
+
+/* Analytics panel */
+.analytics-panel {
+    background-color: var(--panel-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    width: 100%;
+    max-width: 300px;
+    order: 3; /* Position analytics on the right */
+    transition: box-shadow 0.3s ease;
+}
+
+.analytics-panel:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.analytics-panel__title {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.analytics-panel__content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.analytics-panel__data {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.analytics-panel__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.analytics-panel__item:last-child {
+    margin-bottom: 0;
+}
+
+.analytics-panel__label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-right: var(--spacing-md);
+}
+
+.analytics-panel__value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    text-align: right;
+    min-width: 60px;
+} 

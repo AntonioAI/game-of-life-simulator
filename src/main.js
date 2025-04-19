@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the game
     const initialize = () => {
         // Get canvas element
-        const canvas = document.getElementById('game-canvas');
+        const canvas = document.querySelector('.game-canvas');
         if (!canvas) {
             console.error('Canvas element not found');
             return;
