@@ -5,29 +5,18 @@
 
 /* Analytics panel */
 .analytics-panel {
-    background-color: var(--panel-background);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    padding: var(--spacing-lg);
-    width: 100%;
+    /* Use utility class instead of duplicate styles */
+    /* Panel basic styling applied via HTML class u-panel */
     max-width: 300px;
     order: 3; /* Position analytics on the right */
-    /* Transition moved to utilities/animations.css as .transition-shadow */
 }
 
 .analytics-panel:hover {
     box-shadow: var(--shadow-lg);
 }
 
-.analytics-panel__title {
-    color: var(--text-primary);
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--border-color);
-}
+/* Title using utility class via HTML */
+/* .analytics-panel__title - apply u-panel-title in HTML */
 
 .analytics-panel__content {
     width: 100%;

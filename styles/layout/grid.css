@@ -33,18 +33,8 @@ main {
     order: 1; /* Position controls on the left */
 }
 
-/* Canvas container layout */
-.game-canvas__container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    background-color: var(--panel-background);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    order: 2; /* Center the canvas in the flex layout */
-}
+/* Canvas container layout - reference only, defined in canvas.css */
+/* Removed duplicate styles to avoid specificity issues and redundancy */
 
 /* Instructions layout */
 .instructions {

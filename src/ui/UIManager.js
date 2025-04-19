@@ -53,16 +53,17 @@ class UIManager {
      */
     createSimulationControls() {
         const simulationControls = document.createElement('div');
-        simulationControls.className = 'simulation-controls';
+        simulationControls.className = 'simulation-controls u-panel-section';
         
         // Title 
         const simulationTitle = document.createElement('h3');
+        simulationTitle.className = 'u-panel-section-title';
         simulationTitle.textContent = 'Simulation Controls';
         simulationControls.appendChild(simulationTitle);
         
         // Description for simulation controls
         const simulationDescription = document.createElement('p');
-        simulationDescription.className = 'settings-description';
+        simulationDescription.className = 'control-panel__description';
         simulationDescription.textContent = 'Control the simulation flow.';
         simulationControls.appendChild(simulationDescription);
         
@@ -109,16 +110,17 @@ class UIManager {
     createSettingsPanel() {
         // Create grid settings section
         const gridSettings = document.createElement('div');
-        gridSettings.className = 'grid-settings';
+        gridSettings.className = 'grid-settings u-panel-section';
         
         // Create title for this section
         const gridTitle = document.createElement('h3');
+        gridTitle.className = 'u-panel-section-title';
         gridTitle.textContent = 'Grid Dimensions';
         gridSettings.appendChild(gridTitle);
         
         // Create description text for better user guidance
         const gridDescription = document.createElement('p');
-        gridDescription.className = 'settings-description';
+        gridDescription.className = 'control-panel__description';
         gridDescription.textContent = 'Select a preset size or enter custom dimensions.';
         gridSettings.appendChild(gridDescription);
         
@@ -234,16 +236,17 @@ class UIManager {
     addBoundaryToggle() {
         // Create boundary setting section
         const boundarySettings = document.createElement('div');
-        boundarySettings.className = 'boundary-setting';
+        boundarySettings.className = 'boundary-setting u-panel-section';
         
         // Create title for this section
         const boundaryTitle = document.createElement('h3');
+        boundaryTitle.className = 'u-panel-section-title';
         boundaryTitle.textContent = 'Grid Boundary';
         boundarySettings.appendChild(boundaryTitle);
         
         // Create description for boundary type
         const boundaryDescription = document.createElement('p');
-        boundaryDescription.className = 'settings-description';
+        boundaryDescription.className = 'control-panel__description';
         boundaryDescription.textContent = 'Choose how cells behave at the grid edges.';
         boundarySettings.appendChild(boundaryDescription);
         

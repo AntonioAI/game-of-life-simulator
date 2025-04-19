@@ -5,28 +5,17 @@
 
 /* Pattern Library Panel */
 .pattern-library {
+    /* Panel basic styling applied via HTML class u-panel */
     margin-top: var(--spacing-lg);
     width: 100%;
-    padding: var(--spacing-md);
-    background-color: var(--panel-background);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-color);
-    /* Transition moved to utilities/animations.css as .transition-shadow */
 }
 
 .pattern-library:hover {
     box-shadow: var(--shadow-lg);
 }
 
-.pattern-library__title {
-    color: var(--text-primary);
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--border-color);
-}
+/* Title styling applied via HTML class u-panel-title */
+/* .pattern-library__title styles removed */
 
 /* Pattern search */
 .pattern-library__search {

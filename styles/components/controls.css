@@ -5,46 +5,26 @@
 
 /* Control panel styles */
 .control-panel {
-    background-color: var(--panel-background);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    padding: var(--spacing-lg);
-    /* Transition moved to utilities/animations.css as .transition-shadow */
+    /* Panel basic styling applied via HTML class u-panel */
+    /* No redundant panel styles needed */
 }
 
 .control-panel:hover {
     box-shadow: var(--shadow-lg);
 }
 
-.control-panel__title {
-    color: var(--text-primary);
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--border-color);
-}
+/* Title styling applied via HTML class u-panel-title */
+/* .control-panel__title styles removed */
 
 /* Control panel section styles */
 .control-panel__section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
-    padding: var(--spacing-sm);
-    background-color: #f8f9fa;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
+    /* Panel section styling applied via HTML class u-panel-section */
+    /* No redundant panel section styles needed */
 }
 
 .control-panel__section-title {
-    color: var(--secondary-color);
-    font-size: 1.1rem;
-    margin-bottom: var(--spacing-sm);
-    padding-bottom: var(--spacing-xs);
-    border-bottom: 1px solid var(--border-color);
+    /* Panel section title styling applied via HTML class u-panel-section-title */
+    /* No redundant panel section title styles needed */
 }
 
 .control-panel__description {
@@ -159,15 +139,8 @@
 
 /* Grid settings section */
 .control-panel__grid-settings {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
-    padding: var(--spacing-sm);
-    background-color: #f8f9fa;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
+    /* Panel section styling applied via HTML class u-panel-section */
+    /* No redundant panel section styles needed */
 }
 
 .control-panel__preset-buttons {
