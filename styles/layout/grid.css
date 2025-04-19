@@ -37,6 +37,33 @@ main {
 /* Removed duplicate styles to avoid specificity issues and redundancy */
 
 /* Instructions layout */
+.instructions-container {
+    margin-bottom: var(--spacing-lg);
+}
+
+.instructions-panel {
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-md);
+}
+
+.instructions-title {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.instructions-panel:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Old instructions class for backwards compatibility */
 .instructions {
     background-color: var(--panel-background);
     border: 1px solid var(--border-color);

@@ -58,6 +58,48 @@ a:hover {
     font-weight: 500;
 }
 
+.instructions-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+.instructions-panel p {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+}
+
+.instructions-panel p:last-child {
+    margin-bottom: 0;
+}
+
+.instructions-panel p strong {
+    font-weight: 600;
+}
+
+.instructions-panel li {
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.instructions-panel ol {
+    padding-left: 2rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.instructions-panel ol li {
+    margin-bottom: 0.5rem;
+    padding-left: 0;
+    line-height: 1.5;
+}
+
+.instructions-panel strong {
+    font-weight: 600;
+}
+
 .instructions h2 {
     font-size: 1.25rem;
     font-weight: 600;

@@ -43,6 +43,14 @@
         width: 100%;
     }
     
+    .instructions-container {
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .instructions-panel {
+        padding: var(--spacing-md);
+    }
+    
     .control-panel__buttons {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -64,6 +72,28 @@
     
     header h1 {
         font-size: 1.8rem;
+    }
+    
+    .instructions-title {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-xs);
+    }
+    
+    .instructions-panel {
+        padding: var(--spacing-sm);
+    }
+    
+    .instructions-panel p,
+    .instructions-panel li {
+        font-size: 0.9rem;
+    }
+    
+    .instructions-panel ol {
+        padding-left: 1.5rem;
+    }
+    
+    .instructions-panel ol li {
+        margin-bottom: var(--spacing-sm);
     }
     
     .control-panel, .pattern-library, .analytics-panel {
