@@ -173,10 +173,10 @@ class UIManager {
         rowsInput.min = '10';
         rowsInput.max = '200';
         rowsInput.value = this.gameManager.grid.rows;
-        // Add validation to prevent invalid input
-        rowsInput.addEventListener('input', () => {
+        // Add validation to prevent invalid input only when input is complete
+        rowsInput.addEventListener('change', () => {
             const value = parseInt(rowsInput.value);
-            if (value < 10) rowsInput.value = 10;
+            if (isNaN(value) || value < 10) rowsInput.value = 10;
             if (value > 200) rowsInput.value = 200;
         });
         rowsWrapper.appendChild(rowsInput);
@@ -198,10 +198,10 @@ class UIManager {
         colsInput.min = '10';
         colsInput.max = '200';
         colsInput.value = this.gameManager.grid.cols;
-        // Add validation to prevent invalid input
-        colsInput.addEventListener('input', () => {
+        // Add validation to prevent invalid input only when input is complete
+        colsInput.addEventListener('change', () => {
             const value = parseInt(colsInput.value);
-            if (value < 10) colsInput.value = 10;
+            if (isNaN(value) || value < 10) colsInput.value = 10;
             if (value > 200) colsInput.value = 200;
         });
         colsWrapper.appendChild(colsInput);
