@@ -21,8 +21,12 @@ class Renderer {
             cellSize: 10,
             gridColor: '#dddddd',
             cellColor: '#000000',
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            minCellSize: 10 // Minimum cell size for touch interaction
         };
+        
+        // Track if we're on a mobile device
+        this.isMobile = this.detectMobileDevice();
     }
     
     /**
@@ -42,10 +46,16 @@ class Renderer {
         if (!this.ctx) {
             throw new Error('Failed to get canvas context');
         }
+        
+        // Set up resize handler to adjust canvas when window size changes
+        window.addEventListener('resize', () => this.resizeCanvas());
+        
+        // Initial canvas resize
+        this.resizeCanvas();
     }
     
     /**
-     * Calculate cell size based on canvas dimensions and grid size
+     * Calculate cell size based on container dimensions and grid size
      * @param {number} rows - Number of rows in the grid
      * @param {number} cols - Number of columns in the grid
      * @returns {number} The calculated cell size
@@ -55,28 +65,84 @@ class Renderer {
             throw new Error('Canvas dependency is required');
         }
         
-        const smallestDimension = Math.min(this.canvas.width, this.canvas.height);
-        return Math.floor(smallestDimension / Math.max(rows, cols));
+        // Get canvas container dimensions instead of canvas itself
+        const container = this.canvas.parentElement;
+        if (!container) {
+            throw new Error('Canvas must have a parent container element');
+        }
+        
+        // Get dimensions from container instead of canvas
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        
+        // Use the smallest dimension to ensure the entire grid is visible
+        const smallestDimension = Math.min(containerWidth, containerHeight);
+        
+        // Calculate cell size, ensuring it's not smaller than the minimum
+        const calculatedSize = Math.floor(smallestDimension / Math.max(rows, cols));
+        return Math.max(calculatedSize, this.settings.minCellSize);
     }
     
     /**
-     * Adjust canvas dimensions for high-DPI displays
+     * Adjust canvas dimensions for device and DPI
+     * @param {Grid} grid - The grid object to adapt to
      * @returns {void}
      */
-    resizeCanvas() {
-        const pixelRatio = window.devicePixelRatio || 1;
-        if (pixelRatio > 1) {
-            const originalWidth = this.canvas.width;
-            const originalHeight = this.canvas.height;
-            
-            this.canvas.style.width = originalWidth + 'px';
-            this.canvas.style.height = originalHeight + 'px';
-            
-            this.canvas.width = originalWidth * pixelRatio;
-            this.canvas.height = originalHeight * pixelRatio;
-            
-            this.ctx.scale(pixelRatio, pixelRatio);
+    resizeCanvas(grid) {
+        if (!this.canvas) return;
+        
+        // Get the container dimensions
+        const container = this.canvas.parentElement;
+        if (!container) return;
+        
+        // Get container dimensions
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        
+        // Ensure we're working with integers to avoid subpixel rendering issues
+        const intContainerWidth = Math.floor(containerWidth);
+        const intContainerHeight = Math.floor(containerHeight);
+        
+        // Account for device pixel ratio for high-DPI displays
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Set canvas size in CSS pixels (this controls the display size)
+        this.canvas.style.width = `${intContainerWidth}px`;
+        this.canvas.style.height = `${intContainerHeight}px`;
+        
+        // Set actual canvas size accounting for DPI (this controls the drawing buffer size)
+        this.canvas.width = Math.floor(intContainerWidth * dpr);
+        this.canvas.height = Math.floor(intContainerHeight * dpr);
+        
+        // Reset any previous scaling
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        
+        // Scale context for high-DPI
+        this.ctx.scale(dpr, dpr);
+        
+        // Store these dimensions for reference
+        this.canvasCssWidth = intContainerWidth;
+        this.canvasCssHeight = intContainerHeight;
+        
+        // If we have a grid, recalculate cell size and redraw
+        if (grid) {
+            this.settings.cellSize = this.calculateCellSize(grid.rows, grid.cols);
+            this.drawGrid(grid);
         }
+    }
+    
+    /**
+     * Detect if running on a mobile device
+     * @returns {boolean} True if on a mobile device
+     */
+    detectMobileDevice() {
+        return (navigator.userAgent.match(/Android/i) ||
+                navigator.userAgent.match(/webOS/i) ||
+                navigator.userAgent.match(/iPhone/i) ||
+                navigator.userAgent.match(/iPad/i) ||
+                navigator.userAgent.match(/iPod/i) ||
+                navigator.userAgent.match(/BlackBerry/i) ||
+                navigator.userAgent.match(/Windows Phone/i));
     }
     
     /**
@@ -90,16 +156,22 @@ class Renderer {
             throw new Error('Canvas and context are required');
         }
         
-        // Clear the canvas
-        this.ctx.fillStyle = this.settings.backgroundColor;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // Get the CSS dimensions - this is what users see
+        const displayWidth = this.canvasCssWidth || this.canvas.clientWidth;
+        const displayHeight = this.canvasCssHeight || this.canvas.clientHeight;
         
-        // Calculate the offset to center the grid
+        // Clear the entire canvas with background color
+        this.ctx.fillStyle = this.settings.backgroundColor;
+        this.ctx.fillRect(0, 0, displayWidth, displayHeight);
+        
+        // Calculate the cell size and total grid dimensions
         const cellSize = this.settings.cellSize;
         const totalGridWidth = grid.cols * cellSize;
         const totalGridHeight = grid.rows * cellSize;
-        const offsetX = Math.floor((this.canvas.width - totalGridWidth) / 2);
-        const offsetY = Math.floor((this.canvas.height - totalGridHeight) / 2);
+        
+        // Calculate the offset to center the grid
+        const offsetX = Math.floor((displayWidth - totalGridWidth) / 2);
+        const offsetY = Math.floor((displayHeight - totalGridHeight) / 2);
         
         // Performance optimization: Use local variables to reduce property lookups
         const ctx = this.ctx;
@@ -136,18 +208,13 @@ class Renderer {
         // Draw all live cells
         ctx.fillStyle = this.settings.cellColor;
         
-        // Avoid creating closures inside the loop
-        const drawCell = (x, y) => {
-            const cellX = offsetX + (x * cellSize);
-            const cellY = offsetY + (y * cellSize);
-            ctx.fillRect(cellX, cellY, cellSize, cellSize);
-        };
-        
-        // Draw all live cells - removed duplicate code
+        // Draw all live cells using direct approach
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
                 if (gridData[y][x] === 1) {
-                    drawCell(x, y);
+                    const cellX = offsetX + (x * cellSize);
+                    const cellY = offsetY + (y * cellSize);
+                    ctx.fillRect(cellX, cellY, cellSize, cellSize);
                 }
             }
         }
@@ -174,6 +241,10 @@ class Renderer {
             if (event.touches && event.touches.length > 0) {
                 clientX = event.touches[0].clientX;
                 clientY = event.touches[0].clientY;
+            } else if (event.changedTouches && event.changedTouches.length > 0) {
+                // For touchend event, touches list is empty, use changedTouches
+                clientX = event.changedTouches[0].clientX;
+                clientY = event.changedTouches[0].clientY;
             } else {
                 return null; // No valid touch point
             }
@@ -182,23 +253,26 @@ class Renderer {
             clientY = event.clientY;
         }
         
-        // Calculate the scale ratio between the canvas's displayed size and its actual size
-        const scaleX = this.canvas.width / rect.width;
-        const scaleY = this.canvas.height / rect.height;
+        // Get the position within the canvas in CSS pixels
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        
+        // Get the current display dimensions
+        const displayWidth = this.canvasCssWidth || rect.width;
+        const displayHeight = this.canvasCssHeight || rect.height;
+        
+        // Calculate the cell size and total grid dimensions
+        const cellSize = this.settings.cellSize;
+        const totalGridWidth = grid.cols * cellSize;
+        const totalGridHeight = grid.rows * cellSize;
         
         // Calculate the offset to center the grid
-        const totalGridWidth = grid.cols * this.settings.cellSize;
-        const totalGridHeight = grid.rows * this.settings.cellSize;
-        const offsetX = (this.canvas.width - totalGridWidth) / 2;
-        const offsetY = (this.canvas.height - totalGridHeight) / 2;
+        const offsetX = (displayWidth - totalGridWidth) / 2;
+        const offsetY = (displayHeight - totalGridHeight) / 2;
         
-        // Get the position within the canvas, accounting for scaling and offset
-        const canvasX = (clientX - rect.left) * scaleX - offsetX;
-        const canvasY = (clientY - rect.top) * scaleY - offsetY;
-        
-        // Convert to grid coordinates
-        const gridX = Math.floor(canvasX / this.settings.cellSize);
-        const gridY = Math.floor(canvasY / this.settings.cellSize);
+        // Get grid coordinates, accounting for the offset
+        const gridX = Math.floor((x - offsetX) / cellSize);
+        const gridY = Math.floor((y - offsetY) / cellSize);
         
         // Validate grid coordinates are within bounds
         if (gridX < 0 || gridX >= grid.cols || gridY < 0 || gridY >= grid.rows) {

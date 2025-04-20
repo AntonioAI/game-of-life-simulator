@@ -477,6 +477,9 @@ class UIManager {
         let isInteracting = false;
         // Store the last cell toggled to avoid multiple toggles on the same cell
         let lastToggledCell = { x: -1, y: -1 };
+        // Track touch interactions to distinguish between taps and scrolls
+        let touchStartTime = 0;
+        let touchStartPosition = { x: 0, y: 0 };
         
         const handleCanvasInteraction = (event) => {
             // Prevent default behavior (like scrolling on mobile)
@@ -502,6 +505,18 @@ class UIManager {
         // Start interaction
         const startInteraction = (event) => {
             isInteracting = true;
+            
+            // For touch events, record start time and position for gesture detection
+            if (event.type === 'touchstart') {
+                touchStartTime = Date.now();
+                if (event.touches && event.touches.length > 0) {
+                    touchStartPosition = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY
+                    };
+                }
+            }
+            
             handleCanvasInteraction(event);
             
             // Add active class to canvas for visual feedback
@@ -509,9 +524,19 @@ class UIManager {
         };
         
         // End interaction
-        const endInteraction = () => {
+        const endInteraction = (event) => {
             isInteracting = false;
             lastToggledCell = { x: -1, y: -1 };
+            
+            // For touch events, check if it was a short tap
+            if (event && event.type === 'touchend') {
+                const touchDuration = Date.now() - touchStartTime;
+                
+                // If this was a quick tap (< 300ms), handle it as a toggle interaction
+                if (touchDuration < 300) {
+                    handleCanvasInteraction(event);
+                }
+            }
             
             // Remove active class from canvas
             canvas.classList.remove('game-canvas--active');
@@ -519,9 +544,24 @@ class UIManager {
         
         // Move interaction (for drag toggling)
         const moveInteraction = (event) => {
-            if (isInteracting) {
-                handleCanvasInteraction(event);
+            if (!isInteracting) return;
+            
+            // For touch moves, check if the user is trying to scroll
+            if (event.type === 'touchmove' && event.touches && event.touches.length > 0) {
+                const deltaX = Math.abs(event.touches[0].clientX - touchStartPosition.x);
+                const deltaY = Math.abs(event.touches[0].clientY - touchStartPosition.y);
+                
+                // If movement exceeds threshold, it might be a scroll - don't toggle cells
+                if (deltaX > 20 || deltaY > 20) {
+                    // If movement is more vertical than horizontal, let the page scroll
+                    if (deltaY > deltaX * 1.5) {
+                        return; // Allow vertical scrolling
+                    }
+                }
             }
+            
+            // Handle as a cell toggle
+            handleCanvasInteraction(event);
         };
         
         // Mouse events for desktop
@@ -529,7 +569,7 @@ class UIManager {
         document.addEventListener('mouseup', endInteraction);
         canvas.addEventListener('mousemove', moveInteraction);
         
-        // Touch events for mobile devices
+        // Touch events for mobile devices with improved handling
         canvas.addEventListener('touchstart', startInteraction, { passive: false });
         canvas.addEventListener('touchend', endInteraction, { passive: false });
         canvas.addEventListener('touchmove', moveInteraction, { passive: false });
