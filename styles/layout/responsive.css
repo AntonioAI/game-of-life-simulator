@@ -48,10 +48,12 @@
     .game-canvas__container {
         order: 1;
         max-width: 100%;
+        width: 100%;
         margin-bottom: var(--spacing-md);
+        max-height: 60vh; /* Limit height on tablet to ensure controls are visible */
     }
     
-    /* Ensure canvas remains properly sized */
+    /* Ensure canvas maintains aspect ratio */
     .game-canvas {
         height: auto;
     }
@@ -60,6 +62,7 @@
     .layout-sidebar {
         order: 2;
         max-width: 100%;
+        width: 100%;
     }
     
     /* Analytics panel displays last */
@@ -89,6 +92,18 @@
     
     .pattern-library {
         padding: var(--spacing-sm);
+    }
+    
+    /* Make controls more touch-friendly */
+    input[type="range"] {
+        height: 24px; /* Taller slider for easier grabbing */
+    }
+    
+    button, 
+    .preset-button, 
+    .preset-apply {
+        min-height: 44px; /* WCAG standard for touch targets */
+        padding: 12px 16px;
     }
 }
 
@@ -149,5 +164,36 @@
     .control-panel__preset-button {
         width: 100%;
         margin-bottom: var(--spacing-xs);
+    }
+    
+    /* Make the game canvas container take appropriate space */
+    .game-canvas__container {
+        max-height: 50vh; /* Limit height on mobile to ensure controls are visible */
+    }
+    
+    /* Ensure all touch targets meet accessibility standards */
+    button, 
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"],
+    .preset-button, 
+    .preset-apply {
+        min-height: 44px; /* WCAG requirement for touch targets */
+        min-width: 44px;
+        padding: 12px 16px;
+        font-size: 1rem; /* Ensure text is readable */
+    }
+    
+    /* Prevent double-tap zoom */
+    * {
+        touch-action: manipulation;
+    }
+    
+    /* Ensure inputs are large enough to tap easily */
+    input[type="text"],
+    input[type="number"],
+    select {
+        min-height: 44px;
+        font-size: 16px; /* iOS will zoom if font size is smaller than 16px */
     }
 } 

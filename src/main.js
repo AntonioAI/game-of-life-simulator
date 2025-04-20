@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
+        // Remove hardcoded dimensions to allow proper responsive sizing
+        canvas.removeAttribute('width');
+        canvas.removeAttribute('height');
+        
         // Initialize modules using dependency injection
         
         // Create rules instance
@@ -37,9 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create renderer with canvas dependency
         const renderer = new Renderer({ canvas });
         renderer.initialize();
-        
-        // Calculate cell size based on grid dimensions
-        renderer.settings.cellSize = renderer.calculateCellSize(grid.rows, grid.cols);
         
         // Create controls
         const controls = new Controls();
@@ -79,18 +80,50 @@ document.addEventListener('DOMContentLoaded', () => {
         // Place initial pattern (R-Pentomino)
         patternLibrary.placePatternInCenter('rpentomino', grid);
         
+        // Explicitly calculate cell size once patternLibrary is loaded
+        renderer.resizeCanvas(grid);
+        
         // Draw initial state
         renderer.drawGrid(grid);
         
         // Update analytics after everything is initialized
         uiManager.updateAnalytics();
         
-        // Add window resize handler for responsive behavior
+        // Track last known device pixel ratio to detect zoom changes
+        let lastDevicePixelRatio = window.devicePixelRatio || 1;
+        
+        // Add window resize handler for responsive behavior with debounce
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            // Recalculate dimensions and redraw
-            renderer.settings.cellSize = renderer.calculateCellSize(grid.rows, grid.cols);
-            renderer.drawGrid(grid);
+            // Debounce resize events to avoid excessive redraws
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Check if device pixel ratio changed (browser zoom)
+                const currentDpr = window.devicePixelRatio || 1;
+                if (currentDpr !== lastDevicePixelRatio) {
+                    lastDevicePixelRatio = currentDpr;
+                    console.log('Browser zoom changed, recalculating canvas dimensions');
+                }
+                
+                // Use the proper resizeCanvas method with grid parameter
+                renderer.resizeCanvas(grid);
+            }, 100);
         });
+        
+        // Add specific handler for zoom changes (mainly for Firefox)
+        window.addEventListener('wheel', (e) => {
+            if (e.ctrlKey) {
+                // This is likely a zoom event
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    const currentDpr = window.devicePixelRatio || 1;
+                    if (currentDpr !== lastDevicePixelRatio) {
+                        lastDevicePixelRatio = currentDpr;
+                        renderer.resizeCanvas(grid);
+                    }
+                }, 100);
+            }
+        }, { passive: false });
         
         console.log('=== Game of Life Simulator initialized ===');
     };
