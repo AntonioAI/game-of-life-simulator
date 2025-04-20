@@ -121,6 +121,7 @@
     button, 
     .preset-button, 
     .preset-apply {
+
         min-height: 56px; /* WCAG standard for touch targets */
         padding: 12px 16px;
     }
@@ -134,6 +135,7 @@
     .button-text {
         font-size: 0.75rem;
     }
+
 }
 
 /* ==========================================================================
@@ -217,12 +219,15 @@
     input[type="reset"],
     .preset-button, 
     .preset-apply {
+
         min-height: 56px; /* Increased from WCAG minimum requirement */
         min-width: 56px;
+
         padding: 12px 16px;
         font-size: 1rem; /* Ensure text is readable */
     }
     
+
     /* Make button icons larger for better visibility and touch */
     .button-icon-container {
         height: 32px;
@@ -240,6 +245,7 @@
         margin-top: 4px;
     }
     
+
     /* Prevent double-tap zoom */
     * {
         touch-action: manipulation;
