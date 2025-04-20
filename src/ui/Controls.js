@@ -22,11 +22,49 @@ class Controls {
      */
     createButton(icon, tooltip, clickHandler) {
         const button = document.createElement('button');
-        button.innerHTML = `<span class="icon">${icon}</span>`;
+        
+        // Create a container for the icon to ensure proper centering
+        const iconContainer = document.createElement('span');
+        iconContainer.className = 'button-icon-container';
+        iconContainer.innerHTML = `<span class="icon">${icon}</span>`;
+        
+        // Add both icon and text for better semantics and touch targets
+        const textContainer = document.createElement('span');
+        textContainer.className = 'button-text';
+        textContainer.textContent = tooltip;
+        
+        // Add to button
+        button.appendChild(iconContainer);
+        button.appendChild(textContainer);
+        
+        // Set tooltip
         button.title = tooltip;
         
+        // Add accessibility attributes
+        button.setAttribute('aria-label', tooltip);
+        button.setAttribute('role', 'button');
+        
+        // Add a class for mobile specific targeting
+        if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+            button.classList.add('touch-device-button');
+        }
+        
+        // Add an active class handler for visual feedback
+        button.addEventListener('touchstart', function() {
+            this.classList.add('button-active');
+        }, { passive: true });
+        
+        button.addEventListener('touchend', function() {
+            this.classList.remove('button-active');
+        }, { passive: true });
+        
+        // Add click handler
         if (clickHandler) {
-            button.addEventListener('click', clickHandler);
+            // Ensure the click handler works with both mouse and touch
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                clickHandler();
+            });
         }
         
         return button;
@@ -54,11 +92,20 @@ class Controls {
         speedSlider.max = maxSpeed.toString();
         speedSlider.value = initialSpeed.toString();
         
+        // Add ARIA attributes for accessibility
+        speedSlider.setAttribute('aria-valuemin', minSpeed.toString());
+        speedSlider.setAttribute('aria-valuemax', maxSpeed.toString());
+        speedSlider.setAttribute('aria-valuenow', initialSpeed.toString());
+        speedSlider.setAttribute('aria-label', 'Simulation Speed');
+        
         speedSlider.addEventListener('input', (e) => {
             const newSpeed = parseInt(e.target.value);
             
             // Update label
             speedLabel.textContent = `Speed: ${newSpeed} FPS`;
+            
+            // Update ARIA value for accessibility
+            speedSlider.setAttribute('aria-valuenow', newSpeed.toString());
             
             // Call the change handler
             if (changeHandler) {
