@@ -32,22 +32,6 @@
     .layout-sidebar, .analytics-panel {
         width: 300px;
     }
-    
-    /* Adjust button layout for desktop */
-    .control-panel__buttons {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    /* Desktop button styling */
-    button, 
-    .control-panel__button {
-        min-height: 50px;
-    }
-    
-    /* Show button text on desktop */
-    .button-text {
-        display: block;
-    }
 }
 
 /* ==========================================================================
@@ -98,15 +82,12 @@
     
     /* Optimize button layout for medium-sized screens */
     .control-panel__buttons {
-        grid-template-columns: repeat(4, 1fr);
-        gap: var(--spacing-sm);
+        grid-template-columns: repeat(2, 1fr);
     }
     
-    /* Adjust button size for tablet */
-    .control-panel__button,
-    button {
-        min-height: 70px;
-        padding: 12px 8px;
+    .control-panel__button {
+        padding: 10px;
+        font-size: 0.85rem;
     }
     
     .pattern-library {
@@ -121,21 +102,9 @@
     button, 
     .preset-button, 
     .preset-apply {
-
-        min-height: 56px; /* WCAG standard for touch targets */
+        min-height: 44px; /* WCAG standard for touch targets */
         padding: 12px 16px;
     }
-    
-    /* Ensure the icon is prominent */
-    .button-icon-container .icon {
-        font-size: 18px;
-    }
-    
-    /* Ensure text is readable but compact */
-    .button-text {
-        font-size: 0.75rem;
-    }
-
 }
 
 /* ==========================================================================
@@ -176,19 +145,9 @@
         padding: var(--spacing-sm);
     }
     
-    /* Optimize control buttons for very small screens - 2x2 grid */
+    /* Optimize control buttons for very small screens */
     .control-panel__buttons {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin-bottom: 16px;
-    }
-    
-    /* Make buttons larger and more touch-friendly */
-    .control-panel__button,
-    button {
-        min-height: 70px;
-        min-width: 100%;
-        padding: 12px 8px;
+        gap: var(--spacing-xs);
     }
     
     /* Stack inputs vertically */
@@ -219,33 +178,12 @@
     input[type="reset"],
     .preset-button, 
     .preset-apply {
-
-        min-height: 56px; /* Increased from WCAG minimum requirement */
-        min-width: 56px;
-
+        min-height: 44px; /* WCAG requirement for touch targets */
+        min-width: 44px;
         padding: 12px 16px;
         font-size: 1rem; /* Ensure text is readable */
     }
     
-
-    /* Make button icons larger for better visibility and touch */
-    .button-icon-container {
-        height: 32px;
-        margin-bottom: 6px;
-    }
-    
-    .button-icon-container .icon {
-        font-size: 22px;
-    }
-    
-    /* Ensure buttons with icons are properly laid out */
-    .button-text {
-        font-size: 0.85rem;
-        line-height: 1.1;
-        margin-top: 4px;
-    }
-    
-
     /* Prevent double-tap zoom */
     * {
         touch-action: manipulation;
