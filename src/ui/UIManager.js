@@ -6,6 +6,7 @@
 
 import Controls from './Controls.js';
 import eventBus, { Events } from '../core/EventBus.js';
+import config from '../config/GameConfig.js';
 
 /**
  * UIManager class for managing UI elements
@@ -198,7 +199,9 @@ class UIManager {
         
         // Speed control slider
         const speedControl = this.controls.createSpeedSlider(
-            1, 60, this.gameManager.simulationSpeed,
+            config.simulation.minSpeed,
+            config.simulation.maxSpeed,
+            this.gameManager.simulationSpeed,
             (speed) => this.gameManager.updateSimulationSpeed(speed)
         );
         simulationControls.appendChild(speedControl.container);
@@ -226,25 +229,18 @@ class UIManager {
         gridDescription.textContent = 'Select a preset size or enter custom dimensions.';
         gridSettings.appendChild(gridDescription);
         
-        // Create preset buttons with improved layout
+        // Create preset buttons with data from config
         const presetButtons = document.createElement('div');
         presetButtons.className = 'preset-buttons';
         
-        // Define preset configurations with descriptions
-        const presets = [
-            { text: '50×50', description: 'Small Grid', handler: () => this.resizeGrid(50, 50) },
-            { text: '75×75', description: 'Medium Grid', handler: () => this.resizeGrid(75, 75) },
-            { text: '100×100', description: 'Large Grid', handler: () => this.resizeGrid(100, 100) }
-        ];
-        
-        // Create buttons with improved styling
-        presets.forEach(preset => {
+        // Use preset sizes from config
+        config.ui.presetSizes.forEach(preset => {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'preset-button';
             button.title = preset.description;
-            button.textContent = preset.text;
-            button.addEventListener('click', preset.handler);
+            button.textContent = preset.name;
+            button.addEventListener('click', () => this.resizeGrid(preset.rows, preset.cols));
             presetButtons.appendChild(button);
         });
         
@@ -272,14 +268,14 @@ class UIManager {
         const rowsInput = document.createElement('input');
         rowsInput.id = 'rows-input';
         rowsInput.type = 'number';
-        rowsInput.min = '10';
-        rowsInput.max = '200';
+        rowsInput.min = String(config.grid.minSize);
+        rowsInput.max = String(config.grid.maxSize);
         rowsInput.value = this.gameManager.grid.rows;
         // Add validation to prevent invalid input only when input is complete
         rowsInput.addEventListener('change', () => {
             const value = parseInt(rowsInput.value);
-            if (isNaN(value) || value < 10) rowsInput.value = 10;
-            if (value > 200) rowsInput.value = 200;
+            if (isNaN(value) || value < config.grid.minSize) rowsInput.value = config.grid.minSize;
+            if (value > config.grid.maxSize) rowsInput.value = config.grid.maxSize;
         });
         rowsWrapper.appendChild(rowsInput);
         
@@ -297,14 +293,14 @@ class UIManager {
         const colsInput = document.createElement('input');
         colsInput.id = 'cols-input';
         colsInput.type = 'number';
-        colsInput.min = '10';
-        colsInput.max = '200';
+        colsInput.min = String(config.grid.minSize);
+        colsInput.max = String(config.grid.maxSize);
         colsInput.value = this.gameManager.grid.cols;
         // Add validation to prevent invalid input only when input is complete
         colsInput.addEventListener('change', () => {
             const value = parseInt(colsInput.value);
-            if (isNaN(value) || value < 10) colsInput.value = 10;
-            if (value > 200) colsInput.value = 200;
+            if (isNaN(value) || value < config.grid.minSize) colsInput.value = config.grid.minSize;
+            if (value > config.grid.maxSize) colsInput.value = config.grid.maxSize;
         });
         colsWrapper.appendChild(colsInput);
         
@@ -323,7 +319,7 @@ class UIManager {
         applyButton.addEventListener('click', () => {
             const rows = parseInt(rowsInput.value);
             const cols = parseInt(colsInput.value);
-            if (rows >= 10 && rows <= 200 && cols >= 10 && cols <= 200) {
+            if (rows >= config.grid.minSize && rows <= config.grid.maxSize && cols >= config.grid.minSize && cols <= config.grid.maxSize) {
                 this.resizeGrid(rows, cols);
             }
         });

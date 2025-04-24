@@ -7,6 +7,7 @@
 import animationManager from '../utils/AnimationManager.js';
 import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
 import eventBus, { Events } from './EventBus.js';
+import config from '../config/GameConfig.js';
 
 /**
  * GameManager class to orchestrate game flow
@@ -22,11 +23,11 @@ class GameManager {
         this.isSimulationRunning = false;
         this.simulationLoopId = null;
         this.lastFrameTime = 0;
-        this.simulationSpeed = 10;
+        this.simulationSpeed = config.simulation.defaultSpeed;
         this.generationCount = 0;
         
         // Performance optimizations
-        this.maxStepsPerFrame = 3;
+        this.maxStepsPerFrame = config.simulation.maxStepsPerFrame;
         this.updateAnalyticsEveryNSteps = 1;
         this.updateAnalyticsCounter = 0;
         this.isMobileDevice = this.detectMobileDevice();
@@ -98,7 +99,7 @@ class GameManager {
         } else if (totalCells > 5000) { // ~70x70 or larger
             this.maxStepsPerFrame = 2;
         } else {
-            this.maxStepsPerFrame = 3; // Default for small grids
+            this.maxStepsPerFrame = config.simulation.maxStepsPerFrame; // Use config value for small grids
         }
         
         // Adjust analytics update frequency too
@@ -213,14 +214,16 @@ class GameManager {
     
     /**
      * Update the simulation speed
-     * @param {number} newSpeed - The new speed in frames per second
+     * @param {number} newSpeed - The new speed in FPS
      */
     updateSimulationSpeed(newSpeed) {
-        this.simulationSpeed = newSpeed;
+        // Ensure the speed is within the valid range
+        this.simulationSpeed = Math.max(config.simulation.minSpeed, 
+                             Math.min(config.simulation.maxSpeed, newSpeed));
         
         // Publish the event that speed was updated
         eventBus.publish(Events.SPEED_UPDATED, {
-            speed: newSpeed
+            speed: this.simulationSpeed
         });
     }
     
@@ -255,7 +258,7 @@ class GameManager {
             // but limits the number of steps to prevent freezing with large grids
             const stepsToTake = Math.min(
                 Math.floor(elapsed / frameInterval),
-                this.maxStepsPerFrame
+                this.grid.rows > 80 ? 1 : this.maxStepsPerFrame
             );
             
             // Only process if we have steps to take

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game of Life Simulator - Animation Tests</title>
+    <title>Game of Life Simulator - Tests</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,7 +47,7 @@
     </style>
 </head>
 <body>
-    <h1>Game of Life Simulator - Animation Improvements Tests</h1>
+    <h1>Game of Life Simulator - Tests</h1>
     
     <div class="test-container">
         <h2>Animation Manager & Zoom Detector Tests</h2>
@@ -58,14 +58,24 @@
         <pre id="test-output"></pre>
     </div>
     
+    <div class="test-container">
+        <h2>Configuration Module Tests</h2>
+        <p>Click the button below to run tests for the Configuration module.</p>
+        <button id="run-config-tests">Run Config Tests</button>
+        <h3>Config Test Logs:</h3>
+        <pre id="config-test-output"></pre>
+    </div>
+    
     <script type="module">
         import animationManager from './src/utils/AnimationManager.js';
         import ZoomDetector from './src/utils/ZoomDetector.js';
         import './src/tests/AnimationFixTest.js';
+        import './src/tests/Config.test.js';
         
         // Redirect console.log to our output element
         const originalConsoleLog = console.log;
         const outputElement = document.getElementById('test-output');
+        const configOutputElement = document.getElementById('config-test-output');
         
         console.log = function(...args) {
             // Call the original console.log
@@ -76,23 +86,36 @@
                 typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
             ).join(' ');
             
-            outputElement.textContent += message + '\n';
+            // Decide where to output based on current test
+            const currentOutput = window.currentTestOutput || outputElement;
+            currentOutput.textContent += message + '\n';
             
             // Scroll to bottom
-            outputElement.scrollTop = outputElement.scrollHeight;
+            currentOutput.scrollTop = currentOutput.scrollHeight;
         };
         
         // Add event listeners
         document.getElementById('run-animation-tests').addEventListener('click', () => {
             outputElement.textContent = ''; // Clear previous output
+            window.currentTestOutput = outputElement;
             console.log('Starting animation tests...\n');
             
             // Run the tests
             window.runAnimationTests();
         });
         
+        document.getElementById('run-config-tests').addEventListener('click', () => {
+            configOutputElement.textContent = ''; // Clear previous output
+            window.currentTestOutput = configOutputElement;
+            console.log('Starting configuration tests...\n');
+            
+            // Import dynamically to rerun the tests
+            import('./src/tests/Config.test.js?v=' + Date.now());
+        });
+        
         document.getElementById('clear-logs').addEventListener('click', () => {
             outputElement.textContent = '';
+            configOutputElement.textContent = '';
         });
     </script>
 </body>

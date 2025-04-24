@@ -92,5 +92,9 @@ export const Events = {
     
     // User interaction events
     CELL_TOGGLED: 'cell.toggled',
-    PATTERN_SELECTED: 'pattern.selected'
+    PATTERN_SELECTED: 'pattern.selected',
+    
+    // Configuration events
+    CONFIG_UPDATED: 'config.updated',
+    RENDERING_CONFIG_UPDATED: 'config.rendering.updated'
 }; 

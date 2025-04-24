@@ -7,6 +7,7 @@
 import { calculateLivingNeighbors, createEmptyGrid, cloneGrid } from '../utils/GridUtils.js';
 import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
 import eventBus, { Events } from './EventBus.js';
+import config from '../config/GameConfig.js';
 
 /**
  * Grid class for managing grid state and operations
@@ -23,11 +24,10 @@ class Grid {
      */
     constructor(dependencies = {}, options = {}) {
         this.rules = dependencies.rules || null;
-        this.rows = options.rows || 50;
-        this.cols = options.cols || 50;
-        this.cellSize = 10;
+        this.rows = options.rows || config.grid.defaultRows;
+        this.cols = options.cols || config.grid.defaultCols;
+        this.boundaryType = options.boundaryType || config.grid.defaultBoundaryType;
         this.grid = [];
-        this.boundaryType = options.boundaryType || 'toroidal'; // 'toroidal' or 'finite'
         
         // Initialize grid with dead cells
         this.initialize();
@@ -234,21 +234,26 @@ class Grid {
     }
     
     /**
-     * Reset the grid size
+     * Resize the grid
      * @param {number} rows - New number of rows
      * @param {number} cols - New number of columns
+     * @returns {Array} The resized grid
      */
     resize(rows, cols) {
-        this.rows = rows;
-        this.cols = cols;
+        // Ensure the new size is within the allowed range
+        this.rows = Math.max(config.grid.minSize, Math.min(config.grid.maxSize, rows));
+        this.cols = Math.max(config.grid.minSize, Math.min(config.grid.maxSize, cols));
+        
+        // Initialize a new grid with the new size
         this.initialize();
         
-        // Publish the event that grid was resized
+        // Publish grid resized event
         eventBus.publish(Events.GRID_RESIZED, {
-            rows,
-            cols,
-            boundaryType: this.boundaryType
+            rows: this.rows,
+            cols: this.cols
         });
+        
+        return this.grid;
     }
     
     /**

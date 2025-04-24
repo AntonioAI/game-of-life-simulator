@@ -18,6 +18,7 @@ import performanceMonitor from './utils/PerformanceMonitor.js';
 import { isMobileDevice } from './utils/DeviceUtils.js';
 import errorHandler, { ErrorCategory } from './utils/ErrorHandler.js';
 import CanvasDebugger from './utils/CanvasDebugger.js';
+import ConfigPanel from './ui/ConfigPanel.js';
 
 // Set up global error handlers
 window.addEventListener('error', (event) => {
@@ -118,6 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
             componentRegistry.register('gameManager', gameManager);
             componentRegistry.register('uiManager', uiManager);
             componentRegistry.register('patternLibrary', patternLibrary);
+            
+            // Create and initialize the config panel
+            const configPanel = new ConfigPanel({
+                container: document.querySelector('.config-panel')
+            });
+            configPanel.initialize();
+            
+            // Register config panel with component registry
+            componentRegistry.register('configPanel', configPanel);
             
             // Initialize components
             gameManager.initialize();

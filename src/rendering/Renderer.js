@@ -8,6 +8,7 @@ import { isMobileDevice } from '../utils/DeviceUtils.js';
 import { resizeCanvas, resizeCanvasToContainer, addCanvasResizeListener } from '../utils/CanvasUtils.js';
 import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
 import eventBus, { Events } from '../core/EventBus.js';
+import config from '../config/GameConfig.js';
 
 /**
  * Renderer class for canvas operations
@@ -22,13 +23,8 @@ class Renderer {
         this.canvas = dependencies.canvas || null;
         this.ctx = this.canvas ? this.canvas.getContext('2d', { alpha: false }) : null; // Disable alpha for better performance
         
-        this.settings = {
-            cellSize: 10,
-            gridColor: '#dddddd',
-            cellColor: '#000000',
-            backgroundColor: '#ffffff',
-            minCellSize: 10 // Minimum cell size for touch interaction
-        };
+        // Use centralized configuration
+        this.settings = { ...config.rendering };
         
         // Track if we're on a mobile device
         this.isMobile = this.detectMobileDevice();
@@ -119,6 +115,13 @@ class Renderer {
                     this.settings.cellSize = this.calculateCellSize(data.rows, data.cols);
                     this.drawGrid(this.grid);
                 }
+            }),
+            
+            eventBus.subscribe(Events.RENDERING_CONFIG_UPDATED, (data) => {
+                this.updateSettings(data);
+                if (this.grid) {
+                    this.drawGrid(this.grid);
+                }
             })
         );
     }
@@ -157,7 +160,7 @@ class Renderer {
         
         // Calculate cell size, ensuring it's not smaller than the minimum
         const calculatedSize = Math.floor(smallestDimension / Math.max(rows, cols));
-        return Math.max(calculatedSize, this.settings.minCellSize);
+        return Math.max(calculatedSize, config.rendering.minCellSize);
     }
     
     /**
@@ -386,7 +389,7 @@ class Renderer {
     
     /**
      * Update renderer settings
-     * @param {Object} settings - New settings to apply
+     * @param {Object} settings - New settings
      */
     updateSettings(settings) {
         this.settings = { ...this.settings, ...settings };
