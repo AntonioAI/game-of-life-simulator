@@ -5,6 +5,7 @@
  */
 
 import { calculateLivingNeighbors, createEmptyGrid, cloneGrid } from '../utils/GridUtils.js';
+import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
 
 /**
  * Grid class for managing grid state and operations
@@ -54,6 +55,15 @@ class Grid {
             this.grid[y][x] = state === 1 ? 1 : 0;
             return true;
         }
+        
+        // Log the out-of-bounds attempt
+        errorHandler.warning(
+            `Attempted to set cell outside grid bounds: (${x}, ${y})`,
+            ErrorCategory.INPUT,
+            null,
+            { showUser: false } // Don't show to user, just log
+        );
+        
         return false;
     }
     
@@ -69,6 +79,15 @@ class Grid {
             this.grid[y][x] = this.grid[y][x] === 0 ? 1 : 0;
             return true;
         }
+        
+        // Log the out-of-bounds attempt
+        errorHandler.warning(
+            `Attempted to toggle cell outside grid bounds: (${x}, ${y})`,
+            ErrorCategory.INPUT,
+            null,
+            { showUser: false } // Don't show to user, just log
+        );
+        
         return false;
     }
     
@@ -93,7 +112,11 @@ class Grid {
     computeNextGeneration() {
         // Validate rules dependency
         if (!this.rules) {
-            throw new Error('Rules dependency is required');
+            errorHandler.error(
+                'Rules dependency is required for computing the next generation',
+                ErrorCategory.DEPENDENCY
+            );
+            return this.grid; // Return current grid state instead of throwing
         }
         
         // Create a new grid using utility function
@@ -140,6 +163,10 @@ class Grid {
      */
     placePattern(pattern, startX, startY) {
         if (!pattern || !Array.isArray(pattern)) {
+            errorHandler.error(
+                'Invalid pattern: Pattern must be a 2D array',
+                ErrorCategory.INPUT
+            );
             return false;
         }
         
@@ -150,6 +177,12 @@ class Grid {
         if (startX < 0 || startY < 0 || 
             startX + patternWidth > this.cols || 
             startY + patternHeight > this.rows) {
+            errorHandler.warning(
+                `Pattern does not fit at position (${startX}, ${startY})`,
+                ErrorCategory.INPUT,
+                null,
+                { showUser: true }
+            );
             return false;
         }
         
@@ -192,6 +225,13 @@ class Grid {
     setBoundaryType(type) {
         if (type === 'toroidal' || type === 'finite') {
             this.boundaryType = type;
+        } else {
+            errorHandler.warning(
+                `Invalid boundary type: ${type}. Using default.`,
+                ErrorCategory.INPUT,
+                null,
+                { showUser: false }
+            );
         }
     }
     

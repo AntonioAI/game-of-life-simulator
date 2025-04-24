@@ -5,6 +5,7 @@
  */
 
 import animationManager from '../utils/AnimationManager.js';
+import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
 
 /**
  * GameManager class to orchestrate game flow
@@ -54,10 +55,18 @@ class GameManager {
     initialize() {
         // Validate dependencies
         if (!this.grid) {
-            throw new Error('Grid dependency is required');
+            errorHandler.error(
+                'Grid dependency is required for game manager initialization',
+                ErrorCategory.DEPENDENCY
+            );
+            return; // Early return instead of throwing
         }
         if (!this.renderer) {
-            throw new Error('Renderer dependency is required');
+            errorHandler.error(
+                'Renderer dependency is required for game manager initialization',
+                ErrorCategory.DEPENDENCY
+            );
+            return; // Early return instead of throwing
         }
         
         // Set up high-DPI rendering
@@ -180,18 +189,26 @@ class GameManager {
      * Step the simulation forward one generation
      */
     stepSimulation() {
-        // Compute the next generation
-        this.grid.computeNextGeneration();
-        
-        // Redraw the grid
-        this.renderer.drawGrid(this.grid);
-        
-        // Update the generation count
-        this.generationCount++;
-        
-        // Update the analytics
-        if (this.uiManager) {
-            this.uiManager.updateAnalytics();
+        try {
+            // Compute the next generation
+            this.grid.computeNextGeneration();
+            
+            // Redraw the grid
+            this.renderer.drawGrid(this.grid);
+            
+            // Update the generation count
+            this.generationCount++;
+            
+            // Update the analytics
+            if (this.uiManager) {
+                this.uiManager.updateAnalytics();
+            }
+        } catch (err) {
+            errorHandler.error(
+                'Error during simulation step',
+                ErrorCategory.SIMULATION,
+                err
+            );
         }
     }
     
@@ -246,30 +263,39 @@ class GameManager {
             if (stepsToTake > 0) {
                 let shouldUpdateAnalytics = false;
                 
-                // For every step to take
-                for (let i = 0; i < stepsToTake; i++) {
-                    // Compute the next generation
-                    this.grid.computeNextGeneration();
-                    
-                    // Increment generation count
-                    this.generationCount++;
-                    
-                    // Increment analytics counter
-                    this.updateAnalyticsCounter++;
-                    
-                    // Check if we should update analytics this step
-                    if (this.updateAnalyticsCounter >= this.updateAnalyticsEveryNSteps) {
-                        shouldUpdateAnalytics = true;
-                        this.updateAnalyticsCounter = 0;
+                try {
+                    // For every step to take
+                    for (let i = 0; i < stepsToTake; i++) {
+                        // Compute the next generation
+                        this.grid.computeNextGeneration();
+                        
+                        // Increment generation count
+                        this.generationCount++;
+                        
+                        // Increment analytics counter
+                        this.updateAnalyticsCounter++;
+                        
+                        // Check if we should update analytics this step
+                        if (this.updateAnalyticsCounter >= this.updateAnalyticsEveryNSteps) {
+                            shouldUpdateAnalytics = true;
+                            this.updateAnalyticsCounter = 0;
+                        }
                     }
-                }
-                
-                // Optimize rendering: Only redraw once after all generations are computed
-                this.renderer.drawGrid(this.grid);
-                
-                // Update analytics only if needed (reduces DOM operations)
-                if (shouldUpdateAnalytics && this.uiManager) {
-                    this.uiManager.updateAnalytics();
+                    
+                    // Optimize rendering: Only redraw once after all generations are computed
+                    this.renderer.drawGrid(this.grid);
+                    
+                    // Update analytics only if needed (reduces DOM operations)
+                    if (shouldUpdateAnalytics && this.uiManager) {
+                        this.uiManager.updateAnalytics();
+                    }
+                } catch (err) {
+                    errorHandler.error(
+                        'Error during simulation loop',
+                        ErrorCategory.SIMULATION,
+                        err
+                    );
+                    this.pauseSimulation(); // Pause simulation on error
                 }
                 
                 // Update last frame time, accounting for any extra time

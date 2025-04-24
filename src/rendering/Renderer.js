@@ -6,6 +6,7 @@
 
 import { isMobileDevice } from '../utils/DeviceUtils.js';
 import { resizeCanvas, resizeCanvasToContainer, addCanvasResizeListener } from '../utils/CanvasUtils.js';
+import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
 
 /**
  * Renderer class for canvas operations
@@ -46,11 +47,19 @@ class Renderer {
         }
         
         if (!this.canvas) {
-            throw new Error('Canvas dependency is required');
+            errorHandler.error(
+                'Canvas dependency is required for renderer initialization',
+                ErrorCategory.DEPENDENCY
+            );
+            return; // Early return instead of throwing
         }
         
         if (!this.ctx) {
-            throw new Error('Failed to get canvas context');
+            errorHandler.error(
+                'Failed to get canvas context',
+                ErrorCategory.RENDERING
+            );
+            return; // Early return instead of throwing
         }
         
         // Set up the canvas context
@@ -76,13 +85,21 @@ class Renderer {
      */
     calculateCellSize(rows, cols) {
         if (!this.canvas) {
-            throw new Error('Canvas dependency is required');
+            errorHandler.error(
+                'Canvas dependency is required for calculating cell size',
+                ErrorCategory.DEPENDENCY
+            );
+            return this.settings.minCellSize; // Return minimum cell size as fallback
         }
         
         // Get canvas container dimensions instead of canvas itself
         const container = this.canvas.parentElement;
         if (!container) {
-            throw new Error('Canvas must have a parent container element');
+            errorHandler.error(
+                'Canvas must have a parent container element',
+                ErrorCategory.RENDERING
+            );
+            return this.settings.minCellSize; // Return minimum cell size as fallback
         }
         
         // Get dimensions from container instead of canvas
@@ -143,7 +160,11 @@ class Renderer {
     drawGrid(grid) {
         // Ensure canvas and context are available
         if (!this.canvas || !this.ctx) {
-            throw new Error('Canvas and context are required');
+            errorHandler.error(
+                'Canvas and context are required for drawing grid',
+                ErrorCategory.RENDERING
+            );
+            return; // Early return instead of throwing
         }
         
         // Get the CSS dimensions - this is what users see
@@ -217,6 +238,16 @@ class Renderer {
      * @returns {Object|null} The grid coordinates {x, y} or null if out of bounds
      */
     getCellCoordinates(event, grid) {
+        if (!this.canvas) {
+            errorHandler.error(
+                'Canvas is required for getting cell coordinates',
+                ErrorCategory.RENDERING,
+                null,
+                { showUser: false }
+            );
+            return null;
+        }
+        
         const rect = this.canvas.getBoundingClientRect();
         
         // Calculate position within canvas
