@@ -6,6 +6,7 @@
 
 import { calculateLivingNeighbors, createEmptyGrid, cloneGrid } from '../utils/GridUtils.js';
 import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
+import eventBus, { Events } from './EventBus.js';
 
 /**
  * Grid class for managing grid state and operations
@@ -39,6 +40,13 @@ class Grid {
     initialize() {
         // Use utility function to create empty grid
         this.grid = createEmptyGrid(this.rows, this.cols, 0);
+        
+        // Publish grid updated event
+        eventBus.publish(Events.GRID_UPDATED, {
+            rows: this.rows,
+            cols: this.cols
+        });
+        
         return this.grid;
     }
     
@@ -77,6 +85,14 @@ class Grid {
         if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
             // Toggle the cell state (0 to 1 or 1 to 0)
             this.grid[y][x] = this.grid[y][x] === 0 ? 1 : 0;
+            
+            // Publish the event that a cell was toggled
+            eventBus.publish(Events.CELL_TOGGLED, {
+                x,
+                y,
+                state: this.grid[y][x]
+            });
+            
             return true;
         }
         
@@ -143,6 +159,12 @@ class Grid {
         // Update the current grid with the new generation
         this.grid = nextGrid;
         
+        // Publish grid updated event
+        eventBus.publish(Events.GRID_UPDATED, {
+            rows: this.rows,
+            cols: this.cols
+        });
+        
         return this.grid;
     }
     
@@ -151,6 +173,13 @@ class Grid {
      */
     reset() {
         this.grid = createEmptyGrid(this.rows, this.cols, 0);
+        
+        // Publish grid updated event
+        eventBus.publish(Events.GRID_UPDATED, {
+            rows: this.rows, 
+            cols: this.cols
+        });
+        
         return this.grid;
     }
     
@@ -195,6 +224,12 @@ class Grid {
             }
         }
         
+        // Publish grid updated event
+        eventBus.publish(Events.GRID_UPDATED, {
+            rows: this.rows,
+            cols: this.cols
+        });
+        
         return true;
     }
     
@@ -207,6 +242,13 @@ class Grid {
         this.rows = rows;
         this.cols = cols;
         this.initialize();
+        
+        // Publish the event that grid was resized
+        eventBus.publish(Events.GRID_RESIZED, {
+            rows,
+            cols,
+            boundaryType: this.boundaryType
+        });
     }
     
     /**
@@ -225,6 +267,11 @@ class Grid {
     setBoundaryType(type) {
         if (type === 'toroidal' || type === 'finite') {
             this.boundaryType = type;
+            
+            // Publish the event that boundary type changed
+            eventBus.publish(Events.BOUNDARY_CHANGED, {
+                boundaryType: type
+            });
         } else {
             errorHandler.warning(
                 `Invalid boundary type: ${type}. Using default.`,

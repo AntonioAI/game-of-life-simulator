@@ -7,6 +7,7 @@
 import { isMobileDevice } from '../utils/DeviceUtils.js';
 import { resizeCanvas, resizeCanvasToContainer, addCanvasResizeListener } from '../utils/CanvasUtils.js';
 import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
+import eventBus, { Events } from '../core/EventBus.js';
 
 /**
  * Renderer class for canvas operations
@@ -32,8 +33,14 @@ class Renderer {
         // Track if we're on a mobile device
         this.isMobile = this.detectMobileDevice();
         
+        // Grid reference for redrawing
+        this.grid = null;
+        
         // Track cleanup functions
         this.cleanupFunctions = [];
+        
+        // Subscriptions to events
+        this.subscriptions = [];
     }
     
     /**
@@ -65,6 +72,16 @@ class Renderer {
         // Set up the canvas context
         this.ctx.imageSmoothingEnabled = false;
         
+        // Ensure canvas has dimensions
+        if (this.canvas.width === 0 || this.canvas.height === 0) {
+            console.log('Canvas has zero dimensions during initialization, setting default size');
+            const container = this.canvas.parentElement;
+            const width = container ? container.clientWidth || 800 : 800;
+            const height = container ? container.clientHeight || 600 : 600;
+            this.canvas.width = width;
+            this.canvas.height = height;
+        }
+        
         // Add resize listener
         this.cleanupFunctions.push(
             addCanvasResizeListener(this.canvas, {
@@ -72,6 +89,35 @@ class Renderer {
                     if (this.grid) {
                         this.drawGrid(this.grid);
                     }
+                }
+            })
+        );
+        
+        // Subscribe to grid events that require redrawing
+        this.subscriptions.push(
+            eventBus.subscribe(Events.CELL_TOGGLED, () => {
+                if (this.grid) {
+                    this.drawGrid(this.grid);
+                }
+            }),
+            
+            eventBus.subscribe(Events.GRID_UPDATED, () => {
+                if (this.grid) {
+                    this.drawGrid(this.grid);
+                }
+            }),
+            
+            eventBus.subscribe(Events.PATTERN_SELECTED, () => {
+                if (this.grid) {
+                    this.drawGrid(this.grid);
+                }
+            }),
+            
+            eventBus.subscribe(Events.GRID_RESIZED, (data) => {
+                if (this.grid) {
+                    // Calculate new cell size based on new dimensions
+                    this.settings.cellSize = this.calculateCellSize(data.rows, data.cols);
+                    this.drawGrid(this.grid);
                 }
             })
         );
@@ -116,11 +162,43 @@ class Renderer {
     
     /**
      * Adjust canvas dimensions
+     * @param {Grid} grid - The grid to draw after resize
      * @param {number} width - The width to set
      * @param {number} height - The height to set
      * @returns {boolean} True if canvas was resized successfully
      */
-    resizeCanvas(width, height) {
+    resizeCanvas(grid, width, height) {
+        // Store grid reference for future redraws
+        if (grid) {
+            this.grid = grid;
+        }
+        
+        // If dimensions are not provided, calculate based on container and grid
+        if (!width || !height) {
+            // Get the container dimensions
+            const container = this.canvas.parentElement;
+            if (container) {
+                width = container.clientWidth || 800; // Fallback to 800 if clientWidth is 0
+                height = container.clientHeight || 600; // Fallback to 600 if clientHeight is 0
+            } else {
+                // Default dimensions if no container
+                width = 800;
+                height = 600;
+            }
+        }
+        
+        // Ensure minimum dimensions
+        width = Math.max(width, 300);
+        height = Math.max(height, 300);
+        
+        // Log the dimensions for debugging
+        console.log(`Setting canvas dimensions to: ${width}x${height}`);
+        
+        // If we have a grid, calculate the cell size
+        if (this.grid) {
+            this.settings.cellSize = this.calculateCellSize(this.grid.rows, this.grid.cols);
+        }
+        
         return resizeCanvas(this.canvas, width, height, {
             afterResizeCallback: () => {
                 if (this.grid) {
@@ -158,6 +236,9 @@ class Renderer {
      * @returns {void}
      */
     drawGrid(grid) {
+        // Store grid reference for future redraws
+        this.grid = grid;
+        
         // Ensure canvas and context are available
         if (!this.canvas || !this.ctx) {
             errorHandler.error(
@@ -309,6 +390,28 @@ class Renderer {
      */
     updateSettings(settings) {
         this.settings = { ...this.settings, ...settings };
+    }
+    
+    /**
+     * Clean up resources
+     */
+    cleanup() {
+        // Call all cleanup functions
+        this.cleanupFunctions.forEach(cleanupFn => {
+            if (typeof cleanupFn === 'function') {
+                cleanupFn();
+            }
+        });
+        
+        // Unsubscribe from events
+        this.subscriptions.forEach(unsubscribe => {
+            if (typeof unsubscribe === 'function') {
+                unsubscribe();
+            }
+        });
+        
+        this.cleanupFunctions = [];
+        this.subscriptions = [];
     }
 }
 

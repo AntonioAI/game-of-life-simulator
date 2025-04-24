@@ -17,6 +17,7 @@ import animationManager from './utils/AnimationManager.js';
 import performanceMonitor from './utils/PerformanceMonitor.js';
 import { isMobileDevice } from './utils/DeviceUtils.js';
 import errorHandler, { ErrorCategory } from './utils/ErrorHandler.js';
+import CanvasDebugger from './utils/CanvasDebugger.js';
 
 // Set up global error handlers
 window.addEventListener('error', (event) => {
@@ -67,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         try {
+            console.log('Canvas found:', canvas);
+            
             // Remove hardcoded dimensions to allow proper responsive sizing
             canvas.removeAttribute('width');
             canvas.removeAttribute('height');
@@ -83,10 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 cols: isMobileDevice() ? 30 : 50, 
                 boundaryType: 'toroidal' 
             });
+            console.log('Grid initialized with dimensions:', grid.rows, 'x', grid.cols);
             
             // Create renderer with canvas dependency
             const renderer = new Renderer({ canvas });
             renderer.initialize();
+            console.log('Renderer initialized');
             
             // Create controls
             const controls = new Controls();
@@ -106,9 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameManager,
                 controls
             });
-            
-            // Connect UIManager to GameManager
-            gameManager.uiManager = uiManager;
             
             // Register components with the ComponentRegistry
             componentRegistry.register('grid', grid);
@@ -132,12 +134,29 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Place initial pattern (R-Pentomino)
             patternLibrary.placePatternInCenter('rpentomino', grid);
+            console.log('Initial pattern placed');
+            
+            // Explicitly set canvas dimensions before drawing
+            const container = canvas.parentElement;
+            const canvasWidth = container ? container.clientWidth : 800;
+            const canvasHeight = container ? container.clientHeight : 600;
+            
+            // Ensure the canvas has proper dimensions (not 0x0)
+            if (canvas.width === 0 || canvas.height === 0) {
+                console.log('Canvas has zero dimensions, explicitly setting size');
+                canvas.width = canvasWidth || 800;  // Fallback to 800 if width is 0
+                canvas.height = canvasHeight || 600;  // Fallback to 600 if height is 0
+            }
+            
+            console.log(`Initial canvas dimensions: ${canvas.width}x${canvas.height}`);
             
             // Explicitly calculate cell size once patternLibrary is loaded
-            renderer.resizeCanvas(grid);
+            renderer.resizeCanvas(grid, canvasWidth, canvasHeight);
+            console.log('Canvas resized to fit grid');
             
-            // Draw initial state
+            // Force a draw to make sure the grid is visible
             renderer.drawGrid(grid);
+            console.log('Grid drawn to canvas');
             
             // Update analytics after everything is initialized
             uiManager.updateAnalytics();
@@ -158,6 +177,23 @@ document.addEventListener('DOMContentLoaded', () => {
             // Register zoom detector with component registry
             componentRegistry.register('zoomDetector', zoomDetector);
             
+            // Make the debugger available globally for easy console access
+            window.__DEBUG__ = {
+                grid,
+                renderer,
+                gameManager,
+                uiManager,
+                patternLibrary,
+                debugger: CanvasDebugger,
+                runDiagnostics: () => {
+                    console.log('=== Running Canvas Diagnostics ===');
+                    CanvasDebugger.checkCanvas(canvas);
+                    CanvasDebugger.checkRenderer(renderer, grid);
+                    CanvasDebugger.forceRedraw(renderer, grid);
+                    console.log('=== Diagnostics Complete ===');
+                }
+            };
+            
             // Add window resize handler for responsive behavior with debounce
             let resizeTimeout;
             window.addEventListener('resize', () => {
@@ -166,6 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resizeTimeout = setTimeout(() => {
                     // Use the proper resizeCanvas method with grid parameter
                     renderer.resizeCanvas(grid);
+                    console.log('Canvas resized after window resize');
                 }, 200); // Longer debounce time
             }, { passive: true }); // Use passive listener for better performance
             

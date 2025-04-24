@@ -4,6 +4,8 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
+import eventBus, { Events } from '../core/EventBus.js';
+
 /**
  * PatternLibrary class for managing pattern definitions
  */
@@ -303,6 +305,12 @@ class PatternLibrary {
         
         // Place pattern at center
         this.placePattern(patternId, startX, startY, grid);
+        
+        // Publish the event that a pattern was selected
+        eventBus.publish(Events.PATTERN_SELECTED, {
+            patternId,
+            timestamp: performance.now()
+        });
     }
     
     /**

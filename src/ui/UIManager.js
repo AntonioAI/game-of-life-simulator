@@ -5,6 +5,7 @@
  */
 
 import Controls from './Controls.js';
+import eventBus, { Events } from '../core/EventBus.js';
 
 /**
  * UIManager class for managing UI elements
@@ -24,6 +25,9 @@ class UIManager {
         this.controlsContainer = document.querySelector('.control-panel');
         this.analyticsContainer = document.querySelector('.analytics-panel');
         this.patternsContainer = document.querySelector('.pattern-library');
+        
+        // Store event subscriptions for cleanup
+        this.subscriptions = [];
     }
     
     /**
@@ -46,6 +50,104 @@ class UIManager {
         this.addBoundaryToggle();
         this.createAnalyticsDisplay();
         this.setupCanvasInteractions(this.gameManager.renderer.canvas, this.gameManager.grid);
+        
+        // Subscribe to events
+        this.subscribeToEvents();
+    }
+    
+    /**
+     * Subscribe to events from EventBus
+     */
+    subscribeToEvents() {
+        // Subscribe to generation updated events to update analytics
+        this.subscriptions = [
+            eventBus.subscribe(Events.GENERATION_UPDATED, (data) => {
+                this.updateAnalytics();
+            }),
+            
+            eventBus.subscribe(Events.SIMULATION_STARTED, () => {
+                const stateElement = document.getElementById('simulation-state');
+                if (stateElement) {
+                    stateElement.textContent = 'Running';
+                }
+            }),
+            
+            eventBus.subscribe(Events.SIMULATION_PAUSED, () => {
+                const stateElement = document.getElementById('simulation-state');
+                if (stateElement) {
+                    stateElement.textContent = 'Paused';
+                }
+                // Force analytics update on pause to ensure accurate numbers
+                this.updateAnalytics();
+            }),
+            
+            eventBus.subscribe(Events.SIMULATION_RESET, () => {
+                this.updateAnalytics();
+            }),
+            
+            eventBus.subscribe(Events.SIMULATION_STEPPED, () => {
+                this.updateAnalytics();
+            }),
+            
+            eventBus.subscribe(Events.SPEED_UPDATED, (data) => {
+                const speedElement = document.getElementById('simulation-speed');
+                if (speedElement) {
+                    speedElement.textContent = `${data.speed} FPS`;
+                }
+            }),
+            
+            eventBus.subscribe(Events.GRID_RESIZED, (data) => {
+                // Update the input fields with new dimensions
+                const rowsInput = document.getElementById('rows-input');
+                const colsInput = document.getElementById('cols-input');
+                
+                if (rowsInput) {
+                    rowsInput.value = data.rows;
+                }
+                
+                if (colsInput) {
+                    colsInput.value = data.cols;
+                }
+                
+                this.updateAnalytics();
+            }),
+            
+            eventBus.subscribe(Events.BOUNDARY_CHANGED, (data) => {
+                // Update the boundary radio buttons
+                const boundaryRadios = document.querySelectorAll('input[name="boundary-type"]');
+                boundaryRadios.forEach(radio => {
+                    radio.checked = radio.value === data.boundaryType;
+                });
+                
+                // Update the boundary type display
+                const boundaryElement = document.getElementById('boundary-type');
+                if (boundaryElement) {
+                    boundaryElement.textContent = data.boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
+                }
+            }),
+            
+            eventBus.subscribe(Events.CELL_TOGGLED, () => {
+                this.updateAnalytics();
+            })
+        ];
+    }
+    
+    /**
+     * Unsubscribe from events
+     */
+    unsubscribeFromEvents() {
+        // Call all the unsubscribe functions
+        if (this.subscriptions) {
+            this.subscriptions.forEach(unsubscribe => unsubscribe());
+            this.subscriptions = [];
+        }
+    }
+    
+    /**
+     * Clean up resources
+     */
+    cleanup() {
+        this.unsubscribeFromEvents();
     }
     
     /**

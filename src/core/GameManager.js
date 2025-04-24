@@ -6,6 +6,7 @@
 
 import animationManager from '../utils/AnimationManager.js';
 import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
+import eventBus, { Events } from './EventBus.js';
 
 /**
  * GameManager class to orchestrate game flow
@@ -118,10 +119,10 @@ class GameManager {
         
         this.isSimulationRunning = true;
         
-        // Update the UI to show that the simulation is running
-        if (document.getElementById('simulation-state')) {
-            document.getElementById('simulation-state').textContent = 'Running';
-        }
+        // Publish the event that simulation started
+        eventBus.publish(Events.SIMULATION_STARTED, {
+            timestamp: performance.now()
+        });
         
         // Update maximum steps per frame (in case grid was resized)
         this.updateMaxStepsPerFrame();
@@ -152,15 +153,11 @@ class GameManager {
             animationManager.pause(this.simulationLoopId);
         }
         
-        // Update the UI to show that the simulation is paused
-        if (document.getElementById('simulation-state')) {
-            document.getElementById('simulation-state').textContent = 'Paused';
-        }
-        
-        // Force analytics update on pause to ensure accurate numbers
-        if (this.uiManager) {
-            this.uiManager.updateAnalytics();
-        }
+        // Publish the event that simulation paused
+        eventBus.publish(Events.SIMULATION_PAUSED, {
+            timestamp: performance.now(),
+            generationCount: this.generationCount
+        });
     }
     
     /**
@@ -179,10 +176,10 @@ class GameManager {
         // Redraw the grid
         this.renderer.drawGrid(this.grid);
         
-        // Update the analytics
-        if (this.uiManager) {
-            this.uiManager.updateAnalytics();
-        }
+        // Publish the event that simulation was reset
+        eventBus.publish(Events.SIMULATION_RESET, {
+            timestamp: performance.now()
+        });
     }
     
     /**
@@ -199,10 +196,12 @@ class GameManager {
             // Update the generation count
             this.generationCount++;
             
-            // Update the analytics
-            if (this.uiManager) {
-                this.uiManager.updateAnalytics();
-            }
+            // Publish the event that simulation stepped
+            eventBus.publish(Events.SIMULATION_STEPPED, {
+                timestamp: performance.now(),
+                generationCount: this.generationCount,
+                aliveCells: this.grid.getAliveCellsCount()
+            });
         } catch (err) {
             errorHandler.error(
                 'Error during simulation step',
@@ -219,10 +218,10 @@ class GameManager {
     updateSimulationSpeed(newSpeed) {
         this.simulationSpeed = newSpeed;
         
-        // Update the UI to show the new speed
-        if (document.getElementById('simulation-speed')) {
-            document.getElementById('simulation-speed').textContent = `${newSpeed} FPS`;
-        }
+        // Publish the event that speed was updated
+        eventBus.publish(Events.SPEED_UPDATED, {
+            speed: newSpeed
+        });
     }
     
     /**
@@ -285,9 +284,13 @@ class GameManager {
                     // Optimize rendering: Only redraw once after all generations are computed
                     this.renderer.drawGrid(this.grid);
                     
-                    // Update analytics only if needed (reduces DOM operations)
-                    if (shouldUpdateAnalytics && this.uiManager) {
-                        this.uiManager.updateAnalytics();
+                    // Publish generation updated event if needed
+                    if (shouldUpdateAnalytics) {
+                        eventBus.publish(Events.GENERATION_UPDATED, {
+                            timestamp: currentTime,
+                            generationCount: this.generationCount,
+                            aliveCells: this.grid.getAliveCellsCount()
+                        });
                     }
                 } catch (err) {
                     errorHandler.error(

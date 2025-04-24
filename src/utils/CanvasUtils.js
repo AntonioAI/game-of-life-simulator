@@ -15,11 +15,33 @@
  * @returns {boolean} - True if the canvas was resized successfully
  */
 function resizeCanvas(canvas, width, height, options = {}) {
-    if (!canvas) return false;
+    if (!canvas) {
+        console.error('No canvas provided to resizeCanvas');
+        return false;
+    }
+    
+    // Validate width and height are numbers and greater than 0
+    if (typeof width !== 'number' || typeof height !== 'number') {
+        console.error(`Invalid dimensions: width=${width}, height=${height}`);
+        return false;
+    }
+    
+    // Ensure dimensions are not zero or negative
+    if (width <= 0 || height <= 0) {
+        console.warn(`Invalid dimensions (${width}x${height}), using fallback values`);
+        width = width <= 0 ? 800 : width;
+        height = height <= 0 ? 600 : height;
+    }
     
     // Get canvas context
     const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) return false;
+    if (!ctx) {
+        console.error('Could not get 2D context from canvas');
+        return false;
+    }
+    
+    // Log the dimensions
+    console.log(`Setting canvas dimensions: ${width}x${height}`);
     
     // Set the canvas dimensions
     canvas.width = width;
@@ -52,8 +74,22 @@ function resizeCanvasToContainer(canvas, options = {}) {
     if (!container) return false;
     
     // Get container dimensions
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    let width = container.clientWidth;
+    let height = container.clientHeight;
+    
+    // Fallback to default values if dimensions are 0
+    if (width === 0) {
+        console.warn('Container width is 0, using fallback value of 800px');
+        width = 800;
+    }
+    
+    if (height === 0) {
+        console.warn('Container height is 0, using fallback value of 600px');
+        height = 600;
+    }
+    
+    // Log the dimensions we're setting
+    console.log(`Resizing canvas to container: ${width}x${height}`);
     
     return resizeCanvas(canvas, width, height, options);
 }
