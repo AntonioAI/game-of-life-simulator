@@ -15,17 +15,24 @@ import ZoomDetector from './utils/ZoomDetector.js';
 import componentRegistry from './utils/ComponentRegistry.js';
 import animationManager from './utils/AnimationManager.js';
 import performanceMonitor from './utils/PerformanceMonitor.js';
+import { isMobileDevice } from './utils/DeviceUtils.js';
 
 // Initialize the application when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('=== Starting Game of Life Simulator ===');
     
-    // Configure animation manager for performance
-    const isMobileDevice = window.matchMedia('(max-width: 768px)').matches || 
-                       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // Remove the old isMobileDevice detection
+    // const isMobileDevice = window.matchMedia('(max-width: 768px)').matches ||
+    //    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
+    // Detect if on mobile
+    if (isMobileDevice()) {
+        document.body.classList.add('mobile-device');
+    }
+    
+    // Configure animation manager for performance
     // Set throttling for mobile devices to reduce power consumption
-    if (isMobileDevice) {
+    if (isMobileDevice()) {
         animationManager.setThrottleInterval(16); // ~60fps max on mobile
     }
     
@@ -50,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Create grid with rules dependency
         const grid = new Grid({ rules }, { 
-            rows: isMobileDevice ? 30 : 50, 
-            cols: isMobileDevice ? 30 : 50, 
+            rows: isMobileDevice() ? 30 : 50, 
+            cols: isMobileDevice() ? 30 : 50, 
             boundaryType: 'toroidal' 
         });
         

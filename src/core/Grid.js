@@ -4,6 +4,8 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
+import { calculateLivingNeighbors, createEmptyGrid, cloneGrid } from '../utils/GridUtils.js';
+
 /**
  * Grid class for managing grid state and operations
  */
@@ -34,19 +36,8 @@ class Grid {
      * @returns {Array} The initialized grid
      */
     initialize() {
-        // Create a new grid
-        const newGrid = [];
-        for (let y = 0; y < this.rows; y++) {
-            const row = [];
-            for (let x = 0; x < this.cols; x++) {
-                row.push(0); // 0 = dead, 1 = alive
-            }
-            newGrid.push(row);
-        }
-        
-        // Update reference
-        this.grid = newGrid;
-        
+        // Use utility function to create empty grid
+        this.grid = createEmptyGrid(this.rows, this.cols, 0);
         return this.grid;
     }
     
@@ -88,39 +79,11 @@ class Grid {
      * @returns {number} The count of alive neighbors
      */
     countAliveNeighbors(x, y) {
-        let count = 0;
-        
-        // Check all 8 neighboring cells (horizontal, vertical, diagonal)
-        for (let dy = -1; dy <= 1; dy++) {
-            for (let dx = -1; dx <= 1; dx++) {
-                // Skip the cell itself
-                if (dx === 0 && dy === 0) continue;
-                
-                let nx, ny;
-                
-                if (this.boundaryType === 'toroidal') {
-                    // Toroidal wrapping (edges connect)
-                    nx = (x + dx + this.cols) % this.cols;
-                    ny = (y + dy + this.rows) % this.rows;
-                } else {
-                    // Finite grid (edges don't connect)
-                    nx = x + dx;
-                    ny = y + dy;
-                    
-                    // Skip if neighbor is outside grid boundaries
-                    if (nx < 0 || nx >= this.cols || ny < 0 || ny >= this.rows) {
-                        continue;
-                    }
-                }
-                
-                // Increment count if neighbor is alive
-                if (this.grid[ny][nx] === 1) {
-                    count++;
-                }
-            }
-        }
-        
-        return count;
+        return calculateLivingNeighbors(this.grid, y, x, {
+            boundaryType: this.boundaryType,
+            rows: this.rows,
+            cols: this.cols
+        });
     }
     
     /**
@@ -133,54 +96,20 @@ class Grid {
             throw new Error('Rules dependency is required');
         }
         
-        // Performance optimization: Pre-allocate new grid
-        const nextGrid = new Array(this.rows);
-        for (let y = 0; y < this.rows; y++) {
-            nextGrid[y] = new Array(this.cols);
-        }
+        // Create a new grid using utility function
+        const nextGrid = createEmptyGrid(this.rows, this.cols, 0);
         
         // Use local references to avoid property lookups in the loop
         const currentGrid = this.grid;
         const rows = this.rows;
         const cols = this.cols;
-        const boundaryType = this.boundaryType;
         const applyRules = this.rules.applyRules.bind(this.rules);
         
         // Compute next generation
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
-                // Calculate alive neighbors
-                let aliveNeighbors = 0;
-                
-                // Check all 8 neighboring cells
-                for (let dy = -1; dy <= 1; dy++) {
-                    for (let dx = -1; dx <= 1; dx++) {
-                        // Skip the cell itself
-                        if (dx === 0 && dy === 0) continue;
-                        
-                        let nx, ny;
-                        
-                        if (boundaryType === 'toroidal') {
-                            // Toroidal wrapping (edges connect)
-                            nx = (x + dx + cols) % cols;
-                            ny = (y + dy + rows) % rows;
-                        } else {
-                            // Finite grid (edges don't connect)
-                            nx = x + dx;
-                            ny = y + dy;
-                            
-                            // Skip if neighbor is outside grid boundaries
-                            if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) {
-                                continue;
-                            }
-                        }
-                        
-                        // Increment count if neighbor is alive
-                        if (currentGrid[ny][nx] === 1) {
-                            aliveNeighbors++;
-                        }
-                    }
-                }
+                // Calculate alive neighbors using utility function
+                const aliveNeighbors = this.countAliveNeighbors(x, y);
                 
                 // Apply rules and set the cell state in the next generation
                 const currentState = currentGrid[y][x];
@@ -198,11 +127,7 @@ class Grid {
      * Reset the grid (all cells set to dead)
      */
     reset() {
-        for (let y = 0; y < this.rows; y++) {
-            for (let x = 0; x < this.cols; x++) {
-                this.grid[y][x] = 0;
-            }
-        }
+        this.grid = createEmptyGrid(this.rows, this.cols, 0);
         return this.grid;
     }
     

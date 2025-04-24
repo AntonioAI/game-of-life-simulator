@@ -4,6 +4,9 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
+import { isMobileDevice } from '../utils/DeviceUtils.js';
+import { resizeCanvas, resizeCanvasToContainer, addCanvasResizeListener } from '../utils/CanvasUtils.js';
+
 /**
  * Renderer class for canvas operations
  */
@@ -27,6 +30,9 @@ class Renderer {
         
         // Track if we're on a mobile device
         this.isMobile = this.detectMobileDevice();
+        
+        // Track cleanup functions
+        this.cleanupFunctions = [];
     }
     
     /**
@@ -47,11 +53,19 @@ class Renderer {
             throw new Error('Failed to get canvas context');
         }
         
-        // Set up resize handler to adjust canvas when window size changes
-        window.addEventListener('resize', () => this.resizeCanvas());
+        // Set up the canvas context
+        this.ctx.imageSmoothingEnabled = false;
         
-        // Initial canvas resize
-        this.resizeCanvas();
+        // Add resize listener
+        this.cleanupFunctions.push(
+            addCanvasResizeListener(this.canvas, {
+                afterResizeCallback: () => {
+                    if (this.grid) {
+                        this.drawGrid(this.grid);
+                    }
+                }
+            })
+        );
     }
     
     /**
@@ -84,51 +98,33 @@ class Renderer {
     }
     
     /**
-     * Adjust canvas dimensions for device and DPI
-     * @param {Grid} grid - The grid object to adapt to
-     * @returns {void}
+     * Adjust canvas dimensions
+     * @param {number} width - The width to set
+     * @param {number} height - The height to set
+     * @returns {boolean} True if canvas was resized successfully
      */
-    resizeCanvas(grid) {
-        if (!this.canvas) return;
-        
-        // Get the container dimensions
-        const container = this.canvas.parentElement;
-        if (!container) return;
-        
-        // Get container dimensions
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-        
-        // Ensure we're working with integers to avoid subpixel rendering issues
-        const intContainerWidth = Math.floor(containerWidth);
-        const intContainerHeight = Math.floor(containerHeight);
-        
-        // Account for device pixel ratio for high-DPI displays
-        const dpr = window.devicePixelRatio || 1;
-        
-        // Set canvas size in CSS pixels (this controls the display size)
-        this.canvas.style.width = `${intContainerWidth}px`;
-        this.canvas.style.height = `${intContainerHeight}px`;
-        
-        // Set actual canvas size accounting for DPI (this controls the drawing buffer size)
-        this.canvas.width = Math.floor(intContainerWidth * dpr);
-        this.canvas.height = Math.floor(intContainerHeight * dpr);
-        
-        // Reset any previous scaling
-        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-        
-        // Scale context for high-DPI
-        this.ctx.scale(dpr, dpr);
-        
-        // Store these dimensions for reference
-        this.canvasCssWidth = intContainerWidth;
-        this.canvasCssHeight = intContainerHeight;
-        
-        // If we have a grid, recalculate cell size and redraw
-        if (grid) {
-            this.settings.cellSize = this.calculateCellSize(grid.rows, grid.cols);
-            this.drawGrid(grid);
-        }
+    resizeCanvas(width, height) {
+        return resizeCanvas(this.canvas, width, height, {
+            afterResizeCallback: () => {
+                if (this.grid) {
+                    this.drawGrid(this.grid);
+                }
+            }
+        });
+    }
+    
+    /**
+     * Resize canvas to fit its container
+     * @returns {boolean} True if canvas was resized successfully
+     */
+    resizeCanvasToContainer() {
+        return resizeCanvasToContainer(this.canvas, {
+            afterResizeCallback: () => {
+                if (this.grid) {
+                    this.drawGrid(this.grid);
+                }
+            }
+        });
     }
     
     /**
@@ -136,13 +132,7 @@ class Renderer {
      * @returns {boolean} True if on a mobile device
      */
     detectMobileDevice() {
-        return (navigator.userAgent.match(/Android/i) ||
-                navigator.userAgent.match(/webOS/i) ||
-                navigator.userAgent.match(/iPhone/i) ||
-                navigator.userAgent.match(/iPad/i) ||
-                navigator.userAgent.match(/iPod/i) ||
-                navigator.userAgent.match(/BlackBerry/i) ||
-                navigator.userAgent.match(/Windows Phone/i));
+        return isMobileDevice();
     }
     
     /**
