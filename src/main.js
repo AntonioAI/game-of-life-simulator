@@ -11,10 +11,23 @@ import Renderer from './rendering/Renderer.js';
 import UIManager from './ui/UIManager.js';
 import Controls from './ui/Controls.js';
 import PatternLibrary from './patterns/PatternLibrary.js';
+import ZoomDetector from './utils/ZoomDetector.js';
+import componentRegistry from './utils/ComponentRegistry.js';
+import animationManager from './utils/AnimationManager.js';
+import performanceMonitor from './utils/PerformanceMonitor.js';
 
 // Initialize the application when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('=== Starting Game of Life Simulator ===');
+    
+    // Configure animation manager for performance
+    const isMobileDevice = window.matchMedia('(max-width: 768px)').matches || 
+                       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Set throttling for mobile devices to reduce power consumption
+    if (isMobileDevice) {
+        animationManager.setThrottleInterval(16); // ~60fps max on mobile
+    }
     
     // Initialize the game
     const initialize = () => {
@@ -36,7 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
         rules.initialize();
         
         // Create grid with rules dependency
-        const grid = new Grid({ rules }, { rows: 50, cols: 50, boundaryType: 'toroidal' });
+        const grid = new Grid({ rules }, { 
+            rows: isMobileDevice ? 30 : 50, 
+            cols: isMobileDevice ? 30 : 50, 
+            boundaryType: 'toroidal' 
+        });
         
         // Create renderer with canvas dependency
         const renderer = new Renderer({ canvas });
@@ -64,6 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Connect UIManager to GameManager
         gameManager.uiManager = uiManager;
         
+        // Register components with the ComponentRegistry
+        componentRegistry.register('grid', grid);
+        componentRegistry.register('renderer', renderer);
+        componentRegistry.register('gameManager', gameManager);
+        componentRegistry.register('uiManager', uiManager);
+        componentRegistry.register('patternLibrary', patternLibrary);
+        
         // Initialize components
         gameManager.initialize();
         uiManager.initialize();
@@ -89,8 +113,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update analytics after everything is initialized
         uiManager.updateAnalytics();
         
-        // Track last known device pixel ratio to detect zoom changes
-        let lastDevicePixelRatio = window.devicePixelRatio || 1;
+        // Create zoom detector with optimized options
+        const zoomDetector = new ZoomDetector({
+            onZoomChange: (zoomInfo) => {
+                console.log(`Browser zoom changed: ${zoomInfo.oldDpr} -> ${zoomInfo.newDpr}`);
+                renderer.resizeCanvas(grid);
+            },
+            debounceTime: 200, // Longer debounce time to reduce processing
+            useMatchMedia: true // Prefer matchMedia for better performance
+        });
+        
+        // Start zoom detection
+        zoomDetector.startListening();
+        
+        // Register zoom detector with component registry
+        componentRegistry.register('zoomDetector', zoomDetector);
         
         // Add window resize handler for responsive behavior with debounce
         let resizeTimeout;
@@ -98,32 +135,23 @@ document.addEventListener('DOMContentLoaded', () => {
             // Debounce resize events to avoid excessive redraws
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                // Check if device pixel ratio changed (browser zoom)
-                const currentDpr = window.devicePixelRatio || 1;
-                if (currentDpr !== lastDevicePixelRatio) {
-                    lastDevicePixelRatio = currentDpr;
-                    console.log('Browser zoom changed, recalculating canvas dimensions');
-                }
-                
                 // Use the proper resizeCanvas method with grid parameter
                 renderer.resizeCanvas(grid);
-            }, 100);
-        });
+            }, 200); // Longer debounce time
+        }, { passive: true }); // Use passive listener for better performance
         
-        // Add specific handler for zoom changes (mainly for Firefox)
-        window.addEventListener('wheel', (e) => {
-            if (e.ctrlKey) {
-                // This is likely a zoom event
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    const currentDpr = window.devicePixelRatio || 1;
-                    if (currentDpr !== lastDevicePixelRatio) {
-                        lastDevicePixelRatio = currentDpr;
-                        renderer.resizeCanvas(grid);
-                    }
-                }, 100);
+        // Add performance monitoring toggle via keyboard shortcut (Alt+P)
+        window.addEventListener('keydown', (e) => {
+            if (e.altKey && e.key === 'p') {
+                if (performanceMonitor.isActive) {
+                    performanceMonitor.disable();
+                    console.log('Performance monitor disabled');
+                } else {
+                    performanceMonitor.enable(true);
+                    console.log('Performance monitor enabled (Alt+P to toggle)');
+                }
             }
-        }, { passive: false });
+        });
         
         console.log('=== Game of Life Simulator initialized ===');
     };

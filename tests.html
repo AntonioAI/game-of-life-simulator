@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life Simulator - Animation Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .test-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+            white-space: pre-wrap;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game of Life Simulator - Animation Improvements Tests</h1>
+    
+    <div class="test-container">
+        <h2>Animation Manager & Zoom Detector Tests</h2>
+        <p>Click the button below to run tests for the AnimationManager and ZoomDetector utilities.</p>
+        <button id="run-animation-tests">Run Animation Tests</button>
+        <button id="clear-logs">Clear Logs</button>
+        <h3>Test Logs:</h3>
+        <pre id="test-output"></pre>
+    </div>
+    
+    <script type="module">
+        import animationManager from './src/utils/AnimationManager.js';
+        import ZoomDetector from './src/utils/ZoomDetector.js';
+        import './src/tests/AnimationFixTest.js';
+        
+        // Redirect console.log to our output element
+        const originalConsoleLog = console.log;
+        const outputElement = document.getElementById('test-output');
+        
+        console.log = function(...args) {
+            // Call the original console.log
+            originalConsoleLog.apply(console, args);
+            
+            // Append to our output element
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            ).join(' ');
+            
+            outputElement.textContent += message + '\n';
+            
+            // Scroll to bottom
+            outputElement.scrollTop = outputElement.scrollHeight;
+        };
+        
+        // Add event listeners
+        document.getElementById('run-animation-tests').addEventListener('click', () => {
+            outputElement.textContent = ''; // Clear previous output
+            console.log('Starting animation tests...\n');
+            
+            // Run the tests
+            window.runAnimationTests();
+        });
+        
+        document.getElementById('clear-logs').addEventListener('click', () => {
+            outputElement.textContent = '';
+        });
+    </script>
+</body>
+</html> 

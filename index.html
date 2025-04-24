@@ -118,25 +118,6 @@
         // Run on load and resize
         window.addEventListener('resize', setVhProperty);
         setVhProperty();
-        
-        // Monitor for browser zoom changes
-        let lastPixelRatio = window.devicePixelRatio || 1;
-        
-        function checkForZoom() {
-            const currentPixelRatio = window.devicePixelRatio || 1;
-            
-            // If the pixel ratio has changed, the user likely zoomed
-            if (Math.abs(currentPixelRatio - lastPixelRatio) > 0.001) {
-                lastPixelRatio = currentPixelRatio;
-                window.dispatchEvent(new Event('resize'));
-            }
-            
-            // Continue checking
-            requestAnimationFrame(checkForZoom);
-        }
-        
-        // Start monitoring for zoom
-        checkForZoom();
     </script>
 </body>
 </html> 
