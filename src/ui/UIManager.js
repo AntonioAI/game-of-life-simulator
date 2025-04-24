@@ -19,8 +19,16 @@ class UIManager {
      * @param {Controls} dependencies.controls - The controls instance
      */
     constructor(dependencies = {}) {
-        this.gameManager = dependencies.gameManager || null;
-        this.controls = dependencies.controls || new Controls();
+        // Validate required dependencies
+        if (!dependencies.gameManager) {
+            throw new Error('GameManager dependency is required for UIManager');
+        }
+        if (!dependencies.controls) {
+            throw new Error('Controls dependency is required for UIManager');
+        }
+        
+        this.gameManager = dependencies.gameManager;
+        this.controls = dependencies.controls;
         
         // UI elements references
         this.controlsContainer = document.querySelector('.control-panel');

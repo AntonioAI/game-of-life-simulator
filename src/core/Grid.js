@@ -23,7 +23,12 @@ class Grid {
      * @param {string} options.boundaryType - Boundary type ('toroidal' or 'finite')
      */
     constructor(dependencies = {}, options = {}) {
-        this.rules = dependencies.rules || null;
+        // Validate required dependencies
+        if (!dependencies.rules) {
+            throw new Error('Rules dependency is required for Grid');
+        }
+        
+        this.rules = dependencies.rules;
         this.rows = options.rows || config.grid.defaultRows;
         this.cols = options.cols || config.grid.defaultCols;
         this.boundaryType = options.boundaryType || config.grid.defaultBoundaryType;
@@ -126,14 +131,7 @@ class Grid {
      * @returns {Array} The grid for the next generation
      */
     computeNextGeneration() {
-        // Validate rules dependency
-        if (!this.rules) {
-            errorHandler.error(
-                'Rules dependency is required for computing the next generation',
-                ErrorCategory.DEPENDENCY
-            );
-            return this.grid; // Return current grid state instead of throwing
-        }
+        // Rules dependency is already validated in the constructor
         
         // Create a new grid using utility function
         const nextGrid = createEmptyGrid(this.rows, this.cols, 0);

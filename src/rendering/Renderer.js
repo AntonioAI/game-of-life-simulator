@@ -20,8 +20,13 @@ class Renderer {
      * @param {HTMLCanvasElement} dependencies.canvas - The canvas element to render to
      */
     constructor(dependencies = {}) {
-        this.canvas = dependencies.canvas || null;
-        this.ctx = this.canvas ? this.canvas.getContext('2d', { alpha: false }) : null; // Disable alpha for better performance
+        // Validate required dependencies
+        if (!dependencies.canvas) {
+            throw new Error('Canvas dependency is required for Renderer');
+        }
+        
+        this.canvas = dependencies.canvas;
+        this.ctx = this.canvas.getContext('2d', { alpha: false }); // Disable alpha for better performance
         
         // Use centralized configuration
         this.settings = { ...config.rendering };
@@ -49,21 +54,7 @@ class Renderer {
             this.ctx = canvas.getContext('2d', { alpha: false });
         }
         
-        if (!this.canvas) {
-            errorHandler.error(
-                'Canvas dependency is required for renderer initialization',
-                ErrorCategory.DEPENDENCY
-            );
-            return; // Early return instead of throwing
-        }
-        
-        if (!this.ctx) {
-            errorHandler.error(
-                'Failed to get canvas context',
-                ErrorCategory.RENDERING
-            );
-            return; // Early return instead of throwing
-        }
+        // Canvas dependency is already validated in the constructor
         
         // Set up the canvas context
         this.ctx.imageSmoothingEnabled = false;

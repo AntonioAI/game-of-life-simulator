@@ -12,13 +12,16 @@ import UIManager from './ui/UIManager.js';
 import Controls from './ui/Controls.js';
 import PatternLibrary from './patterns/PatternLibrary.js';
 import ZoomDetector from './utils/ZoomDetector.js';
-import componentRegistry from './utils/ComponentRegistry.js';
 import animationManager from './utils/AnimationManager.js';
 import performanceMonitor from './utils/PerformanceMonitor.js';
 import { isMobileDevice } from './utils/DeviceUtils.js';
 import errorHandler, { ErrorCategory } from './utils/ErrorHandler.js';
 import CanvasDebugger from './utils/CanvasDebugger.js';
 import ConfigPanel from './ui/ConfigPanel.js';
+import DependencyContainer from './core/DependencyContainer.js';
+
+// Create a global application dependency container
+window.appContainer = new DependencyContainer();
 
 // Set up global error handlers
 window.addEventListener('error', (event) => {
@@ -75,59 +78,49 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.removeAttribute('width');
             canvas.removeAttribute('height');
             
-            // Initialize modules using dependency injection
+            // Get the dependency container
+            const dependencyContainer = window.appContainer;
             
-            // Create rules instance
-            const rules = new Rules();
+            // Register dependencies with the container
+            dependencyContainer.register('canvas', canvas, true); // Canvas as a singleton
+            dependencyContainer.register('rules', Rules, true); // Rules as a singleton
+            dependencyContainer.register('grid', Grid, true, ['rules']); // Grid depends on rules
+            dependencyContainer.register('renderer', Renderer, true, ['canvas']); // Renderer depends on canvas
+            dependencyContainer.register('controls', Controls, true); // Controls as a singleton
+            dependencyContainer.register('patternLibrary', PatternLibrary, true); // PatternLibrary as a singleton
+            dependencyContainer.register('gameManager', GameManager, true, ['grid', 'renderer']); // GameManager depends on grid and renderer
+            dependencyContainer.register('uiManager', UIManager, true, ['gameManager', 'controls']); // UIManager depends on gameManager and controls
+            dependencyContainer.register('configPanel', ConfigPanel, true); // ConfigPanel as a singleton
+            
+            // Resolve the main dependencies
+            const rules = dependencyContainer.resolve('rules');
             rules.initialize();
             
-            // Create grid with rules dependency
-            const grid = new Grid({ rules }, { 
-                rows: isMobileDevice() ? 30 : 50, 
-                cols: isMobileDevice() ? 30 : 50, 
-                boundaryType: 'toroidal' 
-            });
-            console.log('Grid initialized with dimensions:', grid.rows, 'x', grid.cols);
+            const grid = dependencyContainer.resolve('grid');
+            // Set grid options
+            grid.rows = isMobileDevice() ? 30 : 50;
+            grid.cols = isMobileDevice() ? 30 : 50;
+            grid.boundaryType = 'toroidal';
             
-            // Create renderer with canvas dependency
-            const renderer = new Renderer({ canvas });
+            const renderer = dependencyContainer.resolve('renderer');
             renderer.initialize();
             console.log('Renderer initialized');
             
-            // Create controls
-            const controls = new Controls();
+            const controls = dependencyContainer.resolve('controls');
             
-            // Create pattern library
-            const patternLibrary = new PatternLibrary();
+            const patternLibrary = dependencyContainer.resolve('patternLibrary');
             patternLibrary.initialize();
             
-            // Create game manager with grid and renderer dependencies
-            const gameManager = new GameManager({
-                grid,
-                renderer
-            });
+            const gameManager = dependencyContainer.resolve('gameManager');
             
-            // Create UI manager with dependencies
-            const uiManager = new UIManager({
-                gameManager,
-                controls
-            });
+            const uiManager = dependencyContainer.resolve('uiManager');
             
-            // Register components with the ComponentRegistry
-            componentRegistry.register('grid', grid);
-            componentRegistry.register('renderer', renderer);
-            componentRegistry.register('gameManager', gameManager);
-            componentRegistry.register('uiManager', uiManager);
-            componentRegistry.register('patternLibrary', patternLibrary);
+            // Connect UIManager to GameManager (circular dependency handled outside container)
+            gameManager.uiManager = uiManager;
             
             // Create and initialize the config panel
-            const configPanel = new ConfigPanel({
-                container: document.querySelector('.config-panel')
-            });
+            const configPanel = dependencyContainer.resolve('configPanel');
             configPanel.initialize();
-            
-            // Register config panel with component registry
-            componentRegistry.register('configPanel', configPanel);
             
             // Initialize components
             gameManager.initialize();
@@ -147,9 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Initial pattern placed');
             
             // Explicitly set canvas dimensions before drawing
-            const container = canvas.parentElement;
-            const canvasWidth = container ? container.clientWidth : 800;
-            const canvasHeight = container ? container.clientHeight : 600;
+            const canvasContainer = canvas.parentElement;
+            const canvasWidth = canvasContainer ? canvasContainer.clientWidth : 800;
+            const canvasHeight = canvasContainer ? canvasContainer.clientHeight : 600;
             
             // Ensure the canvas has proper dimensions (not 0x0)
             if (canvas.width === 0 || canvas.height === 0) {
@@ -184,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Start zoom detection
             zoomDetector.startListening();
             
-            // Register zoom detector with component registry
-            componentRegistry.register('zoomDetector', zoomDetector);
+            // Register the zoom detector with the container
+            dependencyContainer.register('zoomDetector', zoomDetector, true);
             
             // Make the debugger available globally for easy console access
             window.__DEBUG__ = {

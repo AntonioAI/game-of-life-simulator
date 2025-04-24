@@ -6,10 +6,11 @@
 function testErrorHandling() {
   console.log('=== Starting Error Handler Tests ===');
   
-  // Get components from registry
-  const grid = componentRegistry.get('grid');
-  const renderer = componentRegistry.get('renderer');
-  const gameManager = componentRegistry.get('gameManager');
+  // Get components from the dependency container
+  const dependencyContainer = window.appContainer;
+  const grid = dependencyContainer.getSingleton('grid');
+  const renderer = dependencyContainer.getSingleton('renderer');
+  const gameManager = dependencyContainer.getSingleton('gameManager');
   
   // Test 1: Info message (should be logged but not shown to user)
   console.log('Test 1: Info message');

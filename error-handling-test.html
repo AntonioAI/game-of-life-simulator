@@ -94,10 +94,11 @@
         import Rules from './src/core/Rules.js';
         import Renderer from './src/rendering/Renderer.js';
         import PatternLibrary from './src/patterns/PatternLibrary.js';
-        import componentRegistry from './src/utils/ComponentRegistry.js';
+        import DependencyContainer from './src/core/DependencyContainer.js';
         import errorHandler, { ErrorCategory, ErrorLevel } from './src/utils/ErrorHandler.js';
         
         let grid, renderer, gameManager, rules;
+        let dependencyContainer;
         
         // Initialize application when the DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
@@ -149,6 +150,9 @@
         });
         
         function initializeComponents() {
+            // Create dependency container
+            dependencyContainer = new DependencyContainer();
+            
             // Get canvas element
             const canvas = document.querySelector('.game-canvas');
             
@@ -173,10 +177,12 @@
                 renderer
             });
             
-            // Register components with the ComponentRegistry
-            componentRegistry.register('grid', grid);
-            componentRegistry.register('renderer', renderer);
-            componentRegistry.register('gameManager', gameManager);
+            // Register components with the DependencyContainer
+            dependencyContainer.register('canvas', canvas, true);
+            dependencyContainer.register('rules', rules, true);
+            dependencyContainer.register('grid', grid, true);
+            dependencyContainer.register('renderer', renderer, true);
+            dependencyContainer.register('gameManager', gameManager, true);
             
             // Initialize components
             gameManager.initialize();
@@ -260,6 +266,7 @@
         window.errorHandler = errorHandler;
         window.ErrorCategory = ErrorCategory;
         window.ErrorLevel = ErrorLevel;
+        window.dependencyContainer = dependencyContainer;
         window.testErrorHandling = {
             runAllTests,
             testInfoMessage,

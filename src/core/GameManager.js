@@ -14,10 +14,18 @@ import config from '../config/GameConfig.js';
  */
 class GameManager {
     constructor(dependencies = {}) {
+        // Validate required dependencies
+        if (!dependencies.grid) {
+            throw new Error('Grid dependency is required for GameManager');
+        }
+        if (!dependencies.renderer) {
+            throw new Error('Renderer dependency is required for GameManager');
+        }
+        
         // Inject dependencies
-        this.grid = dependencies.grid || null;
-        this.renderer = dependencies.renderer || null;
-        this.uiManager = dependencies.uiManager || null;
+        this.grid = dependencies.grid;
+        this.renderer = dependencies.renderer;
+        this.uiManager = dependencies.uiManager || null; // Optional, will be set later
         
         // Game state
         this.isSimulationRunning = false;
@@ -55,21 +63,7 @@ class GameManager {
      * Initialize the game manager
      */
     initialize() {
-        // Validate dependencies
-        if (!this.grid) {
-            errorHandler.error(
-                'Grid dependency is required for game manager initialization',
-                ErrorCategory.DEPENDENCY
-            );
-            return; // Early return instead of throwing
-        }
-        if (!this.renderer) {
-            errorHandler.error(
-                'Renderer dependency is required for game manager initialization',
-                ErrorCategory.DEPENDENCY
-            );
-            return; // Early return instead of throwing
-        }
+        // Grid and Renderer dependencies are already validated in the constructor
         
         // Set up high-DPI rendering
         this.renderer.resizeCanvas();

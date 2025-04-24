@@ -73,6 +73,14 @@
     </div>
 
     <script type="module" src="src/main.js"></script>
+    <script type="module">
+        // Run tests if in development mode with ?test=true parameter
+        if (window.location.search.includes('test=true')) {
+            import('./src/tests/runTests.js')
+                .then(() => console.log('Test runner loaded'))
+                .catch(err => console.error('Failed to load test runner:', err));
+        }
+    </script>
     <script>
         // Set current year in footer
         document.getElementById('current-year').textContent = new Date().getFullYear();
