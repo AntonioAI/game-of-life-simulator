@@ -1,6 +1,7 @@
 /**
  * Game of Life Simulator - Renderer Module
  * Responsible for canvas rendering
+ * @module rendering/Renderer
  * Copyright (c) 2025 Antonio Innocente
  */
 
@@ -12,12 +13,12 @@ import config from '../config/GameConfig.js';
 
 /**
  * Renderer class for canvas operations
+ * @class
  */
 class Renderer {
     /**
      * Create a renderer
-     * @param {Object} dependencies - Dependencies object
-     * @param {HTMLCanvasElement} dependencies.canvas - The canvas element to render to
+     * @param {import('../types/RendererTypes').RendererDependencies} [dependencies={}] - Dependencies object
      */
     constructor(dependencies = {}) {
         // Validate required dependencies
@@ -25,28 +26,32 @@ class Renderer {
             throw new Error('Canvas dependency is required for Renderer');
         }
         
+        /** @type {HTMLCanvasElement} */
         this.canvas = dependencies.canvas;
+        
+        /** @type {CanvasRenderingContext2D} */
         this.ctx = this.canvas.getContext('2d', { alpha: false }); // Disable alpha for better performance
         
-        // Use centralized configuration
+        /** @type {import('../types/RendererTypes').RendererSettings} */
         this.settings = { ...config.rendering };
         
-        // Track if we're on a mobile device
+        /** @type {boolean} */
         this.isMobile = isMobileDevice();
         
-        // Grid reference for redrawing
+        /** @type {import('../core/Grid').default|null} */
         this.grid = null;
         
-        // Track cleanup functions
+        /** @type {Array<Function>} */
         this.cleanupFunctions = [];
         
-        // Subscriptions to events
+        /** @type {Array<Function>} */
         this.subscriptions = [];
     }
     
     /**
      * Initialize the renderer
-     * @param {HTMLCanvasElement} canvas - Optional canvas to set if not provided in constructor
+     * @param {HTMLCanvasElement} [canvas=null] - Optional canvas to set if not provided in constructor
+     * @returns {void}
      */
     initialize(canvas = null) {
         if (canvas) {
@@ -156,9 +161,9 @@ class Renderer {
     
     /**
      * Adjust canvas dimensions
-     * @param {Grid} grid - The grid to draw after resize
-     * @param {number} width - The width to set
-     * @param {number} height - The height to set
+     * @param {import('../core/Grid').default} [grid=null] - The grid to draw after resize
+     * @param {number} [width] - The width to set
+     * @param {number} [height] - The height to set
      * @returns {boolean} True if canvas was resized successfully
      */
     resizeCanvas(grid, width, height) {
@@ -218,7 +223,7 @@ class Renderer {
     
     /**
      * Draw the grid on the canvas
-     * @param {Grid} grid - The grid object to render
+     * @param {import('../core/Grid').default} grid - The grid object to render
      * @returns {void}
      */
     drawGrid(grid) {
@@ -299,10 +304,10 @@ class Renderer {
     }
     
     /**
-     * Get cell coordinates from mouse/touch position
-     * @param {Event} event - The mouse or touch event
-     * @param {Grid} grid - The grid object
-     * @returns {Object|null} The grid coordinates {x, y} or null if out of bounds
+     * Get cell coordinates from a mouse or touch event
+     * @param {MouseEvent|TouchEvent} event - The event object
+     * @param {import('../core/Grid').default} grid - The grid object
+     * @returns {import('../types/GridTypes').CellCoordinates|null} Cell coordinates or null if outside grid
      */
     getCellCoordinates(event, grid) {
         if (!this.canvas) {
@@ -372,14 +377,16 @@ class Renderer {
     
     /**
      * Update renderer settings
-     * @param {Object} settings - New settings
+     * @param {Partial<import('../types/RendererTypes').RendererSettings>} settings - Settings to update
+     * @returns {void}
      */
     updateSettings(settings) {
         this.settings = { ...this.settings, ...settings };
     }
     
     /**
-     * Clean up resources
+     * Clean up event listeners and subscriptions
+     * @returns {void}
      */
     cleanup() {
         // Call all cleanup functions

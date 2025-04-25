@@ -1,7 +1,3 @@
-// This file should be renamed to 03_improve_type_documentation.md
-// I'm adding this comment at the top to indicate the desired rename
-// The actual rename will be done with another command
-
 # Implementation Plan: Improve Type Documentation
 
 ## Issue Description

@@ -1,6 +1,7 @@
 /**
  * Game of Life Simulator - Grid Module
  * Responsible for grid state and operations
+ * @module core/Grid
  * Copyright (c) 2025 Antonio Innocente
  */
 
@@ -11,16 +12,13 @@ import config from '../config/GameConfig.js';
 
 /**
  * Grid class for managing grid state and operations
+ * @class
  */
 class Grid {
     /**
      * Create a grid
-     * @param {Object} dependencies - Dependencies object
-     * @param {Rules} dependencies.rules - Rules implementation
-     * @param {Object} options - Grid options
-     * @param {number} options.rows - Number of rows
-     * @param {number} options.cols - Number of columns
-     * @param {string} options.boundaryType - Boundary type ('toroidal' or 'finite')
+     * @param {import('../types/GridTypes').GridDependencies} [dependencies={}] - Dependencies object
+     * @param {import('../types/GridTypes').GridOptions} [options={}] - Grid options
      */
     constructor(dependencies = {}, options = {}) {
         // Validate required dependencies
@@ -28,10 +26,19 @@ class Grid {
             throw new Error('Rules dependency is required for Grid');
         }
         
+        /** @type {import('../core/Rules').default} */
         this.rules = dependencies.rules;
+        
+        /** @type {number} */
         this.rows = options.rows || config.grid.defaultRows;
+        
+        /** @type {number} */
         this.cols = options.cols || config.grid.defaultCols;
+        
+        /** @type {import('../types/GridTypes').BoundaryType} */
         this.boundaryType = options.boundaryType || config.grid.defaultBoundaryType;
+        
+        /** @type {import('../types/GridTypes').GridArray} */
         this.grid = [];
         
         // Initialize grid with dead cells
@@ -40,7 +47,7 @@ class Grid {
     
     /**
      * Initialize the grid with all cells dead (0)
-     * @returns {Array} The initialized grid
+     * @returns {import('../types/GridTypes').GridArray} The initialized grid
      */
     initialize() {
         // Use utility function to create empty grid
@@ -59,7 +66,7 @@ class Grid {
      * Set a cell to a specific state
      * @param {number} x - The x coordinate
      * @param {number} y - The y coordinate
-     * @param {number} state - The cell state (0 or 1)
+     * @param {import('../types/GridTypes').CellState} state - The cell state (0 or 1)
      * @returns {boolean} True if cell was set successfully
      */
     setCell(x, y, state) {
@@ -84,6 +91,7 @@ class Grid {
      * Toggle the state of a cell
      * @param {number} x - The x coordinate
      * @param {number} y - The y coordinate
+     * @returns {boolean} True if cell was toggled successfully
      */
     toggleCell(x, y) {
         // Ensure coordinates are within grid bounds
@@ -128,7 +136,7 @@ class Grid {
     
     /**
      * Compute the next generation based on Conway's rules
-     * @returns {Array} The grid for the next generation
+     * @returns {import('../types/GridTypes').GridArray} The grid for the next generation
      */
     computeNextGeneration() {
         // Rules dependency is already validated in the constructor
@@ -168,6 +176,7 @@ class Grid {
     
     /**
      * Reset the grid (all cells set to dead)
+     * @returns {import('../types/GridTypes').GridArray} The reset grid
      */
     reset() {
         this.grid = createEmptyGrid(this.rows, this.cols, 0);
@@ -183,7 +192,7 @@ class Grid {
     
     /**
      * Place a pattern on the grid at specific coordinates
-     * @param {Array} pattern - 2D array representing the pattern
+     * @param {import('../types/GridTypes').Pattern} pattern - 2D array representing the pattern
      * @param {number} startX - The starting x coordinate
      * @param {number} startY - The starting y coordinate
      * @returns {boolean} True if pattern was placed successfully
@@ -235,7 +244,7 @@ class Grid {
      * Resize the grid
      * @param {number} rows - New number of rows
      * @param {number} cols - New number of columns
-     * @returns {Array} The resized grid
+     * @returns {import('../types/GridTypes').GridArray} The resized grid
      */
     resize(rows, cols) {
         // Ensure the new size is within the allowed range
@@ -255,8 +264,8 @@ class Grid {
     }
     
     /**
-     * Toggle the boundary type between 'toroidal' and 'finite'
-     * @returns {string} The new boundary type
+     * Toggle the boundary type of the grid
+     * @returns {import('../types/GridTypes').BoundaryType} The new boundary type
      */
     toggleBoundaryType() {
         this.boundaryType = this.boundaryType === 'toroidal' ? 'finite' : 'toroidal';
@@ -264,8 +273,9 @@ class Grid {
     }
     
     /**
-     * Set the boundary type
-     * @param {string} type - The boundary type ('toroidal' or 'finite')
+     * Set the boundary type of the grid
+     * @param {import('../types/GridTypes').BoundaryType} type - The boundary type to set
+     * @returns {import('../types/GridTypes').BoundaryType} The new boundary type
      */
     setBoundaryType(type) {
         if (type === 'toroidal' || type === 'finite') {
@@ -286,7 +296,7 @@ class Grid {
     }
     
     /**
-     * Get the count of alive cells
+     * Get the count of alive cells in the grid
      * @returns {number} The count of alive cells
      */
     getAliveCellsCount() {
