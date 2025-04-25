@@ -8,6 +8,7 @@
  */
 
 import testDependencyContainer from './testDependencyContainer.js';
+import testGridClass from './Grid.test.js';
 
 // Run all tests
 console.log('Running Game of Life Simulator Tests');
@@ -16,6 +17,9 @@ console.log('====================================');
 try {
     // Run DependencyContainer tests
     testDependencyContainer();
+    
+    // Run Grid tests
+    testGridClass();
     
     // Add additional test suite executions here
     

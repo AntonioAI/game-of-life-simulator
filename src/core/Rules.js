@@ -4,8 +4,6 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import { calculateLivingNeighbors } from '../utils/GridUtils.js';
-
 /**
  * Rules class to implement Conway's Game of Life rules
  */
@@ -41,25 +39,6 @@ class Rules {
             // Cell is dead
             return (aliveNeighbors === 3) ? 1 : 0;
         }
-    }
-    
-    /**
-     * Get the count of living neighbors for a cell
-     * @param {Array} grid - The grid data
-     * @param {number} row - The row of the cell
-     * @param {number} col - The column of the cell
-     * @returns {number} The count of living neighbors
-     */
-    getLivingNeighbors(grid, row, col) {
-        const rows = grid.length;
-        const cols = grid[0].length;
-        const boundaryType = grid.boundaryType || 'toroidal';
-        
-        return calculateLivingNeighbors(grid, row, col, {
-            boundaryType: boundaryType,
-            rows: rows,
-            cols: cols
-        });
     }
 }
 

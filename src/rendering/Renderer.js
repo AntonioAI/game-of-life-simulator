@@ -32,7 +32,7 @@ class Renderer {
         this.settings = { ...config.rendering };
         
         // Track if we're on a mobile device
-        this.isMobile = this.detectMobileDevice();
+        this.isMobile = isMobileDevice();
         
         // Grid reference for redrawing
         this.grid = null;
@@ -214,14 +214,6 @@ class Renderer {
                 }
             }
         });
-    }
-    
-    /**
-     * Detect if running on a mobile device
-     * @returns {boolean} True if on a mobile device
-     */
-    detectMobileDevice() {
-        return isMobileDevice();
     }
     
     /**

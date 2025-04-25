@@ -8,6 +8,7 @@ import animationManager from '../utils/AnimationManager.js';
 import errorHandler, { ErrorCategory } from '../utils/ErrorHandler.js';
 import eventBus, { Events } from './EventBus.js';
 import config from '../config/GameConfig.js';
+import { isMobileDevice } from '../utils/DeviceUtils.js';
 
 /**
  * GameManager class to orchestrate game flow
@@ -38,25 +39,13 @@ class GameManager {
         this.maxStepsPerFrame = config.simulation.maxStepsPerFrame;
         this.updateAnalyticsEveryNSteps = 1;
         this.updateAnalyticsCounter = 0;
-        this.isMobileDevice = this.detectMobileDevice();
+        this.isMobileDevice = isMobileDevice();
         
         // For large grids, limit UI updates and steps per frame
         if (this.isMobileDevice) {
             this.updateAnalyticsEveryNSteps = 3; // Update analytics less frequently on mobile
             this.maxStepsPerFrame = 1; // Only 1 step per frame on mobile
         }
-    }
-    
-    /**
-     * Detect if running on a mobile device
-     * @returns {boolean} True if a mobile device is detected
-     * @private
-     */
-    detectMobileDevice() {
-        return (
-            window.matchMedia('(max-width: 768px)').matches || 
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-        );
     }
     
     /**
@@ -162,8 +151,8 @@ class GameManager {
         // Pause the simulation
         this.pauseSimulation();
         
-        // Reset the grid
-        this.grid.initialize();
+        // Reset the grid to an empty state
+        this.grid.reset();
         
         // Reset the generation count
         this.generationCount = 0;

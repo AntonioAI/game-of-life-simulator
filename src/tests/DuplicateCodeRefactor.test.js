@@ -14,7 +14,7 @@ function testDuplicateCodeRefactor() {
     console.log('Testing duplicate code refactoring...');
     
     // Create a test grid
-    const grid = new Grid({}, { rows: 3, cols: 3 });
+    const grid = new Grid({ rules: new Rules() }, { rows: 3, cols: 3 });
     
     // Set up a pattern
     grid.toggleCell(0, 1);
@@ -22,15 +22,15 @@ function testDuplicateCodeRefactor() {
     grid.toggleCell(1, 2);
     grid.toggleCell(2, 1);
     
-    // Create rules instance
-    const rules = new Rules();
+    // Test Grid's neighbor counting
+    const centerNeighbors = grid.countAliveNeighbors(1, 1);
+    console.assert(centerNeighbors === 4, 
+        `Center cell should have 4 neighbors, got ${centerNeighbors}`);
     
-    // Compare results from Grid and Rules methods
-    const gridNeighbors = grid.countAliveNeighbors(1, 1);
-    const rulesNeighbors = rules.getLivingNeighbors(grid.grid, 1, 1);
-    
-    console.assert(gridNeighbors === rulesNeighbors, 
-        `Both methods should return the same number of neighbors: ${gridNeighbors} === ${rulesNeighbors}`);
+    // Test edge neighbor counting
+    const edgeNeighbors = grid.countAliveNeighbors(0, 0);
+    console.assert(edgeNeighbors === 1, 
+        `Corner cell should have 1 neighbor, got ${edgeNeighbors}`);
     
     // Verify that utilities are working correctly
     console.assert(typeof isMobileDevice() === 'boolean', 
