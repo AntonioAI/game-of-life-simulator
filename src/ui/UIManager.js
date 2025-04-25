@@ -614,16 +614,50 @@ class UIManager {
      * @param {Grid} grid - The grid object
      */
     setupCanvasInteractions(canvas, grid) {
-        // Track if we're currently interacting with the canvas
+        // Track interaction state
         let isInteracting = false;
-        // Store the last cell toggled to avoid multiple toggles on the same cell
         let lastToggledCell = { x: -1, y: -1 };
-        // Track touch interactions to distinguish between taps and scrolls
         let touchStartTime = 0;
         let touchStartPosition = { x: 0, y: 0 };
         
-        const handleCanvasInteraction = (event) => {
-            // Prevent default behavior (like scrolling on mobile)
+        /**
+         * Normalize coordinates from either mouse or touch event
+         * @param {Event} event - Mouse or touch event
+         * @returns {Object|null} Normalized coordinates or null if not available
+         */
+        const normalizeEventCoordinates = (event) => {
+            // Return an object with clientX and clientY properties
+            if (event.type.includes('touch')) {
+                if (event.touches && event.touches.length > 0) {
+                    return {
+                        clientX: event.touches[0].clientX,
+                        clientY: event.touches[0].clientY,
+                        isTouch: true
+                    };
+                } else if (event.changedTouches && event.changedTouches.length > 0) {
+                    return {
+                        clientX: event.changedTouches[0].clientX,
+                        clientY: event.changedTouches[0].clientY,
+                        isTouch: true
+                    };
+                }
+                return null;
+            }
+            
+            // Mouse event
+            return {
+                clientX: event.clientX,
+                clientY: event.clientY,
+                isTouch: false
+            };
+        };
+        
+        /**
+         * Toggle cell at the event coordinates if not already toggled
+         * @param {Event} event - Mouse or touch event
+         */
+        const toggleCellAtEventCoordinates = (event) => {
+            // Prevent default behavior (scrolling, etc.)
             event.preventDefault();
             
             const coords = this.gameManager.renderer.getCellCoordinates(event, grid);
@@ -635,37 +669,41 @@ class UIManager {
                 this.gameManager.renderer.drawGrid(grid);
                 this.updateAnalytics();
                 
-                // Add visual feedback for touch
+                // Add visual feedback for touch events
                 if (event.type.startsWith('touch')) {
-                    // Create a ripple effect at the touch point
                     this.createTouchRipple(event);
                 }
             }
         };
         
-        // Start interaction
-        const startInteraction = (event) => {
+        /**
+         * Handle start of interaction (mousedown/touchstart)
+         * @param {Event} event - Mouse or touch event
+         */
+        const handleInteractionStart = (event) => {
             isInteracting = true;
             
-            // For touch events, record start time and position for gesture detection
+            // For touch events, record start time and position
             if (event.type === 'touchstart') {
                 touchStartTime = Date.now();
-                if (event.touches && event.touches.length > 0) {
+                const coords = normalizeEventCoordinates(event);
+                if (coords) {
                     touchStartPosition = {
-                        x: event.touches[0].clientX,
-                        y: event.touches[0].clientY
+                        x: coords.clientX,
+                        y: coords.clientY
                     };
                 }
             }
             
-            handleCanvasInteraction(event);
-            
-            // Add active class to canvas for visual feedback
+            toggleCellAtEventCoordinates(event);
             canvas.classList.add('game-canvas--active');
         };
         
-        // End interaction
-        const endInteraction = (event) => {
+        /**
+         * Handle end of interaction (mouseup/touchend)
+         * @param {Event} event - Mouse or touch event
+         */
+        const handleInteractionEnd = (event) => {
             isInteracting = false;
             lastToggledCell = { x: -1, y: -1 };
             
@@ -673,49 +711,53 @@ class UIManager {
             if (event && event.type === 'touchend') {
                 const touchDuration = Date.now() - touchStartTime;
                 
-                // If this was a quick tap (< 300ms), handle it as a toggle interaction
+                // If this was a quick tap (< 300ms), handle as toggle
                 if (touchDuration < 300) {
-                    handleCanvasInteraction(event);
+                    toggleCellAtEventCoordinates(event);
                 }
             }
             
-            // Remove active class from canvas
             canvas.classList.remove('game-canvas--active');
         };
         
-        // Move interaction (for drag toggling)
-        const moveInteraction = (event) => {
+        /**
+         * Handle movement during interaction (mousemove/touchmove)
+         * @param {Event} event - Mouse or touch event
+         */
+        const handleInteractionMove = (event) => {
             if (!isInteracting) return;
             
             // For touch moves, check if the user is trying to scroll
-            if (event.type === 'touchmove' && event.touches && event.touches.length > 0) {
-                const deltaX = Math.abs(event.touches[0].clientX - touchStartPosition.x);
-                const deltaY = Math.abs(event.touches[0].clientY - touchStartPosition.y);
-                
-                // If movement exceeds threshold, it might be a scroll - don't toggle cells
-                if (deltaX > 20 || deltaY > 20) {
-                    // If movement is more vertical than horizontal, let the page scroll
-                    if (deltaY > deltaX * 1.5) {
-                        return; // Allow vertical scrolling
+            if (event.type === 'touchmove') {
+                const coords = normalizeEventCoordinates(event);
+                if (coords) {
+                    const deltaX = Math.abs(coords.clientX - touchStartPosition.x);
+                    const deltaY = Math.abs(coords.clientY - touchStartPosition.y);
+                    
+                    // If movement exceeds threshold, might be a scroll
+                    if (deltaX > 20 || deltaY > 20) {
+                        // If more vertical than horizontal, let page scroll
+                        if (deltaY > deltaX * 1.5) {
+                            return; // Allow vertical scrolling
+                        }
                     }
                 }
             }
             
-            // Handle as a cell toggle
-            handleCanvasInteraction(event);
+            toggleCellAtEventCoordinates(event);
         };
         
-        // Mouse events for desktop
-        canvas.addEventListener('mousedown', startInteraction);
-        document.addEventListener('mouseup', endInteraction);
-        canvas.addEventListener('mousemove', moveInteraction);
+        // Register mouse events
+        canvas.addEventListener('mousedown', handleInteractionStart);
+        document.addEventListener('mouseup', handleInteractionEnd);
+        canvas.addEventListener('mousemove', handleInteractionMove);
         
-        // Touch events for mobile devices with improved handling
-        canvas.addEventListener('touchstart', startInteraction, { passive: false });
-        canvas.addEventListener('touchend', endInteraction, { passive: false });
-        canvas.addEventListener('touchmove', moveInteraction, { passive: false });
+        // Register touch events with passive: false to allow preventDefault
+        canvas.addEventListener('touchstart', handleInteractionStart, { passive: false });
+        canvas.addEventListener('touchend', handleInteractionEnd, { passive: false });
+        canvas.addEventListener('touchmove', handleInteractionMove, { passive: false });
         
-        // Prevent context menu on canvas (for right-click)
+        // Prevent context menu on canvas
         canvas.addEventListener('contextmenu', (event) => {
             event.preventDefault();
             return false;
