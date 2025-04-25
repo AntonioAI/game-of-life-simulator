@@ -5,6 +5,8 @@
  */
 
 import eventBus, { Events } from '../core/EventBus.js';
+import { createPatternLibraryContainerTemplate, createPatternCategoryTemplate, createPatternCardTemplate } from '../ui/templates/PatternLibraryTemplate.js';
+import { createElementsFromHTML } from '../utils/DOMHelper.js';
 
 /**
  * PatternLibrary class for managing pattern definitions
@@ -316,7 +318,7 @@ class PatternLibrary {
     /**
      * Create pattern library UI
      * @param {Object} dependencies - Dependencies object
-     * @param {Grid} dependencies.grid - The grid object
+     * @param {Grid} dependencies.grid - The grid instance
      * @param {Function} dependencies.onPatternSelected - Callback when pattern is selected
      */
     createPatternLibraryUI(dependencies = {}) {
@@ -328,7 +330,7 @@ class PatternLibrary {
             return;
         }
         
-        // Find or create patterns container
+        // Find patterns container
         const patternsContainer = document.querySelector('.pattern-library');
         if (!patternsContainer) {
             console.error('Patterns container not found');
@@ -338,21 +340,15 @@ class PatternLibrary {
         // Clear existing content
         patternsContainer.innerHTML = '';
         
-        // Create title
-        const title = document.createElement('h2');
-        title.className = 'pattern-library__title';
-        title.textContent = 'Pattern Library';
-        patternsContainer.appendChild(title);
+        // Create the container structure using the template
+        const libraryFragment = createElementsFromHTML(createPatternLibraryContainerTemplate());
+        patternsContainer.appendChild(libraryFragment);
         
-        // Create search input for pattern filtering
-        const searchContainer = document.createElement('div');
-        searchContainer.className = 'pattern-library__search';
+        // Get reference to gallery container
+        const patternGallery = patternsContainer.querySelector('.pattern-library__gallery');
         
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.placeholder = 'Search patterns...';
-        searchInput.className = 'pattern-library__search-input';
-        searchInput.id = 'pattern-search-input';
+        // Get reference to search input
+        const searchInput = patternsContainer.querySelector('#pattern-search-input');
         
         // Function to update search results
         const updateSearchResults = () => {
@@ -360,6 +356,7 @@ class PatternLibrary {
             const patternCards = document.querySelectorAll('.pattern-library__card');
             
             // Toggle clear button visibility
+            const searchContainer = searchInput.parentElement;
             if (searchTerm.length > 0) {
                 searchContainer.classList.add('has-text');
             } else {
@@ -404,6 +401,7 @@ class PatternLibrary {
         searchInput.addEventListener('input', updateSearchResults);
         
         // Add clear button functionality
+        const searchContainer = searchInput.parentElement;
         searchContainer.addEventListener('click', (e) => {
             // Check if the click was on the pseudo-element (approximately)
             const rect = searchContainer.getBoundingClientRect();
@@ -417,13 +415,6 @@ class PatternLibrary {
                 searchInput.focus();
             }
         });
-        
-        searchContainer.appendChild(searchInput);
-        patternsContainer.appendChild(searchContainer);
-        
-        // Create pattern gallery
-        const patternGallery = document.createElement('div');
-        patternGallery.className = 'pattern-library__gallery';
         
         // Group patterns by category
         const categories = {};
@@ -441,46 +432,39 @@ class PatternLibrary {
         this.categoryOrder.forEach(category => {
             if (!categories[category] || categories[category].length === 0) return;
             
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'pattern-library__category';
+            // Create category section using template
+            const categoryFragment = createElementsFromHTML(
+                createPatternCategoryTemplate({
+                    name: category,
+                    description: this.categoryDescriptions[category]
+                })
+            );
             
-            // Add category title
-            const categoryTitle = document.createElement('h3');
-            categoryTitle.textContent = category;
-            categoryDiv.appendChild(categoryTitle);
+            // Add to gallery
+            patternGallery.appendChild(categoryFragment);
             
-            // Add category description if available
-            if (this.categoryDescriptions[category]) {
-                const categoryDesc = document.createElement('div');
-                categoryDesc.className = 'pattern-library__category-description';
-                categoryDesc.textContent = this.categoryDescriptions[category];
-                categoryDiv.appendChild(categoryDesc);
-            }
+            // Get the category div we just added
+            const categoryDiv = patternGallery.lastElementChild;
             
-            // Create grid for patterns in this category
-            const patternsGrid = document.createElement('div');
-            patternsGrid.className = 'pattern-library__grid';
+            // Get reference to the grid within this category
+            const patternsGrid = categoryDiv.querySelector('.pattern-library__grid');
             
             // Sort patterns alphabetically
             categories[category].sort((a, b) => a.name.localeCompare(b.name));
             
             // Add patterns in this category
             categories[category].forEach(pattern => {
-                const patternCard = document.createElement('div');
-                patternCard.className = 'pattern-library__card';
-                patternCard.setAttribute('title', pattern.description);
-                patternCard.setAttribute('data-pattern-id', pattern.id);
+                // Create pattern card using template
+                const cardFragment = createElementsFromHTML(createPatternCardTemplate(pattern));
+                patternsGrid.appendChild(cardFragment);
                 
-                // Create thumbnail
+                // Get the card we just added
+                const patternCard = patternsGrid.lastElementChild;
+                
+                // Create and add thumbnail
                 const thumbnail = this.createPatternThumbnail(pattern.id);
-                patternCard.appendChild(thumbnail);
-                
-                // Add pattern name
-                const patternName = document.createElement('div');
-                patternName.className = 'pattern-library__card-name';
-                patternName.setAttribute('title', pattern.description);
-                patternName.textContent = pattern.name;
-                patternCard.appendChild(patternName);
+                const thumbnailContainer = patternCard.querySelector('.pattern-thumbnail-container');
+                thumbnailContainer.appendChild(thumbnail);
                 
                 // Add click event to place pattern
                 patternCard.addEventListener('click', () => {
@@ -496,15 +480,8 @@ class PatternLibrary {
                         onPatternSelected(pattern.id);
                     }
                 });
-                
-                patternsGrid.appendChild(patternCard);
             });
-            
-            categoryDiv.appendChild(patternsGrid);
-            patternGallery.appendChild(categoryDiv);
         });
-        
-        patternsContainer.appendChild(patternGallery);
     }
     
     /**

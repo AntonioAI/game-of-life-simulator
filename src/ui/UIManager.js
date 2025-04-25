@@ -7,6 +7,9 @@
 import Controls from './Controls.js';
 import eventBus, { Events } from '../core/EventBus.js';
 import config from '../config/GameConfig.js';
+import { createSimulationControlsTemplate, createGridSettingsTemplate, createBoundaryToggleTemplate } from './templates/ControlsTemplate.js';
+import { createAnalyticsTemplate } from './templates/AnalyticsTemplate.js';
+import { createElementsFromHTML } from '../utils/DOMHelper.js';
 
 /**
  * UIManager class for managing UI elements
@@ -198,85 +201,57 @@ class UIManager {
      * Create simulation controls (start, pause, step, reset)
      */
     createSimulationControls() {
-        const simulationControls = document.createElement('div');
-        simulationControls.className = 'simulation-controls u-panel-section';
+        // Use the template to create the HTML structure
+        const controlsFragment = createElementsFromHTML(createSimulationControlsTemplate());
+        this.controlsContainer.appendChild(controlsFragment);
         
-        // Title 
-        const simulationTitle = document.createElement('h3');
-        simulationTitle.className = 'u-panel-section-title';
-        simulationTitle.textContent = 'Simulation Controls';
-        simulationControls.appendChild(simulationTitle);
+        // Get references to the elements where components will be inserted
+        const buttonContainer = document.getElementById('control-buttons-container');
+        const speedSliderContainer = document.getElementById('speed-slider-container');
         
-        // Description for simulation controls
-        const simulationDescription = document.createElement('p');
-        simulationDescription.className = 'control-panel__description';
-        simulationDescription.textContent = 'Control the simulation flow.';
-        simulationControls.appendChild(simulationDescription);
+        // Create and attach control buttons
+        const startButton = this.controls.createButton('▶', 'Start', 
+            () => this.gameManager.startSimulation());
+        const pauseButton = this.controls.createButton('⏸', 'Pause', 
+            () => this.gameManager.pauseSimulation());
+        const stepButton = this.controls.createButton('➡', 'Step', 
+            () => this.gameManager.stepSimulation());
+        const resetButton = this.controls.createButton('↺', 'Reset', 
+            () => this.gameManager.resetSimulation());
         
-        // Button container
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'control-panel__buttons';
+        // Append buttons to container
+        buttonContainer.appendChild(startButton);
+        buttonContainer.appendChild(pauseButton);
+        buttonContainer.appendChild(stepButton);
+        buttonContainer.appendChild(resetButton);
         
-        // Control buttons with clear labels and icons
-        buttonContainer.appendChild(
-            this.controls.createButton('▶', 'Start', 
-                () => this.gameManager.startSimulation())
-        );
-        
-        buttonContainer.appendChild(
-            this.controls.createButton('⏸', 'Pause', 
-                () => this.gameManager.pauseSimulation())
-        );
-        
-        buttonContainer.appendChild(
-            this.controls.createButton('➡', 'Step', 
-                () => this.gameManager.stepSimulation())
-        );
-        
-        buttonContainer.appendChild(
-            this.controls.createButton('↺', 'Reset', 
-                () => this.gameManager.resetSimulation())
-        );
-        
-        simulationControls.appendChild(buttonContainer);
-        
-        // Speed control slider
+        // Create and attach speed slider
         const speedControl = this.controls.createSpeedSlider(
-            config.simulation.minSpeed,
-            config.simulation.maxSpeed,
-            this.gameManager.simulationSpeed,
+            1, 60, this.gameManager.simulationSpeed,
             (speed) => this.gameManager.updateSimulationSpeed(speed)
         );
-        simulationControls.appendChild(speedControl.container);
-        
-        this.controlsContainer.appendChild(simulationControls);
+        speedSliderContainer.appendChild(speedControl.container);
     }
     
     /**
      * Create settings panel (grid size, boundary type)
      */
     createSettingsPanel() {
-        // Create grid settings section
-        const gridSettings = document.createElement('div');
-        gridSettings.className = 'grid-settings u-panel-section';
+        // Use the template to create the HTML structure
+        const gridSettingsFragment = createElementsFromHTML(
+            createGridSettingsTemplate({
+                rows: this.gameManager.grid.rows,
+                cols: this.gameManager.grid.cols,
+                minSize: config.grid.minSize,
+                maxSize: config.grid.maxSize
+            })
+        );
+        this.controlsContainer.appendChild(gridSettingsFragment);
         
-        // Create title for this section
-        const gridTitle = document.createElement('h3');
-        gridTitle.className = 'u-panel-section-title';
-        gridTitle.textContent = 'Grid Dimensions';
-        gridSettings.appendChild(gridTitle);
-        
-        // Create description text for better user guidance
-        const gridDescription = document.createElement('p');
-        gridDescription.className = 'control-panel__description';
-        gridDescription.textContent = 'Select a preset size or enter custom dimensions.';
-        gridSettings.appendChild(gridDescription);
+        // Get reference to preset buttons container
+        const presetButtonsContainer = this.controlsContainer.querySelector('.preset-buttons');
         
         // Create preset buttons with data from config
-        const presetButtons = document.createElement('div');
-        presetButtons.className = 'preset-buttons';
-        
-        // Use preset sizes from config
         config.ui.presetSizes.forEach(preset => {
             const button = document.createElement('button');
             button.type = 'button';
@@ -284,294 +259,77 @@ class UIManager {
             button.title = preset.description;
             button.textContent = preset.name;
             button.addEventListener('click', () => this.resizeGrid(preset.rows, preset.cols));
-            presetButtons.appendChild(button);
+            presetButtonsContainer.appendChild(button);
         });
         
-        gridSettings.appendChild(presetButtons);
+        // Add event listeners for input validation and resize action
+        const rowsInput = document.getElementById('rows-input');
+        const colsInput = document.getElementById('cols-input');
+        const applyButton = document.getElementById('apply-grid-size');
         
-        // Create custom size inputs with improved layout
-        const customSize = document.createElement('div');
-        customSize.className = 'custom-size';
-        
-        // Create a heading for custom size
-        const customSizeHeading = document.createElement('div');
-        customSizeHeading.className = 'custom-size-heading';
-        customSizeHeading.textContent = 'Custom Size';
-        customSize.appendChild(customSizeHeading);
-        
-        // Create rows input with better alignment
-        const rowsWrapper = document.createElement('div');
-        rowsWrapper.className = 'dimension-input';
-        
-        const rowsLabel = document.createElement('label');
-        rowsLabel.textContent = 'Rows:';
-        rowsLabel.htmlFor = 'rows-input';
-        rowsWrapper.appendChild(rowsLabel);
-        
-        const rowsInput = document.createElement('input');
-        rowsInput.id = 'rows-input';
-        rowsInput.type = 'number';
-        rowsInput.min = String(config.grid.minSize);
-        rowsInput.max = String(config.grid.maxSize);
-        rowsInput.value = this.gameManager.grid.rows;
-        // Add validation to prevent invalid input only when input is complete
+        // Add validation to prevent invalid input
         rowsInput.addEventListener('change', () => {
             const value = parseInt(rowsInput.value);
             if (isNaN(value) || value < config.grid.minSize) rowsInput.value = config.grid.minSize;
             if (value > config.grid.maxSize) rowsInput.value = config.grid.maxSize;
         });
-        rowsWrapper.appendChild(rowsInput);
         
-        customSize.appendChild(rowsWrapper);
-        
-        // Create columns input with better alignment
-        const colsWrapper = document.createElement('div');
-        colsWrapper.className = 'dimension-input';
-        
-        const colsLabel = document.createElement('label');
-        colsLabel.textContent = 'Columns:';
-        colsLabel.htmlFor = 'cols-input';
-        colsWrapper.appendChild(colsLabel);
-        
-        const colsInput = document.createElement('input');
-        colsInput.id = 'cols-input';
-        colsInput.type = 'number';
-        colsInput.min = String(config.grid.minSize);
-        colsInput.max = String(config.grid.maxSize);
-        colsInput.value = this.gameManager.grid.cols;
-        // Add validation to prevent invalid input only when input is complete
         colsInput.addEventListener('change', () => {
             const value = parseInt(colsInput.value);
             if (isNaN(value) || value < config.grid.minSize) colsInput.value = config.grid.minSize;
             if (value > config.grid.maxSize) colsInput.value = config.grid.maxSize;
         });
-        colsWrapper.appendChild(colsInput);
         
-        customSize.appendChild(colsWrapper);
-        
-        // Create note about size limitations
-        const sizeNote = document.createElement('div');
-        sizeNote.className = 'size-note';
-        sizeNote.textContent = 'Min: 10×10, Max: 200×200';
-        customSize.appendChild(sizeNote);
-        
-        // Create apply button with improved styling
-        const applyButton = document.createElement('button');
-        applyButton.className = 'preset-apply';
-        applyButton.textContent = 'Apply';
+        // Add event listener to apply button
         applyButton.addEventListener('click', () => {
             const rows = parseInt(rowsInput.value);
             const cols = parseInt(colsInput.value);
-            if (rows >= config.grid.minSize && rows <= config.grid.maxSize && cols >= config.grid.minSize && cols <= config.grid.maxSize) {
+            if (rows >= config.grid.minSize && rows <= config.grid.maxSize && 
+                cols >= config.grid.minSize && cols <= config.grid.maxSize) {
                 this.resizeGrid(rows, cols);
             }
         });
-        customSize.appendChild(applyButton);
-        
-        gridSettings.appendChild(customSize);
-        
-        // Add to controls container
-        this.controlsContainer.appendChild(gridSettings);
     }
     
     /**
      * Add boundary toggle (toroidal/finite)
      */
     addBoundaryToggle() {
-        // Create boundary setting section
-        const boundarySettings = document.createElement('div');
-        boundarySettings.className = 'boundary-setting u-panel-section';
+        // Use the template to create the HTML structure
+        const boundaryFragment = createElementsFromHTML(
+            createBoundaryToggleTemplate(this.gameManager.grid.boundaryType)
+        );
+        this.controlsContainer.appendChild(boundaryFragment);
         
-        // Create title for this section
-        const boundaryTitle = document.createElement('h3');
-        boundaryTitle.className = 'u-panel-section-title';
-        boundaryTitle.textContent = 'Grid Boundary';
-        boundarySettings.appendChild(boundaryTitle);
-        
-        // Create description for boundary type
-        const boundaryDescription = document.createElement('p');
-        boundaryDescription.className = 'control-panel__description';
-        boundaryDescription.textContent = 'Choose how cells behave at the grid edges.';
-        boundarySettings.appendChild(boundaryDescription);
-        
-        // Create select container
-        const selectContainer = document.createElement('div');
-        selectContainer.className = 'boundary-select';
-        
-        // Create label
-        const selectLabel = document.createElement('label');
-        selectLabel.className = 'boundary-label';
-        selectLabel.textContent = 'Boundary Type:';
-        selectLabel.htmlFor = 'boundary-select';
-        selectContainer.appendChild(selectLabel);
-        
-        // Create dropdown
-        const dropdown = document.createElement('select');
-        dropdown.className = 'boundary-dropdown';
-        dropdown.id = 'boundary-select';
-        
-        // Add options
-        const options = [
-            { value: 'toroidal', text: 'Toroidal (Edges Connect)' },
-            { value: 'finite', text: 'Finite (Fixed Edges)' }
-        ];
-        
-        options.forEach(option => {
-            const optionElement = document.createElement('option');
-            optionElement.value = option.value;
-            optionElement.textContent = option.text;
-            if (option.value === this.gameManager.grid.boundaryType) {
-                optionElement.selected = true;
-            }
-            dropdown.appendChild(optionElement);
-        });
-        
-        // Add change handler
+        // Add event listener to the dropdown
+        const dropdown = document.getElementById('boundary-select');
         dropdown.addEventListener('change', () => {
             this.gameManager.grid.setBoundaryType(dropdown.value);
             this.updateAnalytics();
         });
-        
-        selectContainer.appendChild(dropdown);
-        boundarySettings.appendChild(selectContainer);
-        
-        // Add to controls container
-        this.controlsContainer.appendChild(boundarySettings);
     }
     
     /**
      * Create analytics display
      */
     createAnalyticsDisplay() {
-        // Create analytics content container
-        const analyticsContent = document.createElement('div');
-        analyticsContent.className = 'analytics-panel__content';
-        
-        // Create analytics data container
-        const analyticsData = document.createElement('div');
-        analyticsData.className = 'analytics-data';
-        
-        // Generation counter
-        const generationItem = document.createElement('div');
-        generationItem.className = 'analytics-panel__item';
-        
-        const generationLabel = document.createElement('span');
-        generationLabel.className = 'analytics-panel__label';
-        generationLabel.textContent = 'Generation:';
-        generationItem.appendChild(generationLabel);
-        
-        const generationValue = document.createElement('span');
-        generationValue.className = 'analytics-panel__value';
-        generationValue.id = 'generation-count';
-        generationValue.textContent = '0';
-        generationItem.appendChild(generationValue);
-        
-        analyticsData.appendChild(generationItem);
-        
-        // Live cell counter
-        const liveCellItem = document.createElement('div');
-        liveCellItem.className = 'analytics-panel__item';
-        
-        const liveCellLabel = document.createElement('span');
-        liveCellLabel.className = 'analytics-panel__label';
-        liveCellLabel.textContent = 'Live Cells:';
-        liveCellItem.appendChild(liveCellLabel);
-        
-        const liveCellValue = document.createElement('span');
-        liveCellValue.className = 'analytics-panel__value';
-        liveCellValue.id = 'live-cell-count';
-        liveCellValue.textContent = '0';
-        liveCellItem.appendChild(liveCellValue);
-        
-        analyticsData.appendChild(liveCellItem);
-        
-        // Population density counter
-        const densityItem = document.createElement('div');
-        densityItem.className = 'analytics-panel__item';
-        
-        const densityLabel = document.createElement('span');
-        densityLabel.className = 'analytics-panel__label';
-        densityLabel.textContent = 'Population Density:';
-        densityItem.appendChild(densityLabel);
-        
-        const densityValue = document.createElement('span');
-        densityValue.className = 'analytics-panel__value';
-        densityValue.id = 'population-density';
-        densityValue.textContent = '0.0%';
-        densityItem.appendChild(densityValue);
-        
-        analyticsData.appendChild(densityItem);
-        
-        // Grid size display
-        const gridSizeItem = document.createElement('div');
-        gridSizeItem.className = 'analytics-panel__item';
-        
-        const gridSizeLabel = document.createElement('span');
-        gridSizeLabel.className = 'analytics-panel__label';
-        gridSizeLabel.textContent = 'Grid Size:';
-        gridSizeItem.appendChild(gridSizeLabel);
-        
-        const gridSizeValue = document.createElement('span');
-        gridSizeValue.className = 'analytics-panel__value';
-        gridSizeValue.id = 'grid-size';
-        gridSizeValue.textContent = `${this.gameManager.grid.rows}×${this.gameManager.grid.cols}`;
-        gridSizeItem.appendChild(gridSizeValue);
-        
-        analyticsData.appendChild(gridSizeItem);
-        
-        // Add speed display
-        const speedItem = document.createElement('div');
-        speedItem.className = 'analytics-panel__item';
-        
-        const speedLabel = document.createElement('span');
-        speedLabel.className = 'analytics-panel__label';
-        speedLabel.textContent = 'Speed:';
-        speedItem.appendChild(speedLabel);
-        
-        const speedValue = document.createElement('span');
-        speedValue.className = 'analytics-panel__value';
-        speedValue.id = 'simulation-speed';
-        speedValue.textContent = `${this.gameManager.simulationSpeed} FPS`;
-        speedItem.appendChild(speedValue);
-        
-        analyticsData.appendChild(speedItem);
-        
-        // Add simulation state
-        const stateItem = document.createElement('div');
-        stateItem.className = 'analytics-panel__item';
-        
-        const stateLabel = document.createElement('span');
-        stateLabel.className = 'analytics-panel__label';
-        stateLabel.textContent = 'State:';
-        stateItem.appendChild(stateLabel);
-        
-        const stateValue = document.createElement('span');
-        stateValue.className = 'analytics-panel__value';
-        stateValue.id = 'simulation-state';
-        stateValue.textContent = this.gameManager.isSimulationRunning ? 'Running' : 'Paused';
-        stateItem.appendChild(stateValue);
-        
-        analyticsData.appendChild(stateItem);
-        
-        // Add boundary type
-        const boundaryItem = document.createElement('div');
-        boundaryItem.className = 'analytics-panel__item';
-        
-        const boundaryLabel = document.createElement('span');
-        boundaryLabel.className = 'analytics-panel__label';
-        boundaryLabel.textContent = 'Boundary:';
-        boundaryItem.appendChild(boundaryLabel);
-        
-        const boundaryValue = document.createElement('span');
-        boundaryValue.className = 'analytics-panel__value';
-        boundaryValue.id = 'boundary-type';
-        boundaryValue.textContent = this.gameManager.grid.boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
-        boundaryItem.appendChild(boundaryValue);
-        
-        analyticsData.appendChild(boundaryItem);
-        
-        analyticsContent.appendChild(analyticsData);
-        this.analyticsContainer.appendChild(analyticsContent);
+        // Use the template to create the HTML structure
+        const grid = this.gameManager.grid;
+        const analyticsFragment = createElementsFromHTML(
+            createAnalyticsTemplate({
+                generation: this.gameManager.generationCount,
+                aliveCells: grid.getAliveCellsCount(),
+                totalCells: grid.rows * grid.cols,
+                simulationState: this.gameManager.isSimulationRunning ? 'Running' : 'Paused',
+                speed: this.gameManager.simulationSpeed,
+                boundaryType: grid.boundaryType,
+                gridSize: {
+                    rows: grid.rows,
+                    cols: grid.cols
+                }
+            })
+        );
+        this.analyticsContainer.appendChild(analyticsFragment);
     }
     
     /**

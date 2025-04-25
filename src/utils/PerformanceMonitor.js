@@ -5,6 +5,8 @@
  */
 
 import animationManager from './AnimationManager.js';
+import { createPerformanceMonitorTemplate, createPerformanceStatsTemplate } from './templates/PerformanceMonitorTemplate.js';
+import { createElementFromHTML } from './DOMHelper.js';
 
 /**
  * Performance monitor for animation frames
@@ -68,21 +70,8 @@ class PerformanceMonitor {
     createDisplay() {
         if (this.display) return;
         
-        // Create stats display
-        this.display = document.createElement('div');
-        this.display.className = 'performance-stats';
-        this.display.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            z-index: 9999;
-        `;
+        // Create stats display using template
+        this.display = createElementFromHTML(createPerformanceMonitorTemplate());
         
         // Add to document when ready
         if (document.body) {
@@ -161,13 +150,12 @@ class PerformanceMonitor {
         this.monitorId = requestAnimationFrame(this.monitor);
     }
     
+    /**
+     * Update the display with current stats
+     */
     updateDisplay() {
         if (this.display) {
-            this.display.innerHTML = `
-                FPS: ${this.stats.framesPerSecond}<br>
-                Frame Time: ${this.stats.frameTime.toFixed(2)}ms<br>
-                Active Animations: ${this.stats.activeAnimations}
-            `;
+            this.display.innerHTML = createPerformanceStatsTemplate(this.stats);
         }
     }
 }

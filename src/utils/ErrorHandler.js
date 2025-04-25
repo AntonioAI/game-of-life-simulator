@@ -4,6 +4,9 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
+import { createErrorContainerTemplate, createErrorNotificationTemplate } from './templates/ErrorTemplate.js';
+import { createElementFromHTML } from './DOMHelper.js';
+
 /**
  * Error severity levels
  * @enum {string}
@@ -78,18 +81,8 @@ class ErrorHandler {
             return;
         }
         
-        // Create error container if it doesn't exist
-        this.errorContainer = document.createElement('div');
-        this.errorContainer.id = 'error-container';
-        this.errorContainer.className = 'error-container';
-        this.errorContainer.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            max-width: 350px;
-            z-index: 1000;
-        `;
-        
+        // Create error container using template
+        this.errorContainer = createElementFromHTML(createErrorContainerTemplate());
         document.body.appendChild(this.errorContainer);
     }
     
@@ -243,63 +236,23 @@ class ErrorHandler {
             this.initErrorUI();
         }
         
-        const { level, message } = errorDetails;
+        // Create error notification using template
+        const errorElement = createElementFromHTML(createErrorNotificationTemplate(errorDetails));
         
-        // Create error notification element
-        const errorElement = document.createElement('div');
-        errorElement.className = `error-notification error-${level}`;
-        errorElement.innerHTML = `
-            <div class="error-header">
-                <span class="error-level">${level.toUpperCase()}</span>
-                <button class="error-close">×</button>
-            </div>
-            <div class="error-message">${message}</div>
-        `;
+        // Add dismiss functionality
+        const dismissButton = errorElement.querySelector('.error-dismiss');
+        if (dismissButton) {
+            dismissButton.addEventListener('click', () => this.dismissError(errorElement));
+        }
         
-        // Add styles based on error level
-        const bgColor = level === ErrorLevel.WARNING ? '#fff3cd' : 
-                         level === ErrorLevel.ERROR ? '#f8d7da' : 
-                         level === ErrorLevel.FATAL ? '#dc3545' : '#d1ecf1';
-                         
-        const textColor = level === ErrorLevel.WARNING ? '#856404' : 
-                           level === ErrorLevel.ERROR ? '#721c24' : 
-                           level === ErrorLevel.FATAL ? '#ffffff' : '#0c5460';
-        
-        errorElement.style.cssText = `
-            background-color: ${bgColor};
-            color: ${textColor};
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: opacity 0.3s ease-in-out;
-            animation: slide-in 0.3s ease-out;
-        `;
-        
-        // Add close button functionality
-        const closeButton = errorElement.querySelector('.error-close');
-        closeButton.style.cssText = `
-            float: right;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: ${textColor};
-        `;
-        
-        closeButton.addEventListener('click', () => {
-            this.dismissError(errorElement);
-        });
-        
-        // Add to error container
+        // Add to container
         this.errorContainer.appendChild(errorElement);
         
-        // Auto-dismiss non-fatal errors after 5 seconds
-        if (level !== ErrorLevel.FATAL) {
+        // Auto-dismiss after delay for less severe errors
+        if (errorDetails.level === ErrorLevel.INFO || errorDetails.level === ErrorLevel.WARNING) {
             setTimeout(() => {
                 this.dismissError(errorElement);
-            }, 5000);
+            }, errorDetails.level === ErrorLevel.INFO ? 5000 : 8000);
         }
     }
     
@@ -309,7 +262,14 @@ class ErrorHandler {
      * @private
      */
     dismissError(errorElement) {
+        if (!errorElement) return;
+        
+        // Add fade-out animation
         errorElement.style.opacity = '0';
+        errorElement.style.transform = 'translateX(20px)';
+        errorElement.style.transition = 'opacity 0.3s, transform 0.3s';
+        
+        // Remove after animation completes
         setTimeout(() => {
             if (errorElement.parentNode) {
                 errorElement.parentNode.removeChild(errorElement);
@@ -355,6 +315,6 @@ class ErrorHandler {
     }
 }
 
-// Create and export a singleton instance
+// Create and export singleton instance
 const errorHandler = new ErrorHandler();
 export default errorHandler; 

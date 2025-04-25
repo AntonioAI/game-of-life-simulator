@@ -4,6 +4,10 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
+import { createButtonTemplate, createSpeedSliderTemplate, createSettingInputTemplate, 
+    createSelectDropdownTemplate, createPrimaryButtonTemplate } from './templates/ControlsComponentTemplate.js';
+import { createElementFromHTML } from '../utils/DOMHelper.js';
+
 /**
  * Controls class for creating and managing UI controls
  */
@@ -21,15 +25,13 @@ class Controls {
      * @returns {HTMLButtonElement} The created button
      */
     createButton(icon, tooltip, clickHandler) {
-        const button = document.createElement('button');
-        button.innerHTML = `<span class="icon">${icon}</span>`;
-        button.title = tooltip;
+        const buttonElement = createElementFromHTML(createButtonTemplate(icon, tooltip));
         
         if (clickHandler) {
-            button.addEventListener('click', clickHandler);
+            buttonElement.addEventListener('click', clickHandler);
         }
         
-        return button;
+        return buttonElement;
     }
     
     /**
@@ -41,18 +43,14 @@ class Controls {
      * @returns {Object} The created speed control elements: { container, label, slider }
      */
     createSpeedSlider(minSpeed, maxSpeed, initialSpeed, changeHandler) {
-        const speedControl = document.createElement('div');
-        speedControl.className = 'control-panel__speed-control';
+        const speedControlElement = createElementFromHTML(createSpeedSliderTemplate({
+            minSpeed,
+            maxSpeed,
+            initialSpeed
+        }));
         
-        const speedLabel = document.createElement('label');
-        speedLabel.textContent = `Speed: ${initialSpeed} FPS`;
-        speedControl.appendChild(speedLabel);
-        
-        const speedSlider = document.createElement('input');
-        speedSlider.type = 'range';
-        speedSlider.min = minSpeed.toString();
-        speedSlider.max = maxSpeed.toString();
-        speedSlider.value = initialSpeed.toString();
+        const speedLabel = speedControlElement.querySelector('label');
+        const speedSlider = speedControlElement.querySelector('input');
         
         speedSlider.addEventListener('input', (e) => {
             const newSpeed = parseInt(e.target.value);
@@ -66,10 +64,8 @@ class Controls {
             }
         });
         
-        speedControl.appendChild(speedSlider);
-        
         return {
-            container: speedControl,
+            container: speedControlElement,
             label: speedLabel,
             slider: speedSlider
         };
@@ -84,39 +80,31 @@ class Controls {
      * @returns {Object} The created elements: { container, label, input }
      */
     createSettingInput(label, type, value, options = {}) {
-        const container = document.createElement('div');
-        container.className = 'control-panel__setting';
-        
-        const labelElement = document.createElement('label');
-        labelElement.textContent = label;
-        
-        const input = document.createElement('input');
-        input.type = type;
-        input.value = value.toString();
-        
-        // Apply options
+        // Prepare attributes object
+        const attributes = {};
         Object.keys(options).forEach(key => {
-            if (key === 'changeHandler') return; // Skip the event handler
-            input[key] = options[key];
+            if (key !== 'changeHandler') attributes[key] = options[key];
         });
+        
+        const settingElement = createElementFromHTML(createSettingInputTemplate({
+            label,
+            type,
+            value,
+            attributes
+        }));
+        
+        const labelElement = settingElement.querySelector('label');
+        const inputElement = settingElement.querySelector('input');
         
         // Add change handler if provided
         if (options.changeHandler) {
-            input.addEventListener('change', options.changeHandler);
+            inputElement.addEventListener('change', options.changeHandler);
         }
         
-        // For mobile-friendly UI and proper alignment
-        const fieldWrapper = document.createElement('div');
-        fieldWrapper.className = 'control-panel__field';
-        fieldWrapper.appendChild(labelElement);
-        fieldWrapper.appendChild(input);
-        
-        container.appendChild(fieldWrapper);
-        
         return {
-            container,
+            container: settingElement,
             label: labelElement,
-            input
+            input: inputElement
         };
     }
     
@@ -129,39 +117,26 @@ class Controls {
      * @returns {Object} The created elements: { container, label, select }
      */
     createSelectDropdown(label, options, initialValue, changeHandler) {
-        const container = document.createElement('div');
-        container.className = 'control-panel__dropdown';
+        const dropdownElement = createElementFromHTML(createSelectDropdownTemplate({
+            label,
+            options,
+            initialValue
+        }));
         
-        const labelElement = document.createElement('label');
-        labelElement.textContent = label;
-        container.appendChild(labelElement);
-        
-        const select = document.createElement('select');
-        
-        // Add options
-        options.forEach(option => {
-            const optionElement = document.createElement('option');
-            optionElement.value = option.value;
-            optionElement.textContent = option.text;
-            select.appendChild(optionElement);
-        });
-        
-        // Set initial value
-        select.value = initialValue;
+        const labelElement = dropdownElement.querySelector('label');
+        const selectElement = dropdownElement.querySelector('select');
         
         // Add change handler
         if (changeHandler) {
-            select.addEventListener('change', () => {
-                changeHandler(select.value);
+            selectElement.addEventListener('change', () => {
+                changeHandler(selectElement.value);
             });
         }
         
-        container.appendChild(select);
-        
         return {
-            container,
+            container: dropdownElement,
             label: labelElement,
-            select
+            select: selectElement
         };
     }
     
@@ -172,15 +147,13 @@ class Controls {
      * @returns {HTMLButtonElement} The created button
      */
     createPrimaryButton(text, clickHandler) {
-        const button = document.createElement('button');
-        button.textContent = text;
-        button.className = 'control-panel__button--primary';
+        const buttonElement = createElementFromHTML(createPrimaryButtonTemplate(text));
         
         if (clickHandler) {
-            button.addEventListener('click', clickHandler);
+            buttonElement.addEventListener('click', clickHandler);
         }
         
-        return button;
+        return buttonElement;
     }
 }
 
