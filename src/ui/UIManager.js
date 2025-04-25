@@ -37,6 +37,9 @@ class UIManager {
         
         // Store event subscriptions for cleanup
         this.subscriptions = [];
+        
+        // Debounce timer for analytics updates
+        this.analyticsUpdateTimer = null;
     }
     
     /**
@@ -68,12 +71,32 @@ class UIManager {
      * Subscribe to events from EventBus
      */
     subscribeToEvents() {
-        // Subscribe to generation updated events to update analytics
-        this.subscriptions = [
-            eventBus.subscribe(Events.GENERATION_UPDATED, (data) => {
-                this.updateAnalytics();
-            }),
-            
+        // Define events that require analytics updates only
+        const analyticsUpdateEvents = [
+            Events.GENERATION_UPDATED,
+            Events.SIMULATION_RESET, 
+            Events.SIMULATION_STEPPED,
+            Events.CELL_TOGGLED
+            // GRID_RESIZED and SIMULATION_PAUSED need special handling
+        ];
+        
+        // Create a single subscription for all analytics-updating events
+        const analyticsUpdateHandler = (data) => {
+            this.debouncedUpdateAnalytics();
+        };
+        
+        // Store subscriptions for cleanup
+        this.subscriptions = [];
+        
+        // Add subscription for each analytics event
+        analyticsUpdateEvents.forEach(eventName => {
+            this.subscriptions.push(
+                eventBus.subscribe(eventName, analyticsUpdateHandler)
+            );
+        });
+        
+        // Add other event subscriptions with different handlers
+        this.subscriptions.push(
             eventBus.subscribe(Events.SIMULATION_STARTED, () => {
                 const stateElement = document.getElementById('simulation-state');
                 if (stateElement) {
@@ -86,15 +109,7 @@ class UIManager {
                 if (stateElement) {
                     stateElement.textContent = 'Paused';
                 }
-                // Force analytics update on pause to ensure accurate numbers
-                this.updateAnalytics();
-            }),
-            
-            eventBus.subscribe(Events.SIMULATION_RESET, () => {
-                this.updateAnalytics();
-            }),
-            
-            eventBus.subscribe(Events.SIMULATION_STEPPED, () => {
+                // For pause, we want immediate update, not debounced
                 this.updateAnalytics();
             }),
             
@@ -118,6 +133,7 @@ class UIManager {
                     colsInput.value = data.cols;
                 }
                 
+                // Update analytics immediately after grid resize
                 this.updateAnalytics();
             }),
             
@@ -133,12 +149,25 @@ class UIManager {
                 if (boundaryElement) {
                     boundaryElement.textContent = data.boundaryType === 'toroidal' ? 'Toroidal' : 'Finite';
                 }
-            }),
-            
-            eventBus.subscribe(Events.CELL_TOGGLED, () => {
-                this.updateAnalytics();
             })
-        ];
+        );
+    }
+    
+    /**
+     * Debounced version of updateAnalytics to improve performance for rapid events
+     * @param {number} delay - Delay in milliseconds, defaults to 50ms
+     */
+    debouncedUpdateAnalytics(delay = 50) {
+        // Clear any existing timer
+        if (this.analyticsUpdateTimer) {
+            clearTimeout(this.analyticsUpdateTimer);
+        }
+        
+        // Set a new timer
+        this.analyticsUpdateTimer = setTimeout(() => {
+            this.updateAnalytics();
+            this.analyticsUpdateTimer = null;
+        }, delay);
     }
     
     /**
@@ -157,6 +186,12 @@ class UIManager {
      */
     cleanup() {
         this.unsubscribeFromEvents();
+        
+        // Clear any pending analytics update timer
+        if (this.analyticsUpdateTimer) {
+            clearTimeout(this.analyticsUpdateTimer);
+            this.analyticsUpdateTimer = null;
+        }
     }
     
     /**
