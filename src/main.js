@@ -44,14 +44,8 @@ window.addEventListener('unhandledrejection', (event) => {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('=== Starting Game of Life Simulator ===');
     
-    // Remove the old isMobileDevice detection
-    // const isMobileDevice = window.matchMedia('(max-width: 768px)').matches ||
-    //    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // Detect if on mobile
-    if (isMobileDevice()) {
-        document.body.classList.add('mobile-device');
-    }
+    // NOTE: Mobile device detection is now handled by TouchHandler.js
+    // and is initialized in init.js, which runs before main.js
     
     // Configure animation manager for performance
     // Set throttling for mobile devices to reduce power consumption
