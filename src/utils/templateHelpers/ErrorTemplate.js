@@ -1,11 +1,20 @@
 /**
  * Game of Life Simulator - Error Template Module
- * Responsible for generating HTML for error notifications
+ * 
+ * TEMPLATE HELPER UTILITY
+ * 
+ * This module provides utilities for generating error notification templates.
+ * Unlike UI component templates, these are utility functions for creating
+ * system-level notifications across the application. They provide reusable
+ * error display functionality that can be used by any component.
+ * 
  * Copyright (c) 2025 Antonio Innocente
  */
 
 /**
  * Generate HTML for the error container
+ * Creates the base container that will hold all error notifications
+ * 
  * @returns {string} HTML string for the error container
  */
 export function createErrorContainerTemplate() {
@@ -22,6 +31,11 @@ export function createErrorContainerTemplate() {
 
 /**
  * Generate HTML for an error notification
+ * Creates a styled notification element for displaying errors, warnings and info messages
+ * 
+ * This is a helper utility that can be used by any part of the application
+ * to display standardized error messages.
+ * 
  * @param {Object} errorDetails - Error details
  * @param {string} errorDetails.level - Error level (info, warning, error, fatal)
  * @param {string} errorDetails.message - Error message
@@ -81,6 +95,8 @@ export function createErrorNotificationTemplate(errorDetails) {
 
 /**
  * Get background color for error level
+ * Utility function that provides consistent colors for different error levels
+ * 
  * @param {string} level - Error level
  * @returns {string} CSS color
  * @private

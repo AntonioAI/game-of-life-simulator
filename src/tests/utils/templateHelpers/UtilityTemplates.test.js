@@ -6,10 +6,10 @@
 
 import { createButtonTemplate, createSpeedSliderTemplate, 
     createSettingInputTemplate, createSelectDropdownTemplate, 
-    createPrimaryButtonTemplate } from '../ui/templates/ControlsComponentTemplate.js';
-import { createErrorContainerTemplate, createErrorNotificationTemplate } from '../utils/templates/ErrorTemplate.js';
-import { createPerformanceMonitorTemplate, createPerformanceStatsTemplate } from '../utils/templates/PerformanceMonitorTemplate.js';
-import { ErrorLevel, ErrorCategory } from '../utils/ErrorHandler.js';
+    createPrimaryButtonTemplate } from '../../../ui/componentTemplates/ControlsComponentTemplate.js';
+import { createErrorContainerTemplate, createErrorNotificationTemplate } from '../../../utils/templateHelpers/ErrorTemplate.js';
+import { createPerformanceMonitorTemplate, createPerformanceStatsTemplate } from '../../../utils/templateHelpers/PerformanceMonitorTemplate.js';
+import { ErrorLevel, ErrorCategory } from '../../../utils/ErrorHandler.js';
 
 /**
  * Test utility templates

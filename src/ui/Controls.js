@@ -5,7 +5,7 @@
  */
 
 import { createButtonTemplate, createSpeedSliderTemplate, createSettingInputTemplate, 
-    createSelectDropdownTemplate, createPrimaryButtonTemplate } from './templates/ControlsComponentTemplate.js';
+    createSelectDropdownTemplate, createPrimaryButtonTemplate } from './componentTemplates/ControlsComponentTemplate.js';
 import { createElementFromHTML } from '../utils/DOMHelper.js';
 
 /**

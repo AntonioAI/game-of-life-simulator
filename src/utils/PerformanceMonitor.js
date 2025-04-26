@@ -5,7 +5,7 @@
  */
 
 import animationManager from './AnimationManager.js';
-import { createPerformanceMonitorTemplate, createPerformanceStatsTemplate } from './templates/PerformanceMonitorTemplate.js';
+import { createPerformanceMonitorTemplate, createPerformanceStatsTemplate } from './templateHelpers/PerformanceMonitorTemplate.js';
 import { createElementFromHTML } from './DOMHelper.js';
 
 /**

@@ -4,9 +4,9 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import { createSimulationControlsTemplate, createGridSettingsTemplate, createBoundaryToggleTemplate } from '../ui/templates/ControlsTemplate.js';
-import { createAnalyticsTemplate } from '../ui/templates/AnalyticsTemplate.js';
-import { createPatternLibraryContainerTemplate, createPatternCategoryTemplate, createPatternCardTemplate } from '../ui/templates/PatternLibraryTemplate.js';
+import { createSimulationControlsTemplate, createGridSettingsTemplate, createBoundaryToggleTemplate } from '../../../ui/componentTemplates/ControlsTemplate.js';
+import { createAnalyticsTemplate } from '../../../ui/componentTemplates/AnalyticsTemplate.js';
+import { createPatternLibraryContainerTemplate, createPatternCategoryTemplate, createPatternCardTemplate } from '../../../ui/componentTemplates/PatternLibraryTemplate.js';
 
 /**
  * Test all template generation functions

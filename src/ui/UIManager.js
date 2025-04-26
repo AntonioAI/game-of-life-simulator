@@ -7,8 +7,8 @@
 import Controls from './Controls.js';
 import eventBus, { Events } from '../core/EventBus.js';
 import config from '../config/GameConfig.js';
-import { createSimulationControlsTemplate, createGridSettingsTemplate, createBoundaryToggleTemplate } from './templates/ControlsTemplate.js';
-import { createAnalyticsTemplate } from './templates/AnalyticsTemplate.js';
+import { createSimulationControlsTemplate, createGridSettingsTemplate, createBoundaryToggleTemplate } from './componentTemplates/ControlsTemplate.js';
+import { createAnalyticsTemplate } from './componentTemplates/AnalyticsTemplate.js';
 import { createElementsFromHTML } from '../utils/DOMHelper.js';
 
 /**

@@ -5,7 +5,7 @@
  */
 
 import eventBus, { Events } from '../core/EventBus.js';
-import { createPatternLibraryContainerTemplate, createPatternCategoryTemplate, createPatternCardTemplate } from '../ui/templates/PatternLibraryTemplate.js';
+import { createPatternLibraryContainerTemplate, createPatternCategoryTemplate, createPatternCardTemplate } from '../ui/componentTemplates/PatternLibraryTemplate.js';
 import { createElementsFromHTML } from '../utils/DOMHelper.js';
 
 /**

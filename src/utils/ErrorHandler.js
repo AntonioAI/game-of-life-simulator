@@ -4,7 +4,7 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import { createErrorContainerTemplate, createErrorNotificationTemplate } from './templates/ErrorTemplate.js';
+import { createErrorContainerTemplate, createErrorNotificationTemplate } from './templateHelpers/ErrorTemplate.js';
 import { createElementFromHTML } from './DOMHelper.js';
 
 /**

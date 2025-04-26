@@ -1,11 +1,19 @@
 /**
  * Game of Life Simulator - Controls Template Module
- * Responsible for generating HTML for control components
+ * 
+ * UI COMPONENT TEMPLATE
+ * 
+ * This module generates HTML markup for the control panel UI components.
+ * It creates DOM structures for interactive elements like buttons, sliders,
+ * and grid configuration controls that users directly interact with.
+ * 
  * Copyright (c) 2025 Antonio Innocente
  */
 
 /**
- * Generate HTML for simulation controls
+ * Generate HTML for simulation controls panel
+ * Creates the structure for play/pause/step buttons and speed controls
+ * 
  * @returns {string} HTML string for simulation controls
  */
 export function createSimulationControlsTemplate() {
@@ -24,7 +32,9 @@ export function createSimulationControlsTemplate() {
 }
 
 /**
- * Generate HTML for grid settings
+ * Generate HTML for grid settings panel
+ * Creates form elements for users to adjust grid dimensions
+ * 
  * @param {Object} options - Grid options
  * @param {number} options.rows - Current number of rows
  * @param {number} options.cols - Current number of columns
@@ -68,7 +78,9 @@ export function createGridSettingsTemplate(options = {}) {
 }
 
 /**
- * Generate HTML for boundary toggle
+ * Generate HTML for boundary toggle selector
+ * Creates a dropdown for users to select boundary behavior
+ * 
  * @param {string} currentType - Current boundary type ('toroidal' or 'finite')
  * @returns {string} HTML string for boundary toggle
  */

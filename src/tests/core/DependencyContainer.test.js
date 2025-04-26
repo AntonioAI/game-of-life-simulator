@@ -1,5 +1,5 @@
 /**
- * Game of Life Simulator - Dependency Container Tests
+ * Game of Life Simulator - Dependency Container Comprehensive Tests
  * 
  * Tests the functionality of the DependencyContainer module
  * 
