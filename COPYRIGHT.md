@@ -1,6 +1,6 @@
 # Copyright Notice
 
-Copyright © 2023 Antonio Innocente. All Rights Reserved.
+Copyright © 2025 Antonio Innocente. All Rights Reserved.
 
 ## Terms of Use
 

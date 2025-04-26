@@ -1,6 +1,6 @@
 # Game of Life Simulator
 
-An interactive web-based implementation of Conway's Game of Life built with HTML5 Canvas and JavaScript. Experience the fascinating world of cellular automata through this modern, responsive simulator.
+An interactive, performant web-based implementation of Conway's Game of Life built with HTML5 Canvas and modern JavaScript. Experience the fascinating world of cellular automata through this responsive simulator.
 
 ![Game of Life Simulator](screenshot.png)
 
@@ -43,11 +43,9 @@ An interactive web-based implementation of Conway's Game of Life built with HTML
 
 2. Run a local web server to serve the files:
 
-   Since this application uses ES modules (`import`/`export`), you'll need to serve the files through a web server due to browser security restrictions when loading modules from `file://` URLs.
+   Since this application uses ES modules (`import`/`export`), you'll need to serve the files through a web server.
 
-   You can use one of these methods:
-
-   **Option 1: Using Python (if installed):**
+   **Option 1: Using Python:**
    ```bash
    # For Python 3.x
    python -m http.server
@@ -57,9 +55,9 @@ An interactive web-based implementation of Conway's Game of Life built with HTML
    ```
    Then open http://localhost:8000 in your browser.
 
-   **Option 2: Using Node.js (if installed):**
+   **Option 2: Using Node.js:**
    ```bash
-   # Install a simple HTTP server globally (if not already installed)
+   # Install a simple HTTP server globally
    npm install -g http-server
 
    # Run the server
@@ -68,12 +66,9 @@ An interactive web-based implementation of Conway's Game of Life built with HTML
    Then open http://localhost:8080 in your browser.
 
    **Option 3: Using Visual Studio Code:**
-   If you're using VS Code, install the "Live Server" extension, then right-click on index.html and select "Open with Live Server".
+   Install the "Live Server" extension, then right-click on index.html and select "Open with Live Server".
 
-   **Option 4: Using any modern web server:**
-   You can use any web server that can serve static files (Apache, Nginx, etc.)
-
-The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrate the fascinating evolution of Conway's Game of Life.
+The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrate Conway's Game of Life evolution.
 
 ## Usage
 
@@ -89,27 +84,25 @@ The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrat
    - Speed slider: Adjust simulation speed from 1 to 60 FPS
 
 3. **Grid Settings**:
-   - Choose from preset grid sizes (50×50, 75×75, 100×100)
+   - Choose from preset grid sizes
    - Enter custom dimensions (10-200 cells per side)
    - Toggle between toroidal (wrapping) and finite boundaries
 
 4. **Pattern Library**:
    - Use the search bar to find specific patterns
    - Click on a pattern thumbnail to place it on the grid
-   - Patterns are categorized by type (Still Life, Oscillator, Spaceship, Growth)
+   - Patterns are categorized by type
 
-## Technical Details
+## Technical Architecture
 
-- Built with vanilla JavaScript (ES6 modules) and HTML5 Canvas
-- No external dependencies
-- Modular architecture with dependency injection
-- Optimized for performance with:
-  - RequestAnimationFrame for smooth animation
-  - Batch rendering operations
-  - Efficient grid computation
-  - Mobile-specific optimizations
+### Core Principles
 
-## Project Structure
+- **Modular Architecture**: Components are decoupled and follow the single responsibility principle
+- **Dependency Injection**: Core systems use a DI container to manage dependencies
+- **Performance Optimization**: Uses requestAnimationFrame and efficient canvas operations
+- **Cross-Browser Compatibility**: Works on all modern browsers (Chrome, Firefox, Safari, Edge)
+
+### Project Structure
 
 ```
 /src
@@ -117,14 +110,24 @@ The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrat
     GameManager.js       // Orchestration and game loop
     Grid.js              // Grid state and operations
     Rules.js             // Conway's rules implementation
+    DependencyContainer.js // Manages component dependencies
   /rendering
-    Renderer.js          // Canvas rendering
+    Renderer.js          // Canvas rendering optimizations
   /ui
     UIManager.js         // UI coordination
     Controls.js          // User controls
+    ConfigPanel.js       // Configuration interface
   /patterns
     PatternLibrary.js    // Pattern definitions and management
+  /utils
+    AnimationManager.js  // Manages animation frames
+    DeviceUtils.js       // Device detection helpers
+    CanvasDebugger.js    // Canvas debugging utilities
+    ErrorHandler.js      // Error handling and reporting
+    ZoomDetector.js      // Handles browser zoom changes
+    PerformanceMonitor.js // Performance tracking
   main.js                // Application entry point
+  init.js                // Initial loading
 
 /styles
   /core
@@ -143,20 +146,32 @@ The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrat
     animations.css       // Animations and transitions
     helpers.css          // Utility classes
   main.css               // Single import file
-  STYLE-GUIDE.md         // CSS style guide and documentation
-  README.md              // CSS architecture documentation
 ```
+
+### Technical Highlights
+
+- **No External Dependencies**: Built with vanilla JavaScript (ES6+ modules)
+- **Responsive Canvas**: Automatically adjusts to viewport size
+- **Device Optimization**: Special handling for mobile and touch devices
+- **Error Handling**: Comprehensive error capture and reporting
+- **Performance Monitoring**: Built-in tools to measure render performance
+- **Browser Zoom Detection**: Maintains proper rendering at different zoom levels
 
 ### CSS Architecture
 
-The project uses a modular CSS architecture with the following characteristics:
-
-- **BEM Methodology**: Block, Element, Modifier naming convention for clear, maintainable CSS
-- **CSS Variables**: Defined in `variables.css` for consistent colors, spacing, and styling
+- **BEM Methodology**: Block, Element, Modifier naming convention
+- **CSS Variables**: Consistent colors, spacing, and styling
+- **Mobile-First Design**: Ensures proper display on all devices
 - **Modular Structure**: Separated by concerns (core, components, layout, utilities)
-- **Mobile-First Responsive Design**: Adapts seamlessly to different screen sizes
 
-For more details on the CSS structure and available utility classes, see the [CSS Style Guide](styles/STYLE-GUIDE.md) and [CSS Architecture Documentation](styles/README.md).
+## Deployment
+
+This project is designed for static hosting solutions like GitHub Pages, Netlify, or Vercel for:
+- Fast loading times
+- Easy continuous deployment
+- Cost efficiency
+
+Simply push your changes to your chosen hosting provider's repository, and your simulator will be live in minutes.
 
 ## Contributing
 

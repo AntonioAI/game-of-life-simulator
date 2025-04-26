@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Interactive Game of Life simulator with customizable patterns and controls">
     <title>Game of Life Simulator</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="/styles/main.css">
     <meta name="google-adsense-account" content="ca-pub-4772375115624530">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4772375115624530" crossorigin="anonymous"></script>
 </head>
@@ -73,16 +73,16 @@
     </div>
 
     <!-- Import initialization module first -->
-    <script type="module" src="src/init.js"></script>
+    <script type="module" src="/src/init.js"></script>
     
     <!-- Main application entry point -->
-    <script type="module" src="src/main.js"></script>
+    <script type="module" src="/src/main.js"></script>
     
     <!-- Test runner -->
     <script type="module">
         // Run tests if in development mode with ?test=true parameter
         if (window.location.search.includes('test=true')) {
-            import('./src/tests/runTests.js')
+            import('/src/tests/runTests.js')
                 .then(() => console.log('Test runner loaded'))
                 .catch(err => console.error('Failed to load test runner:', err));
         }
