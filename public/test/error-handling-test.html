@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life Error Handling Test</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .test-panel {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        
+        .test-button {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background-color: #0069d9;
+        }
+        
+        .canvas-container {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            height: 400px;
+        }
+        
+        .game-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .log-panel {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f1f1f1;
+            height: 200px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Error Handling Test Page</h1>
+    <p>This page tests the error handling system for the Game of Life Simulator.</p>
+    
+    <div class="canvas-container">
+        <canvas class="game-canvas"></canvas>
+    </div>
+    
+    <div class="test-panel">
+        <h2>Error Handler Tests</h2>
+        <button id="btn-run-all-tests" class="test-button">Run All Tests</button>
+        
+        <h3>Individual Tests</h3>
+        <button id="btn-test-info" class="test-button">Test Info Message</button>
+        <button id="btn-test-warning" class="test-button">Test Warning Message</button>
+        <button id="btn-test-error" class="test-button">Test Error Message</button>
+        <button id="btn-test-out-of-bounds" class="test-button">Test Out of Bounds</button>
+        <button id="btn-test-invalid-pattern" class="test-button">Test Invalid Pattern</button>
+        <button id="btn-test-dependency" class="test-button">Test Missing Dependency</button>
+        <button id="btn-test-toggle-visibility" class="test-button">Toggle Error Visibility</button>
+        <button id="btn-clear-log" class="test-button">Clear Error Log</button>
+    </div>
+    
+    <div class="log-panel" id="log-panel">
+        <h3>Test Log</h3>
+        <div id="log-output"></div>
+    </div>
+    
+    <!-- Load the application scripts -->
+    <script type="module">
+        import GameManager from '/src/core/GameManager.js';
+        import Grid from '/src/core/Grid.js';
+        import Rules from '/src/core/Rules.js';
+        import Renderer from '/src/rendering/Renderer.js';
+        import PatternLibrary from '/src/patterns/PatternLibrary.js';
+        import DependencyContainer from '/src/core/DependencyContainer.js';
+        import errorHandler, { ErrorCategory, ErrorLevel } from '/src/utils/ErrorHandler.js';
+        
+        let grid, renderer, gameManager, rules;
+        let dependencyContainer;
+        
+        // Initialize application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up custom logger to display in the UI
+            const logOutput = document.getElementById('log-output');
+            const originalConsoleLog = console.log;
+            const originalConsoleWarn = console.warn;
+            const originalConsoleError = console.error;
+            
+            // Override console methods to log to UI
+            console.log = function(...args) {
+                originalConsoleLog.apply(console, args);
+                const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+                appendToLog(message);
+            };
+            
+            console.warn = function(...args) {
+                originalConsoleWarn.apply(console, args);
+                const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+                appendToLog(`⚠️ ${message}`);
+            };
+            
+            console.error = function(...args) {
+                originalConsoleError.apply(console, args);
+                const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+                appendToLog(`❌ ${message}`);
+            };
+            
+            function appendToLog(message) {
+                const line = document.createElement('div');
+                line.textContent = message;
+                logOutput.appendChild(line);
+                logOutput.scrollTop = logOutput.scrollHeight;
+            }
+            
+            // Initialize components
+            initializeComponents();
+            
+            // Set up test buttons
+            document.getElementById('btn-run-all-tests').addEventListener('click', runAllTests);
+            document.getElementById('btn-test-info').addEventListener('click', testInfoMessage);
+            document.getElementById('btn-test-warning').addEventListener('click', testWarningMessage);
+            document.getElementById('btn-test-error').addEventListener('click', testErrorMessage);
+            document.getElementById('btn-test-out-of-bounds').addEventListener('click', testOutOfBounds);
+            document.getElementById('btn-test-invalid-pattern').addEventListener('click', testInvalidPattern);
+            document.getElementById('btn-test-dependency').addEventListener('click', testMissingDependency);
+            document.getElementById('btn-test-toggle-visibility').addEventListener('click', toggleErrorVisibility);
+            document.getElementById('btn-clear-log').addEventListener('click', clearErrorLog);
+        });
+        
+        function initializeComponents() {
+            // Create dependency container
+            dependencyContainer = new DependencyContainer();
+            
+            // Get canvas element
+            const canvas = document.querySelector('.game-canvas');
+            
+            // Create rules instance
+            rules = new Rules();
+            rules.initialize();
+            
+            // Create grid with rules dependency
+            grid = new Grid({ rules }, { 
+                rows: 30, 
+                cols: 30,
+                boundaryType: 'toroidal' 
+            });
+            
+            // Create renderer with canvas dependency
+            renderer = new Renderer({ canvas });
+            renderer.initialize();
+            
+            // Create game manager with grid and renderer dependencies
+            gameManager = new GameManager({
+                grid,
+                renderer
+            });
+            
+            // Register components with the DependencyContainer
+            dependencyContainer.register('canvas', canvas, true);
+            dependencyContainer.register('rules', rules, true);
+            dependencyContainer.register('grid', grid, true);
+            dependencyContainer.register('renderer', renderer, true);
+            dependencyContainer.register('gameManager', gameManager, true);
+            
+            // Initialize components
+            gameManager.initialize();
+            
+            // Draw initial state
+            renderer.drawGrid(grid);
+            
+            console.log('Components initialized');
+        }
+        
+        // Test Functions
+        function runAllTests() {
+            console.log('=== Running All Tests ===');
+            testInfoMessage();
+            testWarningMessage();
+            testErrorMessage();
+            testOutOfBounds();
+            testInvalidPattern();
+            testMissingDependency();
+            console.log('=== Tests Complete ===');
+        }
+        
+        function testInfoMessage() {
+            console.log('Testing info message...');
+            errorHandler.logInfo('This is a test info message', ErrorCategory.UI);
+        }
+        
+        function testWarningMessage() {
+            console.log('Testing warning message...');
+            errorHandler.logWarning('This is a test warning message', ErrorCategory.VALIDATION);
+        }
+        
+        function testErrorMessage() {
+            console.log('Testing error message...');
+            errorHandler.logError('This is a test error message', ErrorCategory.SYSTEM);
+        }
+        
+        function testOutOfBounds() {
+            console.log('Testing out of bounds error...');
+            try {
+                grid.toggleCell(1000, 1000);
+            } catch (error) {
+                errorHandler.logError(`${error.message}`, ErrorCategory.GRID);
+            }
+        }
+        
+        function testInvalidPattern() {
+            console.log('Testing invalid pattern error...');
+            try {
+                PatternLibrary.getPattern('non-existent-pattern');
+            } catch (error) {
+                errorHandler.logError(`${error.message}`, ErrorCategory.PATTERN);
+            }
+        }
+        
+        function testMissingDependency() {
+            console.log('Testing missing dependency error...');
+            try {
+                const testContainer = new DependencyContainer();
+                testContainer.resolve('nonexistent');
+            } catch (error) {
+                errorHandler.logError(`${error.message}`, ErrorCategory.DEPENDENCY);
+            }
+        }
+        
+        function toggleErrorVisibility() {
+            const container = document.getElementById('error-container');
+            if (container) {
+                container.style.display = container.style.display === 'none' ? 'block' : 'none';
+                console.log(`Error visibility: ${container.style.display === 'none' ? 'hidden' : 'visible'}`);
+            } else {
+                console.warn('Error container not found');
+            }
+        }
+        
+        function clearErrorLog() {
+            const container = document.getElementById('error-container');
+            if (container) {
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+                console.log('Error log cleared');
+            } else {
+                console.warn('Error container not found');
+            }
+        }
+    </script>
+</body>
+</html> 

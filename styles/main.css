@@ -32,6 +32,8 @@
 @import 'components/controls.css';  /* Simulation control buttons and inputs */
 @import 'components/analytics.css'; /* Game statistics display */
 @import 'components/patterns.css';  /* Pattern library and selection */
+@import 'components/config.css';    /* Configuration panel */
+@import 'components/error.css';     /* Error notifications */
 
 /* ==========================================================================
    4. Utility Styles - Helper classes

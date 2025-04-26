@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Interactive Game of Life simulator with customizable patterns and controls">
     <title>Game of Life Simulator</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="/styles/main.css">
     <meta name="google-adsense-account" content="ca-pub-4772375115624530">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4772375115624530" crossorigin="anonymous"></script>
 </head>
@@ -44,6 +44,10 @@
                     <h2 class="control-panel__title u-panel-title">Controls</h2>
                     <!-- Simulation controls will be added by JavaScript -->
                 </div>
+                
+                <div class="config-panel u-panel transition-shadow">
+                    <!-- Config panel will be inserted here by JavaScript -->
+                </div>
             </div>
             
             <div class="game-canvas__container">
@@ -68,75 +72,20 @@
         </footer>
     </div>
 
-    <script type="module" src="src/main.js"></script>
-    <script>
-        // Set current year in footer
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        // Check if device is mobile
-        function isMobileDevice() {
-            return (navigator.userAgent.match(/Android/i) ||
-                    navigator.userAgent.match(/webOS/i) ||
-                    navigator.userAgent.match(/iPhone/i) ||
-                    navigator.userAgent.match(/iPad/i) ||
-                    navigator.userAgent.match(/iPod/i) ||
-                    navigator.userAgent.match(/BlackBerry/i) ||
-                    navigator.userAgent.match(/Windows Phone/i));
+    <!-- Import initialization module first -->
+    <script type="module" src="/src/init.js"></script>
+    
+    <!-- Main application entry point -->
+    <script type="module" src="/src/main.js"></script>
+    
+    <!-- Test runner -->
+    <script type="module">
+        // Run tests if in development mode with ?test=true parameter
+        if (window.location.search.includes('test=true')) {
+            import('/src/tests/runTests.js')
+                .then(() => console.log('Test runner loaded'))
+                .catch(err => console.error('Failed to load test runner:', err));
         }
-        
-        // Add mobile device class if needed
-        if (isMobileDevice()) {
-            document.body.classList.add('mobile-device');
-        }
-        
-        // Prevent double-tap zoom on iOS and other mobile browsers
-        document.addEventListener('touchstart', function(event) {
-            if (event.target.tagName === 'BUTTON' || 
-                event.target.tagName === 'INPUT' || 
-                event.target.tagName === 'CANVAS' ||
-                event.target.tagName === 'SELECT') {
-                event.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Handle device orientation changes
-        window.addEventListener('orientationchange', function() {
-            // Add a small delay to allow the browser to update dimensions
-            setTimeout(function() {
-                // Trigger resize event to recalculate canvas dimensions
-                window.dispatchEvent(new Event('resize'));
-            }, 200);
-        });
-        
-        // Fix for iOS 100vh issue (where 100vh includes the address bar)
-        function setVhProperty() {
-            // Set CSS custom property based on the actual inner height
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        
-        // Run on load and resize
-        window.addEventListener('resize', setVhProperty);
-        setVhProperty();
-        
-        // Monitor for browser zoom changes
-        let lastPixelRatio = window.devicePixelRatio || 1;
-        
-        function checkForZoom() {
-            const currentPixelRatio = window.devicePixelRatio || 1;
-            
-            // If the pixel ratio has changed, the user likely zoomed
-            if (Math.abs(currentPixelRatio - lastPixelRatio) > 0.001) {
-                lastPixelRatio = currentPixelRatio;
-                window.dispatchEvent(new Event('resize'));
-            }
-            
-            // Continue checking
-            requestAnimationFrame(checkForZoom);
-        }
-        
-        // Start monitoring for zoom
-        checkForZoom();
     </script>
 </body>
 </html> 

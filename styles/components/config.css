@@ -1,0 +1,134 @@
+/**
+ * Game of Life Simulator - Config Panel Styles
+ * Styles for the configuration UI panel
+ * Copyright (c) 2025 Antonio Innocente
+ */
+
+/* Config Panel */
+.config-panel {
+    margin-top: 20px;
+}
+
+.config-panel__title {
+    margin-bottom: 15px;
+}
+
+/* Config Item Styles */
+.config-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.config-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.config-item label {
+    flex: 1;
+    min-width: 120px;
+    margin-right: 10px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.config-item input[type="color"] {
+    width: 40px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.config-item input[type="range"] {
+    flex: 1;
+    min-width: 120px;
+    margin-right: 10px;
+}
+
+.config-item select {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 0.9rem;
+}
+
+/* Section Titles */
+.u-panel-section-title {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Action Buttons */
+.config-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.config-actions button {
+    padding: 8px 15px;
+    border-radius: 4px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+}
+
+.btn-secondary {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .config-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .config-item label {
+        margin-bottom: 5px;
+        width: 100%;
+    }
+    
+    .config-item input[type="range"],
+    .config-item select {
+        width: 100%;
+    }
+    
+    .config-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .config-actions button {
+        width: 100%;
+    }
+} 
