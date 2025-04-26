@@ -1,10 +1,10 @@
 /**
- * Game of Life Simulator - DeviceUtils Tests
- * Tests for device utility functions
+ * Game of Life Simulator - Device Utilities Tests
+ * Tests for device detection utilities
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import { isMobileDevice, MOBILE_BREAKPOINT } from '../utils/DeviceUtils.js';
+import { isMobileDevice, MOBILE_BREAKPOINT } from '../../utils/DeviceUtils.js';
 
 function testDeviceUtils() {
     console.log('Testing DeviceUtils...');

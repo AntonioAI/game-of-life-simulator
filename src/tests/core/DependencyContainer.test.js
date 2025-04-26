@@ -6,7 +6,7 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import DependencyContainer from '../core/DependencyContainer.js';
+import DependencyContainer from '../../core/DependencyContainer.js';
 
 /**
  * Test suite for DependencyContainer

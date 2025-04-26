@@ -4,7 +4,7 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import eventBus, { Events } from '../core/EventBus.js';
+import eventBus, { Events } from '../../core/EventBus.js';
 
 /**
  * Test the EventBus functionality
@@ -47,17 +47,30 @@ function testEventBus() {
     
     console.assert(counter1 === 1 && counter2 === 1, 'Multiple handlers should be called');
     
-    // Test error handling
+    // Test error handling - temporarily override console.error
     let errorThrown = false;
+    const originalConsoleError = console.error;
+    console.error = function(message, error) {
+        // Only silence our test error, allow other errors to be logged
+        if (error && error.message === 'Test error') {
+            // Error is expected, verify it's what we expect
+            errorThrown = error.message === 'Test error';
+        } else {
+            originalConsoleError.apply(console, arguments);
+        }
+    };
+    
     eventBus.subscribe('error.event', () => {
-        errorThrown = true;
         throw new Error('Test error');
     });
     
     // This should not throw to the calling code
     eventBus.publish('error.event');
     
-    console.assert(errorThrown, 'Error handler should be called');
+    // Restore console.error
+    console.error = originalConsoleError;
+    
+    console.assert(errorThrown, 'Error handler should be called and error should be caught');
     
     // Clear all subscriptions for cleanup
     eventBus.clear();

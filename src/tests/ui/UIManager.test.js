@@ -4,7 +4,7 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import UIManager from '../ui/UIManager.js';
+import UIManager from '../../ui/UIManager.js';
 
 /**
  * Mock the DOM environment for testing

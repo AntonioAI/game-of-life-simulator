@@ -4,8 +4,8 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import Grid from '../core/Grid.js';
-import Rules from '../core/Rules.js';
+import Grid from '../../core/Grid.js';
+import Rules from '../../core/Rules.js';
 
 /**
  * Test the Grid class for correct neighbor counting and generation computation
@@ -69,12 +69,26 @@ function testNextGenerationComputation() {
     // Compute next generation
     const nextGen = grid.computeNextGeneration();
     
+    // Print the current state of the grid for debugging
+    console.log("Next generation grid state:");
+    for (let y = 0; y < grid.rows; y++) {
+        console.log(nextGen[y].map(cell => cell === 1 ? 'X' : '.').join(' '));
+    }
+    
     // Verify expected results for glider's next step
-    console.assert(nextGen[0][0] === 0, `Cell (0,0) should be dead in next gen, got ${nextGen[0][0]}`);
-    console.assert(nextGen[1][1] === 0, `Cell (1,1) should be dead in next gen, got ${nextGen[1][1]}`);
+    // The glider pattern evolves as follows:
+    // Generation 1:    Generation 2:
+    // .X.              ...
+    // ..X              X.X
+    // XXX              .XX
+    //                  .X.
+    
+    console.assert(nextGen[0][1] === 0, `Cell (1,0) should be dead in next gen, got ${nextGen[0][1]}`);
+    console.assert(nextGen[1][0] === 1, `Cell (0,1) should be alive in next gen, got ${nextGen[1][0]}`);
+    console.assert(nextGen[1][2] === 1, `Cell (2,1) should be alive in next gen, got ${nextGen[1][2]}`);
+    console.assert(nextGen[2][1] === 1, `Cell (1,2) should be alive in next gen, got ${nextGen[2][1]}`);
     console.assert(nextGen[2][2] === 1, `Cell (2,2) should be alive in next gen, got ${nextGen[2][2]}`);
-    console.assert(nextGen[1][3] === 1, `Cell (1,3) should be alive in next gen, got ${nextGen[1][3]}`);
-    console.assert(nextGen[2][3] === 1, `Cell (2,3) should be alive in next gen, got ${nextGen[2][3]}`);
+    console.assert(nextGen[3][1] === 1, `Cell (1,3) should be alive in next gen, got ${nextGen[3][1]}`);
     
     console.log('✓ Next generation computation tests passed');
 }

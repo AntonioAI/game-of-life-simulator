@@ -4,13 +4,13 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import DependencyContainer from '../core/DependencyContainer.js';
-import Grid from '../core/Grid.js';
-import Rules from '../core/Rules.js';
-import GameManager from '../core/GameManager.js';
-import Renderer from '../rendering/Renderer.js';
-import UIManager from '../ui/UIManager.js';
-import Controls from '../ui/Controls.js';
+import DependencyContainer from '../../core/DependencyContainer.js';
+import Grid from '../../core/Grid.js';
+import Rules from '../../core/Rules.js';
+import GameManager from '../../core/GameManager.js';
+import Renderer from '../../rendering/Renderer.js';
+import UIManager from '../../ui/UIManager.js';
+import Controls from '../../ui/Controls.js';
 
 /**
  * Test function to verify dependency injection is working correctly

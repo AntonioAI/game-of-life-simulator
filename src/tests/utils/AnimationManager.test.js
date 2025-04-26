@@ -4,8 +4,9 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import animationManager from '../utils/AnimationManager.js';
-import ZoomDetector from '../utils/ZoomDetector.js';
+// Import the AnimationManager instance (default export)
+import animationManager from '../../utils/AnimationManager.js';
+import ZoomDetector from '../../utils/ZoomDetector.js';
 
 /**
  * Test the AnimationManager functionality
@@ -15,7 +16,7 @@ function testAnimationManager() {
     
     // Test animation registration
     const animationId = animationManager.register(() => {}, 'testAnimation');
-    console.assert(typeof animationId === 'number', 'AnimationManager should return a numeric ID');
+    console.assert(typeof animationId === 'string', 'AnimationManager should return a string ID');
     
     // Test active animation count
     const activeCount = animationManager.getActiveAnimationCount();
@@ -23,11 +24,11 @@ function testAnimationManager() {
     
     // Test pause functionality
     animationManager.pause(animationId);
-    console.assert(animationManager.isPaused(animationId), 'Animation should be paused');
+    console.assert(!animationManager.isActive(animationId), 'Animation should be paused');
     
     // Test resume functionality
     animationManager.resume(animationId);
-    console.assert(!animationManager.isPaused(animationId), 'Animation should be resumed');
+    console.assert(animationManager.isActive(animationId), 'Animation should be resumed');
     
     // Test unregistration
     animationManager.unregister(animationId);

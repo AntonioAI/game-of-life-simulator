@@ -4,7 +4,7 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import config, { saveConfig } from '../config/GameConfig.js';
+import config, { saveConfig } from '../../config/GameConfig.js';
 
 function testConfig() {
     // Test that the configuration object has the expected structure

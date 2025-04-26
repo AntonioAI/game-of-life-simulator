@@ -4,7 +4,7 @@
  * Copyright (c) 2025 Antonio Innocente
  */
 
-import PatternLibrary from '../patterns/PatternLibrary.js';
+import PatternLibrary from '../../patterns/PatternLibrary.js';
 
 /**
  * Mock the DOM environment for testing
