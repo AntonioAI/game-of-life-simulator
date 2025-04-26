@@ -6,7 +6,7 @@
 
 import eventBus, { Events } from '../core/EventBus.js';
 import { createPatternLibraryContainerTemplate, createPatternCategoryTemplate, createPatternCardTemplate } from '../ui/componentTemplates/PatternLibraryTemplate.js';
-import { createElementsFromHTML } from '../utils/DOMHelper.js';
+import { createElementsFromHTML, clearElement } from '../utils/DOMHelper.js';
 
 /**
  * PatternLibrary class for managing pattern definitions
@@ -338,7 +338,7 @@ class PatternLibrary {
         }
         
         // Clear existing content
-        patternsContainer.innerHTML = '';
+        clearElement(patternsContainer);
         
         // Create the container structure using the template
         const libraryFragment = createElementsFromHTML(createPatternLibraryContainerTemplate());

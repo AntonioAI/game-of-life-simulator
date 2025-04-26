@@ -40,23 +40,52 @@ export function createElement(tag, attributes = {}, properties = {}, children = 
 }
 
 /**
- * Create an element from an HTML string
+ * Create an element from an HTML string (UNSAFE for user-controlled content)
  * @param {string} html - HTML string to convert to an element
  * @returns {Element} The created element
  */
 export function createElementFromHTML(html) {
+    // SAFETY: Only use this function with trusted HTML templates, never with user input
     const template = document.createElement('template');
+    // Use textContent for setting text content to prevent XSS
+    // Only use innerHTML with trusted static HTML templates
     template.innerHTML = html.trim();
     return template.content.firstChild;
 }
 
 /**
- * Create multiple elements from an HTML string
+ * Create multiple elements from an HTML string (UNSAFE for user-controlled content)
  * @param {string} html - HTML string to convert to elements
  * @returns {DocumentFragment} Document fragment containing the elements
  */
 export function createElementsFromHTML(html) {
+    // SAFETY: Only use this function with trusted HTML templates, never with user input
     const template = document.createElement('template');
+    // Use textContent for setting text content to prevent XSS
+    // Only use innerHTML with trusted static HTML templates
     template.innerHTML = html.trim();
     return template.content;
+}
+
+/**
+ * Set text content safely
+ * @param {Element} element - The DOM element to update
+ * @param {string} text - The text content to set
+ */
+export function setTextContent(element, text) {
+    if (element) {
+        element.textContent = text;
+    }
+}
+
+/**
+ * Clear the content of an element safely
+ * @param {Element} element - The DOM element to clear
+ */
+export function clearElement(element) {
+    if (element) {
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    }
 } 

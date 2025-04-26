@@ -129,7 +129,7 @@
             
             function appendToLog(message) {
                 const line = document.createElement('div');
-                line.innerHTML = message;
+                line.textContent = message;
                 logOutput.appendChild(line);
                 logOutput.scrollTop = logOutput.scrollHeight;
             }
@@ -261,7 +261,9 @@
         function clearErrorLog() {
             const container = document.getElementById('error-container');
             if (container) {
-                container.innerHTML = '';
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
                 console.log('Error log cleared');
             } else {
                 console.warn('Error container not found');

@@ -6,7 +6,7 @@
 
 import animationManager from './AnimationManager.js';
 import { createPerformanceMonitorTemplate, createPerformanceStatsTemplate } from './templateHelpers/PerformanceMonitorTemplate.js';
-import { createElementFromHTML } from './DOMHelper.js';
+import { createElementFromHTML, clearElement } from './DOMHelper.js';
 
 /**
  * Performance monitor for animation frames
@@ -155,7 +155,9 @@ class PerformanceMonitor {
      */
     updateDisplay() {
         if (this.display) {
-            this.display.innerHTML = createPerformanceStatsTemplate(this.stats);
+            // Use safe DOM manipulation instead of innerHTML
+            clearElement(this.display);
+            this.display.appendChild(createElementFromHTML(createPerformanceStatsTemplate(this.stats)));
         }
     }
 }

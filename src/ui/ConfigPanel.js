@@ -6,6 +6,7 @@
 
 import config, { saveConfig } from '../config/GameConfig.js';
 import eventBus, { Events } from '../core/EventBus.js';
+import { createElementsFromHTML, setTextContent } from '../utils/DOMHelper.js';
 
 /**
  * ConfigPanel class for managing configuration UI
@@ -35,8 +36,8 @@ class ConfigPanel {
      * Create the configuration panel UI
      */
     createConfigPanel() {
-        // Create the panel content
-        this.container.innerHTML = `
+        // Create the panel content using a safer approach
+        const configPanelTemplate = `
             <h2 class="config-panel__title u-panel-title">Configuration</h2>
             <div class="u-panel-section">
                 <h3 class="u-panel-section-title">Appearance</h3>
@@ -92,6 +93,12 @@ class ConfigPanel {
             </div>
         `;
         
+        // Clear container and append the template
+        while (this.container.firstChild) {
+            this.container.removeChild(this.container.firstChild);
+        }
+        this.container.appendChild(createElementsFromHTML(configPanelTemplate));
+        
         // Add event listeners to the form elements
         this.addEventListeners();
     }
@@ -123,7 +130,8 @@ class ConfigPanel {
         defaultSpeedSlider.addEventListener('input', (e) => {
             const speed = parseInt(e.target.value);
             config.simulation.defaultSpeed = speed;
-            defaultSpeedValue.textContent = `${speed} FPS`;
+            // Use safe text content method
+            setTextContent(defaultSpeedValue, `${speed} FPS`);
         });
         
         // Grid size selector
