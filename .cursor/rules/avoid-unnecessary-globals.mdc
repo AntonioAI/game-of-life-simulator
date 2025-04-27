@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-Export/import modules instead of relying on window

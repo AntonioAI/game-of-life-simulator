@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-Observer for UI updates, Strategy for rules, etc.

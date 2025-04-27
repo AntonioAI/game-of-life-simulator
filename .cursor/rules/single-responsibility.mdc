@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-Keep GameManager focused on orchestrating game flow
