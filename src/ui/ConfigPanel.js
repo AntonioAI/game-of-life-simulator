@@ -2,6 +2,14 @@
  * Game of Life Simulator - Configuration Panel Module
  * Manages the configuration UI
  * Copyright (c) 2025 Antonio Innocente
+ * 
+ * The ConfigPanel is responsible for managing user preferences that persist between sessions.
+ * Unlike the Controls panel which affects the current simulation immediately,
+ * the Configuration panel handles settings that are saved to localStorage and loaded on startup.
+ * 
+ * Changes in this panel require explicit saving via the "Save Configuration" button.
+ * 
+ * See docs/PANELS.md for more information on the difference between this and the Controls panel.
  */
 
 import config, { saveConfig } from '../config/GameConfig.js';
@@ -10,6 +18,7 @@ import { createElementsFromHTML, setTextContent } from '../utils/DOMHelper.js';
 
 /**
  * ConfigPanel class for managing configuration UI
+ * Handles persistent user preferences for appearance and default settings
  */
 class ConfigPanel {
     constructor(dependencies = {}) {

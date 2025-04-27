@@ -148,6 +148,50 @@
     border-bottom: 1px solid var(--border-color);
 }
 
+/* Documentation link in panel headers */
+.panel-docs-link {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-left: var(--spacing-sm);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background-color: #f5f5f5;
+    transition: all 0.2s ease;
+}
+
+.panel-docs-link:hover {
+    background-color: #e0e0e0;
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Info button in panel headers */
+.panel-info-button {
+    background: none;
+    border: none;
+    padding: 2px;
+    margin-left: var(--spacing-sm);
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.panel-info-button:hover {
+    color: var(--primary-color);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.panel-info-button svg {
+    width: 16px;
+    height: 16px;
+}
+
 .u-panel-section {
     width: 100%;
     padding: var(--spacing-md);

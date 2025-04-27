@@ -93,6 +93,13 @@ The grid will be pre-populated with the R-Pentomino pattern, ready to demonstrat
    - Click on a pattern thumbnail to place it on the grid
    - Patterns are categorized by type
 
+## Documentation
+
+- [UI Panels](docs/PANELS.md) - Documentation on the differences between Control Panel and Configuration Panel
+- [Styles Guide](styles/STYLE-GUIDE.md) - Information about the CSS architecture and styling conventions
+- [Modal Implementation](docs/MODAL_IMPLEMENTATION.md) - Detailed plan for implementing in-app documentation modals
+- [Modal Summary](docs/MODAL_SUMMARY.md) - Quick reference for the modal implementation
+
 ## Technical Architecture
 
 ### Core Principles

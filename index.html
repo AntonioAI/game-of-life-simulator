@@ -40,12 +40,31 @@
         
         <main>
             <div class="layout-sidebar">
-                <div class="control-panel u-panel transition-shadow">
-                    <h2 class="control-panel__title u-panel-title">Controls</h2>
+                <div class="control-panel u-panel transition-shadow" title="Controls for the current simulation session. Changes take effect immediately but do not persist between sessions.">
+                    <h2 class="control-panel__title u-panel-title">
+                        Controls 
+                        <button class="panel-info-button" id="controls-panel-info" aria-label="Information about Controls panel">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </button>
+                    </h2>
                     <!-- Simulation controls will be added by JavaScript -->
                 </div>
                 
-                <div class="config-panel u-panel transition-shadow">
+                <div class="config-panel u-panel transition-shadow" title="Configuration settings for appearance and defaults. Changes are saved between sessions but require clicking Save.">
+                    <h2 class="config-panel__title u-panel-title">
+                        Configuration 
+                        <button class="panel-info-button" id="config-panel-info" aria-label="Information about Configuration panel">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </button>
+                    </h2>
                     <!-- Config panel will be inserted here by JavaScript -->
                 </div>
             </div>
@@ -70,6 +89,104 @@
         <footer class="u-text-center u-margin-top-md">
             <p>Conway's Game of Life Simulator - © <span id="current-year"></span> <a href="https://github.com/AntonioAI" target="_blank" class="transition-color">Antonio Innocente</a> | <a href="https://github.com/AntonioAI/game-of-life-simulator" target="_blank" class="transition-color">Source Code</a></p>
         </footer>
+    </div>
+
+    <!-- Configuration Panel Info Modal -->
+    <div id="config-panel-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="config-panel-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="config-panel-modal-title">Configuration Panel</h3>
+                <span class="modal-close" aria-label="Close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>The Configuration Panel allows you to customize the appearance and default settings of the simulation. Changes made here are saved between browser sessions.</p>
+                
+                <h4>Key Differences from Controls Panel</h4>
+                <ul>
+                    <li><strong>Persistence:</strong> Settings are saved to localStorage and persist between sessions</li>
+                    <li><strong>Effect:</strong> Changes only take effect after clicking "Save Configuration" or on page reload</li>
+                    <li><strong>Purpose:</strong> For setting preferences and appearance rather than immediate control</li>
+                </ul>
+                
+                <h4>Available Settings</h4>
+                <div class="modal-section">
+                    <h5>Appearance</h5>
+                    <p>Customize the visual style of the simulation:</p>
+                    <ul>
+                        <li><strong>Cell Color:</strong> Change the color of live cells</li>
+                        <li><strong>Grid Color:</strong> Change the color of grid lines</li>
+                        <li><strong>Background Color:</strong> Change the canvas background color</li>
+                    </ul>
+                </div>
+                
+                <div class="modal-section">
+                    <h5>Default Preferences</h5>
+                    <p>Set default values for new sessions:</p>
+                    <ul>
+                        <li><strong>Default Speed:</strong> Initial simulation speed when page loads</li>
+                        <li><strong>Default Grid Size:</strong> Initial grid dimensions when page loads</li>
+                        <li><strong>Default Boundary:</strong> Initial boundary type (Toroidal or Finite)</li>
+                    </ul>
+                </div>
+                
+                <div class="modal-section">
+                    <h5>Actions</h5>
+                    <ul>
+                        <li><strong>Save Configuration:</strong> Save all settings to browser storage</li>
+                        <li><strong>Reset to Defaults:</strong> Revert all settings to their original values</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls Panel Info Modal -->
+    <div id="controls-panel-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="controls-panel-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="controls-panel-modal-title">Controls Panel</h3>
+                <span class="modal-close" aria-label="Close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>The Controls Panel provides real-time control over the current simulation session. Changes take effect immediately but don't persist between browser sessions.</p>
+                
+                <h4>Key Differences from Configuration Panel</h4>
+                <ul>
+                    <li><strong>Immediacy:</strong> Changes take effect right away</li>
+                    <li><strong>Session-only:</strong> Settings reset when you reload the page</li>
+                    <li><strong>Purpose:</strong> For controlling the active simulation in real-time</li>
+                </ul>
+                
+                <h4>Available Controls</h4>
+                <div class="modal-section">
+                    <h5>Simulation Controls</h5>
+                    <ul>
+                        <li><strong>Play/Pause:</strong> Start or stop the simulation</li>
+                        <li><strong>Step:</strong> Advance one generation at a time</li>
+                        <li><strong>Reset:</strong> Clear the grid completely</li>
+                        <li><strong>Speed Slider:</strong> Control animation frame rate (1-60 FPS)</li>
+                    </ul>
+                </div>
+                
+                <div class="modal-section">
+                    <h5>Grid Settings</h5>
+                    <ul>
+                        <li><strong>Preset Sizes:</strong> Quick selection of common grid dimensions</li>
+                        <li><strong>Custom Dimensions:</strong> Set specific numbers of rows and columns</li>
+                        <li><strong>Apply Button:</strong> Resize the grid immediately</li>
+                        <li><strong>Boundary Type:</strong> Toggle between Toroidal (wrapping) and Finite boundaries</li>
+                    </ul>
+                </div>
+                
+                <p><strong>Note:</strong> For persistent settings that are saved between visits, use the Configuration Panel instead.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn">Close</button>
+            </div>
+        </div>
     </div>
 
     <!-- Import initialization module first -->
