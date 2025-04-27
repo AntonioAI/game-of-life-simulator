@@ -34,6 +34,7 @@
 @import 'components/patterns.css';  /* Pattern library and selection */
 @import 'components/config.css';    /* Configuration panel */
 @import 'components/error.css';     /* Error notifications */
+@import 'components/modal.css';     /* Modal dialog components */
 
 /* ==========================================================================
    4. Utility Styles - Helper classes

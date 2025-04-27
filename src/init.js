@@ -6,9 +6,11 @@
 
 import { initBrowserHandlers } from './ui/BrowserHandlers.js';
 import { initTouchHandlers } from './utils/TouchHandler.js';
+import Modal from './ui/components/Modal.js';
 
 // Initialize all browser-related functionality immediately
 document.addEventListener('DOMContentLoaded', () => {
     initBrowserHandlers();
     initTouchHandlers();
+    Modal.initialize();
 }); 

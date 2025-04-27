@@ -2,6 +2,17 @@
  * Game of Life Simulator - UIManager Module
  * Responsible for UI coordination
  * Copyright (c) 2025 Antonio Innocente
+ * 
+ * The UIManager orchestrates the Controls panel, which provides immediate control
+ * over the current simulation session. Unlike the ConfigPanel which handles persistent
+ * settings, the Controls panel managed by UIManager affects the simulation immediately
+ * but these changes are not saved between sessions.
+ * 
+ * This includes simulation flow controls (play/pause/step), current grid settings,
+ * and boundary type for the current session.
+ * 
+ * See docs/PANELS.md for more information on the difference between the Controls panel
+ * and the Configuration panel.
  */
 
 import Controls from './Controls.js';
@@ -13,6 +24,7 @@ import { createElementsFromHTML } from '../utils/DOMHelper.js';
 
 /**
  * UIManager class for managing UI elements
+ * Coordinates the Controls panel and Analytics panel for the current simulation session
  */
 class UIManager {
     /**
