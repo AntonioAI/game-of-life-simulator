@@ -97,12 +97,8 @@ export default class ZoomDetector {
         
         // Clean up media query listeners
         if (this.mediaQueryList) {
-            if (this.mediaQueryList.removeEventListener) {
-                this.mediaQueryList.removeEventListener('change', this.handleMediaChange);
-            } else if (this.mediaQueryList.removeListener) {
-                // For older browsers
-                this.mediaQueryList.removeListener(this.handleMediaChange);
-            }
+            // Use only standard event listener method
+            this.mediaQueryList.removeEventListener?.('change', this.handleMediaChange);
             this.mediaQueryList = null;
         }
         
@@ -127,27 +123,21 @@ export default class ZoomDetector {
     setupMatchMediaDetection() {
         // Clean up previous media query listeners
         if (this.mediaQueryList) {
-            if (this.mediaQueryList.removeEventListener) {
-                this.mediaQueryList.removeEventListener('change', this.handleMediaChange);
-            } else if (this.mediaQueryList.removeListener) {
-                this.mediaQueryList.removeListener(this.handleMediaChange);
-            }
+            // Use only standard event listener method
+            this.mediaQueryList.removeEventListener?.('change', this.handleMediaChange);
         }
         
         // Create a media query based on device pixel ratio
         const dpr = window.devicePixelRatio || 1;
         this.mediaQueryList = window.matchMedia(`(resolution: ${dpr}dppx)`);
         
-        // Add the listener
-        if (this.mediaQueryList.addEventListener) {
-            this.mediaQueryList.addEventListener('change', this.handleMediaChange);
-        } else if (this.mediaQueryList.addListener) {
-            // For older browsers
-            this.mediaQueryList.addListener(this.handleMediaChange);
-        } else {
-            // If neither method is available, throw error to fall back to other methods
-            throw new Error('matchMedia API does not support listeners');
+        // Add the listener using standard method
+        if (!this.mediaQueryList.addEventListener) {
+            // If addEventListener not available, throw error to fall back to other methods
+            throw new Error('matchMedia API does not support standard event listeners');
         }
+        
+        this.mediaQueryList.addEventListener('change', this.handleMediaChange);
     }
     
     /**
